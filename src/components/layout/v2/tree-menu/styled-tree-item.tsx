@@ -1,5 +1,7 @@
-import theme from "../../theme";
-import ParentTreeIcon from "./parent-tree-icon";
+import ParentTreeIcon from "../../../../styles/components/layout-screen/parent-tree-icon";
+import theme from "../../../../styles/theme";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { SubdirectoryArrowRightRounded } from "@mui/icons-material";
 import { TreeItem, TreeItemProps, treeItemClasses } from "@mui/lab";
 import { Stack, Typography, styled } from "@mui/material";
@@ -10,7 +12,6 @@ import { Stack, Typography, styled } from "@mui/material";
 type StyledTreeItemProps = TreeItemProps & {
   itemType: string;
   itemName: string;
-  isLayoutComponent: boolean;
   isRoot?: boolean;
   isRootSubdirectory?: boolean;
   hasChildren?: boolean;
@@ -54,10 +55,20 @@ export const StyledTreeItem = ({
   isRootSubdirectory,
   hasChildren,
   ...other
-}: StyledTreeItemProps) => (
-  <StyledTreeItemRoot
-    label={
-      <>
+}: StyledTreeItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: other.nodeId
+  });
+  return (
+    <StyledTreeItemRoot
+      ref={setNodeRef}
+      sx={{
+        transform: CSS.Transform.toString(transform),
+        transition: transition
+      }}
+      {...attributes}
+      {...listeners}
+      label={
         <Stack direction="row" justifyContent="space-between">
           <div style={{ display: "flex", flexDirection: "row" }}>
             {isRootSubdirectory && (
@@ -86,8 +97,8 @@ export const StyledTreeItem = ({
           </div>
           {hasChildren && <ParentTreeIcon />}
         </Stack>
-      </>
-    }
-    {...other}
-  />
-);
+      }
+      {...other}
+    />
+  );
+};

@@ -5,8 +5,8 @@ import { TreeObject } from "../../../types";
 import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
 import ElementNavigationPane from "../../layouts/element-navigation-pane";
-import LayoutTreeMenuHtml from "./layout-tree-menu-html";
 import PanelSubtitle from "./panel-subtitle";
+import LayoutTreeMenuHtml from "./tree-menu/layout-tree-menu-html";
 import { MenuItem, Stack } from "@mui/material";
 import { ChangeEvent } from "react";
 
