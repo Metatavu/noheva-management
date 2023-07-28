@@ -1,4 +1,4 @@
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import * as React from "react";
 
 /**

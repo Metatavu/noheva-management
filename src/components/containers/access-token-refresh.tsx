@@ -101,15 +101,16 @@ class AccessTokenRefresh extends React.Component<Props, State> {
    */
   private refreshAccessToken() {
     try {
-      const refreshed = this.keycloak.updateToken(70);
-      if (refreshed) {
-        const { token, tokenParsed } = this.keycloak;
+      this.keycloak.updateToken(70).then((refreshed) => {
+        if (refreshed) {
+          const { token, tokenParsed } = this.keycloak;
 
-        if (tokenParsed && tokenParsed.sub && token) {
-          this.props.onLogin(this.keycloak);
+          if (tokenParsed?.sub && token) {
+            this.props.onLogin(this.keycloak);
+          }
         }
-      }
-    } catch (e) {
+      });
+    } catch (e: any) {
       this.setState({
         error: e
       });

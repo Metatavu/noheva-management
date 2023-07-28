@@ -12,7 +12,7 @@ import { ExhibitionPageTabHolder } from "../../content-editor/constants";
 import TabItem from "../../generic/tab-item";
 import { LayoutGravityValuePairs } from "../../layout/editor-constants/values";
 import PagePreviewComponentEditor from "./page-preview-component";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -40,14 +40,9 @@ interface Props extends WithStyles<typeof styles> {
 }
 
 /**
- * Interface representing component state
- */
-interface State {}
-
-/**
  * Component for rendering LinearLayout views
  */
-class PagePreviewLinearLayout extends React.Component<Props, State> {
+class PagePreviewLinearLayout extends React.Component<Props, {}> {
   /**
    * Constructor
    *
@@ -150,7 +145,11 @@ class PagePreviewLinearLayout extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewLinearLayout: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewLinearLayout: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**
@@ -199,7 +198,7 @@ class PagePreviewLinearLayout extends React.Component<Props, State> {
         case "gravity":
           result.justifyContent = AndroidUtils.gravityToJustifyContent(property.value);
           break;
-        case "padding":
+        case "padding": {
           const px = AndroidUtils.stringToPx(
             this.props.displayMetrics,
             property.value,
@@ -209,6 +208,7 @@ class PagePreviewLinearLayout extends React.Component<Props, State> {
             result.padding = px;
           }
           break;
+        }
         case "orientation":
           if (property.value === "vertical") {
             result.flexDirection = "column";

@@ -1,35 +1,35 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
+import { setDeviceModels } from "../../actions/devices";
+import Api from "../../api/api";
+import { Config } from "../../constants/configuration";
+import { ContentVersion, DeviceModel, Visitor } from "../../generated/client";
+import strings from "../../localization/strings";
+import logo from "../../resources/gfx/muisti-logo.png";
 import { ReduxActions, ReduxState } from "../../store";
-import { History } from "history";
 import styles from "../../styles/screens/reception-screen";
+import { AccessToken } from "../../types";
+import LanguageUtils from "../../utils/language-utils";
+import { MqttListener } from "../generic/mqtt-listener";
+import TagListener from "../generic/tag-listener";
+import BasicLayout from "../layouts/basic-layout";
 import {
-  CircularProgress,
-  Typography,
   Button,
-  TextField,
+  CircularProgress,
+  FormControl,
   InputLabel,
   MenuItem,
   Select,
-  FormControl,
-  SelectChangeEvent
+  SelectChangeEvent,
+  TextField,
+  Typography
 } from "@mui/material";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
+import { History } from "history";
 import { KeycloakInstance } from "keycloak-js";
-import { ContentVersion, DeviceModel, Visitor } from "../../generated/client";
-import { AccessToken } from "../../types";
-import strings from "../../localization/strings";
-import BasicLayout from "../layouts/basic-layout";
-import { setDeviceModels } from "../../actions/devices";
-import TagListener from "../generic/tag-listener";
-import { MqttListener } from "../generic/mqtt-listener";
-import Api from "../../api/api";
+import * as React from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
 import SimpleReactValidator from "simple-react-validator";
-import logo from "../../resources/gfx/muisti-logo.png";
-import LanguageUtils from "../../utils/language-utils";
-import { Config } from "../../constants/configuration";
 
 /**
  * Component props
@@ -692,4 +692,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ReceptionScreen));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(ReceptionScreen));

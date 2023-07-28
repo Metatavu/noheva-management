@@ -488,4 +488,4 @@ const mapStateToProps = (state: ReduxState) => ({
   deviceModels: state.devices.deviceModels
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(DiagnosticsScreen));
+export default withStyles(styles)(connect(mapStateToProps)(DiagnosticsScreen));

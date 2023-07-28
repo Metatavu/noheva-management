@@ -432,7 +432,7 @@ export default class SpacesMap extends React.Component<Props, State> {
         groupId: selectedItems.deviceGroup.id,
         modelId: deviceModels[0].id,
         screenOrientation: ScreenOrientation.Landscape,
-        imageLoadStrategy: DeviceImageLoadStrategy.MEMORY,
+        imageLoadStrategy: DeviceImageLoadStrategy.Memory,
         location: {
           x: marker._latlng.lat,
           y: marker._latlng.lng

@@ -145,7 +145,7 @@ class CommonLayoutPropertiesEditor extends React.Component<Props, State> {
           fullWidth
           type="text"
           name="name"
-          value={pageLayoutView && pageLayoutView.name ? pageLayoutView.name : ""}
+          value={pageLayoutView?.name ? pageLayoutView.name : ""}
           onChange={this.onNameChange}
         />
         <HelpDialog title={strings.layoutEditor.commonComponents.name}>
@@ -711,7 +711,6 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(CommonLayoutPropertiesEditor));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(CommonLayoutPropertiesEditor)
+);

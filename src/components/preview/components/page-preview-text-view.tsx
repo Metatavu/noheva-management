@@ -10,7 +10,7 @@ import { CSSPropertyValuePairs, ResourceMap } from "../../../types";
 import DisplayMetrics from "../../../types/display-metrics";
 import AndroidUtils from "../../../utils/android-utils";
 import { LayoutGravityValuePairs } from "../../layout/editor-constants/values";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -95,7 +95,11 @@ class PagePreviewTextView extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewTextView: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewTextView: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**
@@ -108,7 +112,7 @@ class PagePreviewTextView extends React.Component<Props, State> {
       (property) => property.name === "text"
     );
     const id = textProperty?.value;
-    if (id && id.startsWith("@resources/")) {
+    if (id?.startsWith("@resources/")) {
       const resource = this.props.resourceMap[id.substring(11)];
       if (!resource) {
         return;
@@ -119,7 +123,6 @@ class PagePreviewTextView extends React.Component<Props, State> {
           return strings.contentEditor.preview.resourceModePreview.scripted;
         case PageResourceMode.Dynamic:
           return strings.contentEditor.preview.resourceModePreview.dynamic;
-        case PageResourceMode.Static:
         default:
           return resource.data;
       }
@@ -208,7 +211,7 @@ class PagePreviewTextView extends React.Component<Props, State> {
       }
 
       switch (property.name) {
-        case "width":
+        case "width": {
           const widthInPixels = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (widthInPixels) {
             result.width = widthInPixels;
@@ -216,7 +219,8 @@ class PagePreviewTextView extends React.Component<Props, State> {
             console.log("Button: unknown width", property.value);
           }
           break;
-        case "height":
+        }
+        case "height": {
           const heightInPixels = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (heightInPixels) {
             result.height = heightInPixels;
@@ -224,7 +228,8 @@ class PagePreviewTextView extends React.Component<Props, State> {
             console.log("Button: unknown height", property.value);
           }
           break;
-        case "background":
+        }
+        case "background": {
           const color = AndroidUtils.toCssColor(property.value);
           if (color) {
             result.background = color;
@@ -232,7 +237,8 @@ class PagePreviewTextView extends React.Component<Props, State> {
             this.handleUnknownProperty(property, "Unknown background");
           }
           break;
-        case "textSize":
+        }
+        case "textSize": {
           const px = AndroidUtils.stringToPx(
             this.props.displayMetrics,
             property.value,
@@ -244,6 +250,7 @@ class PagePreviewTextView extends React.Component<Props, State> {
             console.log("TextView: unknown textSize", property.value);
           }
           break;
+        }
         case "textAlignment":
           switch (property.value) {
             case "inherit":
@@ -267,7 +274,7 @@ class PagePreviewTextView extends React.Component<Props, State> {
             default:
           }
           break;
-        case "textColor":
+        case "textColor": {
           const textColor = AndroidUtils.toCssColor(property.value);
           if (textColor) {
             result.color = textColor;
@@ -275,6 +282,7 @@ class PagePreviewTextView extends React.Component<Props, State> {
             this.handleUnknownProperty(property, "Unknown text color");
           }
           break;
+        }
         default:
           this.handleUnknownProperty(property, "Unknown property");
           break;
@@ -346,7 +354,7 @@ class PagePreviewTextView extends React.Component<Props, State> {
   private onClick = (event: React.MouseEvent) => {
     const { view, onViewClick } = this.props;
     event.stopPropagation();
-    onViewClick && onViewClick(view);
+    onViewClick?.(view);
   };
 }
 

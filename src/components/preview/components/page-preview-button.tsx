@@ -8,7 +8,7 @@ import { CSSPropertyValuePairs, ResourceMap } from "../../../types";
 import DisplayMetrics from "../../../types/display-metrics";
 import AndroidUtils from "../../../utils/android-utils";
 import { LayoutGravityValuePairs } from "../../layout/editor-constants/values";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -93,7 +93,11 @@ class PagePreviewButton extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewButton: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewButton: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**
@@ -106,7 +110,7 @@ class PagePreviewButton extends React.Component<Props, State> {
       (property) => property.name === "text"
     );
     const id = textProperty?.value;
-    if (id && id.startsWith("@resources/")) {
+    if (id?.startsWith("@resources/")) {
       const resource = this.props.resourceMap[id.substring(11)];
       if (resource) {
         return resource.data;
@@ -165,7 +169,7 @@ class PagePreviewButton extends React.Component<Props, State> {
         case "background":
           result.backgroundColor = property.value;
           break;
-        case "width":
+        case "width": {
           const widthPixels = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (widthPixels) {
             result.width = widthPixels;
@@ -173,7 +177,8 @@ class PagePreviewButton extends React.Component<Props, State> {
             this.handleUnknownProperty(property, `unknown width ${property.value}`);
           }
           break;
-        case "height":
+        }
+        case "height": {
           const heightPixels = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (heightPixels) {
             result.height = heightPixels;
@@ -181,10 +186,11 @@ class PagePreviewButton extends React.Component<Props, State> {
             this.handleUnknownProperty(property, `unknown height ${property.value}`);
           }
           break;
+        }
         case "textColor":
           result.color = property.value;
           break;
-        case "textSize":
+        case "textSize": {
           const fontSizePixels = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (fontSizePixels) {
             /**
@@ -198,6 +204,7 @@ class PagePreviewButton extends React.Component<Props, State> {
             this.handleUnknownProperty(property, `unknown font size ${property.value}`);
           }
           break;
+        }
         case "layout_gravity":
           if (parentIsFrameLayout) {
             const gravityProps: CSSPropertyValuePairs[] =
@@ -232,7 +239,7 @@ class PagePreviewButton extends React.Component<Props, State> {
 
     properties.forEach((property) => {
       switch (property.name) {
-        case "gravity":
+        case "gravity": {
           const gravityProps: CSSPropertyValuePairs[] = AndroidUtils.layoutGravityToCSSPositioning(
             property.value as LayoutGravityValuePairs
           );
@@ -241,6 +248,7 @@ class PagePreviewButton extends React.Component<Props, State> {
           });
 
           return;
+        }
         default:
           return;
       }
@@ -277,7 +285,7 @@ class PagePreviewButton extends React.Component<Props, State> {
   private onClick = (event: React.MouseEvent) => {
     const { view, onViewClick } = this.props;
     event.stopPropagation();
-    onViewClick && onViewClick(view);
+    onViewClick?.(view);
   };
 }
 

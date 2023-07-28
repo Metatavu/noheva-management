@@ -8,7 +8,7 @@ import { ResourceMap } from "../../../types";
 import DisplayMetrics from "../../../types/display-metrics";
 import PagePreviewImageView from "./page-preview-image-view";
 import PagePreviewPlayerView from "./page-preview-player-view";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -34,14 +34,9 @@ interface Props extends WithStyles<typeof styles> {
 }
 
 /**
- * Interface representing component state
- */
-interface State {}
-
-/**
  * Component for rendering Video views
  */
-class PagePreviewMediaView extends React.Component<Props, State> {
+class PagePreviewMediaView extends React.Component<Props, {}> {
   /**
    * Constructor
    *
@@ -119,7 +114,7 @@ class PagePreviewMediaView extends React.Component<Props, State> {
     const srcProperty = this.props.view.properties.find((property) => property.name === "src");
 
     const id = srcProperty?.value;
-    if (id && id.startsWith("@resources/")) {
+    if (id?.startsWith("@resources/")) {
       const resource = this.props.resourceMap[id.substring(11)];
       if (resource) {
         return resource.type;

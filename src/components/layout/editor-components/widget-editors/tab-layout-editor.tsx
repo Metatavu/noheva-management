@@ -436,7 +436,7 @@ class TabLayoutEditor extends React.Component<Props, {}> {
     const { pageLayout } = this.props;
 
     const elementList: JSX.Element[] = [];
-    this.constructSingleElement(elementList, pageLayout.data.children);
+    this.constructSingleElement(elementList, (pageLayout.data as PageLayoutView).children);
     return elementList;
   };
 

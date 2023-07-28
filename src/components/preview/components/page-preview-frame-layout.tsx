@@ -12,7 +12,7 @@ import { ExhibitionPageTabHolder } from "../../content-editor/constants";
 import TabItem from "../../generic/tab-item";
 import { LayoutGravityValuePairs } from "../../layout/editor-constants/values";
 import PagePreviewComponentEditor from "./page-preview-component";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -40,14 +40,9 @@ interface Props extends WithStyles<typeof styles> {
 }
 
 /**
- * Interface representing component state
- */
-interface State {}
-
-/**
  * Component for rendering FrameLayout views
  */
-class PagePreviewFrameLayout extends React.Component<Props, State> {
+class PagePreviewFrameLayout extends React.Component<Props, {}> {
   /**
    * Constructor
    *
@@ -98,9 +93,9 @@ class PagePreviewFrameLayout extends React.Component<Props, State> {
       handleLayoutProperties
     } = this.props;
 
-    return (view.children || []).map((child, index) => (
+    return (view.children || []).map((child) => (
       <PagePreviewComponentEditor
-        key={index}
+        key={child.id}
         view={child}
         parentView={view}
         selectedView={selectedView}
@@ -154,7 +149,11 @@ class PagePreviewFrameLayout extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewFrameLayout: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewFrameLayout: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**

@@ -9,7 +9,7 @@ import DisplayMetrics from "../../../types/display-metrics";
 import AndroidUtils from "../../../utils/android-utils";
 import { LayoutGravityValuePairs } from "../../layout/editor-constants/values";
 import PagePreviewComponentEditor from "./page-preview-component";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -93,9 +93,9 @@ class PagePreviewFlowTextView extends React.Component<Props, State> {
     const { view, layer, resourceMap, displayMetrics, scale, onViewClick, handleLayoutProperties } =
       this.props;
 
-    return (view.children || []).map((childView, index) => (
+    return (view.children || []).map((childView) => (
       <PagePreviewComponentEditor
-        key={index}
+        key={childView.id}
         view={childView}
         parentView={view}
         layer={layer}
@@ -127,7 +127,11 @@ class PagePreviewFlowTextView extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewFlowTextView: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewFlowTextView: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**
@@ -138,7 +142,7 @@ class PagePreviewFlowTextView extends React.Component<Props, State> {
   private getText = () => {
     const textProperty = this.props.view.properties.find((property) => property.name === "text");
     const id = textProperty?.value;
-    if (id && id.startsWith("@resources/")) {
+    if (id?.startsWith("@resources/")) {
       const resource = this.props.resourceMap[id.substring(11)];
       if (resource) {
         return resource.data;
@@ -190,7 +194,7 @@ class PagePreviewFlowTextView extends React.Component<Props, State> {
       }
 
       switch (property.name) {
-        case "textSize":
+        case "textSize": {
           const px = AndroidUtils.stringToPx(
             this.props.displayMetrics,
             property.value,
@@ -202,6 +206,7 @@ class PagePreviewFlowTextView extends React.Component<Props, State> {
             console.log("FlowTextView: unknown layout_height", property.value);
           }
           break;
+        }
         default:
           this.handleUnknownProperty(property, "Unknown property");
           break;
@@ -237,7 +242,7 @@ class PagePreviewFlowTextView extends React.Component<Props, State> {
   private onClick = (event: React.MouseEvent) => {
     const { view, onViewClick } = this.props;
     event.stopPropagation();
-    onViewClick && onViewClick(view);
+    onViewClick?.(view);
   };
 }
 

@@ -6,7 +6,6 @@ import {
   ExhibitionPageTransition
 } from "../../generated/client";
 import strings from "../../localization/strings";
-import { ReduxActions, ReduxState } from "../../store";
 import styles from "../../styles/page-settings-editor";
 import theme from "../../styles/theme";
 import GenericButton from "../generic/generic-button";
@@ -34,8 +33,6 @@ import {
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
 
 /**
  * Interface representing component properties
@@ -205,7 +202,7 @@ class TransitionsEditor extends React.Component<Props, State> {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography style={{ marginBottom: theme.spacing(2) }} variant="h6"></Typography>
+          <Typography style={{ marginBottom: theme.spacing(2) }} variant="h6" />
           <FormControl variant="outlined">
             <InputLabel id={strings.contentEditor.editor.dialog.timeInterpolation}>
               {strings.contentEditor.editor.dialog.timeInterpolation}
@@ -545,22 +542,4 @@ class TransitionsEditor extends React.Component<Props, State> {
   };
 }
 
-/**
- * Redux mapper for mapping store state to component props
- *
- * @param state store state
- */
-function mapStateToProps(state: ReduxState) {
-  return {};
-}
-
-/**
- * Redux mapper for mapping component dispatches
- *
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
-  return {};
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TransitionsEditor));
+export default withStyles(styles)(TransitionsEditor);

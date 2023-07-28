@@ -84,14 +84,14 @@ class LayoutTreeMenu extends React.Component<Props, State> {
         <div className={classes.treeView}>
           <TreeMenu
             data={treeData}
-            onClickItem={({ key, label, ...props }) => {
+            onClickItem={({ _key, _label, ...props }) => {
               props.onSelect(props.element, props.type, props.path);
             }}
           >
             {({ search, items }) => (
               <>
                 <FilledInput
-                  onChange={(e) => search && search(e.target.value)}
+                  onChange={(e) => search?.(e.target.value)}
                   placeholder={strings.exhibition.navigation.search}
                   className={classes.searchBar}
                   fullWidth
@@ -136,7 +136,6 @@ class LayoutTreeMenu extends React.Component<Props, State> {
     label,
     name,
     path,
-    active,
     ...otherProps
   }: TreeMenuItem) => {
     const { classes } = this.props;

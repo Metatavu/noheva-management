@@ -125,8 +125,8 @@ function mapStateToProps(state: ReduxState) {
  *
  * @param dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(AddDeviceEditor));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(AddDeviceEditor));

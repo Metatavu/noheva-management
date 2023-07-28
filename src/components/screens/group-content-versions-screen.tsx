@@ -129,7 +129,7 @@ class GroupContentVersionsScreen extends React.Component<Props, State> {
           actionBarButtons={actionBarButtons}
         >
           <div className={classes.loader}>
-            <CircularProgress size={50} color="secondary"></CircularProgress>
+            <CircularProgress size={50} color="secondary" />
           </div>
         </BasicLayout>
       );
@@ -304,13 +304,7 @@ class GroupContentVersionsScreen extends React.Component<Props, State> {
     const deviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
 
     const [exhibition, room, contentVersion, groupContentVersions, deviceGroups] =
-      await Promise.all<
-        Exhibition,
-        ExhibitionRoom,
-        ContentVersion,
-        GroupContentVersion[],
-        ExhibitionDeviceGroup[]
-      >([
+      await Promise.all([
         exhibitionsApi.findExhibition({ exhibitionId }),
         exhibitionRoomsApi.findExhibitionRoom({ exhibitionId, roomId }),
         contentVersionsApi.findContentVersion({ exhibitionId, contentVersionId }),
@@ -582,11 +576,10 @@ function mapStateToProps(state: ReduxState) {
  *
  * @param dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(GroupContentVersionsScreen));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(GroupContentVersionsScreen)
+);

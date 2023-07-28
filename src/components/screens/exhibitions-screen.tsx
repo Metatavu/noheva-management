@@ -1,18 +1,6 @@
 import { setExhibitions } from "../../actions/exhibitions";
 import Api from "../../api/api";
-import {
-  ContentVersion,
-  Exhibition,
-  ExhibitionDevice,
-  ExhibitionDeviceGroup,
-  ExhibitionFloor,
-  ExhibitionPage,
-  ExhibitionRoom,
-  GroupContentVersion,
-  RfidAntenna,
-  Visitor,
-  VisitorSession
-} from "../../generated/client";
+import { Exhibition } from "../../generated/client";
 import strings from "../../localization/strings";
 import { ReduxActions, ReduxState } from "../../store";
 import styles from "../../styles/exhibition-view";
@@ -111,7 +99,7 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
     if (this.state.loading) {
       return (
         <div className={classes.loader}>
-          <CircularProgress size={50} color="secondary"></CircularProgress>
+          <CircularProgress size={50} color="secondary" />
         </div>
       );
     }
@@ -448,18 +436,7 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
       antennas,
       visitors,
       visitorSessions
-    ] = await Promise.all<
-      ExhibitionPage[],
-      ContentVersion[],
-      ExhibitionDevice[],
-      ExhibitionDeviceGroup[],
-      ExhibitionFloor[],
-      ExhibitionRoom[],
-      GroupContentVersion[],
-      RfidAntenna[],
-      Visitor[],
-      VisitorSession[]
-    >([
+    ] = await Promise.all([
       pagesApi.listExhibitionPages({ exhibitionId: selectedExhibition.id }),
       contentVersionsApi.listContentVersions({ exhibitionId: selectedExhibition.id }),
       devicesApi.listExhibitionDevices({ exhibitionId: selectedExhibition.id }),
@@ -697,6 +674,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-// TODO: withStyles type issue might be resolved with using compose?
-// export default compose(connect(mapStateToProps, mapDispatchToProps),withStyles(styles))(ExhibitionsScreen);
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ExhibitionsScreen));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(ExhibitionsScreen));

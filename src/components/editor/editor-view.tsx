@@ -6,7 +6,9 @@ import * as React from "react";
 /**
  * Interface representing component properties
  */
-interface Props extends WithStyles<typeof styles> {}
+interface Props extends WithStyles<typeof styles> {
+  children?: React.ReactNode;
+}
 
 /**
  * Interface representing component state

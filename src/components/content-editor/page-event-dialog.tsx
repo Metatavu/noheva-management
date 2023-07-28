@@ -540,10 +540,6 @@ class PageEventDialog extends React.Component<Props, State> {
         return [this.getStringProperty("name")];
       case ExhibitionPageEventActionType.ExecuteWebScript:
         return [this.getStringProperty("webViewId"), this.getStringProperty("script")];
-      case ExhibitionPageEventActionType.Hide:
-      case ExhibitionPageEventActionType.Show:
-      case ExhibitionPageEventActionType.Setsrc:
-      case ExhibitionPageEventActionType.Settext:
       default:
         return [];
     }
@@ -592,9 +588,7 @@ class PageEventDialog extends React.Component<Props, State> {
    *
    * @param event react change event
    */
-  private onEventTriggerEventPropertyChange = (
-    event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>
-  ) => {
+  private onEventTriggerEventPropertyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { pageEvent } = this.state;
 
     const propertyName = event.target.name;

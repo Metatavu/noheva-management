@@ -92,6 +92,18 @@ const AddNewLayoutDialog: React.FC<Props> = ({
     </FormControl>
   );
 
+  /**
+   * Handler for add button click
+   */
+  const handleAddButtonClick = () => {
+    if (!(newLayoutName && selectedDeviceModelId)) return;
+    if (createSubLayout) {
+      onCreateNewSubLayout(newLayoutName);
+    } else {
+      onCreateNewLayout(newLayoutName, selectedDeviceModelId);
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -136,11 +148,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
           disableElevation
           variant="contained"
           disabled={!isValid}
-          onClick={() =>
-            createSubLayout
-              ? onCreateNewSubLayout(newLayoutName)
-              : onCreateNewLayout(newLayoutName, selectedDeviceModelId)
-          }
+          onClick={handleAddButtonClick}
           color="secondary"
           autoFocus
         >

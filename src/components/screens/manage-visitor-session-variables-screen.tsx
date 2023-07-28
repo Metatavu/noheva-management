@@ -732,7 +732,6 @@ const mapDispatchToProps = (dispatch: Dispatch<ReduxActions>) => ({
   setDeviceModels: (deviceModels: DeviceModel[]) => dispatch(setDeviceModels(deviceModels))
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(ManageVisitorSessionVariablesScreen));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(ManageVisitorSessionVariablesScreen)
+);

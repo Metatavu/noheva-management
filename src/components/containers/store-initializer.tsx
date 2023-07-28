@@ -72,7 +72,7 @@ class StoreInitializer extends React.Component<Props, State> {
       this.props.setLayouts(layouts);
       this.props.setSubLayouts(subLayouts);
       this.props.setDeviceModels(deviceModels);
-    } catch (e) {
+    } catch (e: any) {
       this.setState({
         error: e
       });

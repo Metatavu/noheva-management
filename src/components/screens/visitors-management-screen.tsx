@@ -591,7 +591,7 @@ export class VisitorsManagementScreen extends React.Component<Props, State> {
       exhibitionId: exhibitionId,
       visitorSession: {
         language: selectedLanguage,
-        state: VisitorSessionState.ACTIVE,
+        state: VisitorSessionState.Active,
         visitorIds: createdVisitors.map((visitor) => visitor.id || "")
       }
     });
@@ -686,9 +686,8 @@ export class VisitorsManagementScreen extends React.Component<Props, State> {
    * Event handler for language change
    *
    * @param event react change event
-   * @param child react child node
    */
-  private onLanguageChange = (event: SelectChangeEvent<string>, child: React.ReactNode) => {
+  private onLanguageChange = (event: SelectChangeEvent<string>) => {
     this.setState({
       selectedLanguage: event.target.value,
       dataChanged: true
@@ -761,9 +760,11 @@ export class VisitorsManagementScreen extends React.Component<Props, State> {
 
     const exhibitions = await exhibitionsApi.listExhibitions();
     for (const exhibition of exhibitions) {
+      if (!exhibition.id) continue;
+
       const [exhibitionVisitors, exhibitionSessions] = await Promise.all([
-        visitorsApi.listVisitors({ exhibitionId: exhibition.id!, tagId: tag }),
-        sessionsApi.listVisitorSessions({ exhibitionId: exhibition.id!, tagId: tag })
+        visitorsApi.listVisitors({ exhibitionId: exhibition.id, tagId: tag }),
+        sessionsApi.listVisitorSessions({ exhibitionId: exhibition.id, tagId: tag })
       ]);
 
       if (!exhibitionVisitors.length && !exhibitionSessions.length) {
@@ -777,13 +778,15 @@ export class VisitorsManagementScreen extends React.Component<Props, State> {
 
       try {
         for (const session of exhibitionSessions) {
+          if (!exhibition.id || !session.id) continue;
+
           await sessionsApi.deleteVisitorSession({
-            exhibitionId: exhibition.id!,
-            visitorSessionId: session.id!
+            exhibitionId: exhibition.id,
+            visitorSessionId: session.id
           });
 
           for (const visitorId of session.visitorIds) {
-            await visitorsApi.deleteVisitor({ exhibitionId: exhibition.id!, visitorId });
+            await visitorsApi.deleteVisitor({ exhibitionId: exhibition.id, visitorId });
           }
 
           this.setState({
@@ -1053,7 +1056,6 @@ function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(VisitorsManagementScreen));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(VisitorsManagementScreen)
+);

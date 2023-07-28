@@ -174,8 +174,8 @@ function mapStateToProps(state: ReduxState) {
  *
  * @param dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FloorPlansScreen));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(FloorPlansScreen));

@@ -9,7 +9,7 @@ import DisplayMetrics from "../../../types/display-metrics";
 import AndroidUtils from "../../../utils/android-utils";
 import { LayoutGravityValuePairs } from "../../layout/editor-constants/values";
 import VideoIcon from "@mui/icons-material/OndemandVideo";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -110,7 +110,7 @@ class PagePreviewVideoView extends React.Component<Props, State> {
     const srcProperty = this.props.view.properties.find((property) => property.name === "src");
 
     const id = srcProperty?.value;
-    if (id && id.startsWith("@resources/")) {
+    if (id?.startsWith("@resources/")) {
       const resource = this.props.resourceMap[id.substring(11)];
       if (resource) {
         return resource.data;
@@ -127,7 +127,11 @@ class PagePreviewVideoView extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewVideoView: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewVideoView: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**
@@ -216,7 +220,7 @@ class PagePreviewVideoView extends React.Component<Props, State> {
   private onClick = (event: React.MouseEvent) => {
     const { view, onViewClick } = this.props;
     event.stopPropagation();
-    onViewClick && onViewClick(view);
+    onViewClick?.(view);
   };
 }
 

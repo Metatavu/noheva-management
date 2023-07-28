@@ -247,7 +247,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
           noBackButton
         >
           <div className={classes.loader}>
-            <CircularProgress size={50} color="secondary"></CircularProgress>
+            <CircularProgress size={50} color="secondary" />
           </div>
         </BasicLayout>
       );
@@ -363,7 +363,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
    * @param event event object
    * @param newIndex new tab index value
    */
-  private setTabIndex = (event: React.ChangeEvent<{}>, newIndex: number) => {
+  private setTabIndex = (_: React.ChangeEvent<{}>, newIndex: number) => {
     this.setState({
       timelineTabIndex: newIndex,
       selectedContentVersion: this.state.contentVersions[0],
@@ -465,7 +465,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
               deviceOrientation={deviceModel?.screenOrientation}
               device={previewData.device}
               page={previewPage}
-              view={view}
+              view={view as PageLayoutView}
               selectedView={selectedLayoutView}
               resources={resources}
               displayMetrics={displayMetrics}
@@ -852,7 +852,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       return (
         <EventTriggerEditor
           selectedEventTrigger={foundTrigger}
-          view={pageLayout?.data}
+          view={pageLayout?.data as PageLayoutView}
           pages={pages}
           availableLanguages={availableLanguages}
           visitorVariables={visitorVariables}
@@ -967,7 +967,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       return;
     }
 
-    return triggerList.map((trigger, index) => {
+    return triggerList.map((trigger) => {
       const pageEventTriggerIndex = selectedPage.eventTriggers.findIndex(
         (pageTrigger) => pageTrigger.id === trigger.id
       );
@@ -976,7 +976,6 @@ class ContentEditorScreen extends React.Component<Props, State> {
         <List key={trigger.id} disablePadding style={{ marginBottom: theme.spacing(1) }}>
           <ListItem
             className={classes.borderedListItem}
-            key={index}
             button
             onClick={this.onTriggerClick(pageEventTriggerIndex)}
           >
@@ -1045,7 +1044,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
         const tabHolder = tabMap.get(selectedLayoutView.id);
         const tabData = this.getTabStructure(tabHolder?.tabComponent.contentContainerId);
-        if (tabData && tabData.tabs) {
+        if (tabData?.tabs) {
           tabData.tabs[selectedTabIndex] = updatedTab;
           if (tabHolder) {
             tabHolder.tabComponent = tabData;
@@ -1520,7 +1519,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         ExhibitionPageEventTriggerFromJSON
       );
       result.resources = (parsedCode.resources || []).map(ExhibitionPageResourceFromJSON);
-    } catch (error) {
+    } catch (error: any) {
       this.setState({ error });
     }
 
@@ -1679,7 +1678,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
           const tabData = this.getTabStructure();
 
-          if (tabData && tabData.tabs) {
+          if (tabData?.tabs) {
             const tabHolder = tabMap.get(selectedLayoutView.id);
 
             if (tabHolder) {
@@ -1824,7 +1823,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
    * @param expanded is element expanded
    */
   private onExpandElement =
-    (view: PageLayoutView) => (event: React.ChangeEvent<{}>, expanded: boolean) => {
+    (view: PageLayoutView) => (_: React.ChangeEvent<{}>, expanded: boolean) => {
       this.setState({
         selectedLayoutView: expanded ? view : undefined
       });
@@ -1838,7 +1837,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
    * @param expanded is content version expanded
    */
   private onExpandContentVersion =
-    (contentVersion: ContentVersion) => (event: React.ChangeEvent<{}>, expanded: boolean) => {
+    (contentVersion: ContentVersion) => (_: React.ChangeEvent<{}>, expanded: boolean) => {
       this.setState({
         selectedContentVersion: expanded ? contentVersion : undefined,
         selectedPage: expanded ? this.getCorrespondingSelectedPage(contentVersion) : undefined,
@@ -2038,7 +2037,9 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
     this.setState(
       produce((draft: State) => {
-        const resourceHolder = ResourceUtils.getResourcesFromLayoutData(pageLayout.data);
+        const resourceHolder = ResourceUtils.getResourcesFromLayoutData(
+          pageLayout.data as PageLayoutView
+        );
 
         draft.selectedPage = selectedPage;
         draft.selectedLayoutView = undefined;
@@ -2120,7 +2121,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
           draft.dataChanged = false;
         })
       );
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
 
       this.setState({
@@ -2178,9 +2179,9 @@ class ContentEditorScreen extends React.Component<Props, State> {
     }
 
     const isIdlePage = timelineTabIndex === 0;
-    const layoutId = layouts && layouts.length ? layouts[0].id : null;
+    const layoutId = layouts?.length ? layouts[0].id : null;
     const deviceId = selectedDevice.id;
-    const temp = ResourceUtils.getResourcesFromLayoutData(layouts[0].data);
+    const temp = ResourceUtils.getResourcesFromLayoutData(layouts[0].data as PageLayoutView);
 
     if (!layoutId || !deviceId || !selectedContentVersion) {
       return;
@@ -2326,7 +2327,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         selectedPage: undefined,
         selectedTriggerIndex: undefined
       });
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       this.setState({ error: e });
     }
@@ -2433,7 +2434,6 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(ContentEditorScreen));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(ContentEditorScreen)
+);

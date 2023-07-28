@@ -79,9 +79,9 @@ const DiagnosticsProperties: React.FC<Props> = ({
    */
   const renderLocalizedImageLoadStrategy = (imageLoadStrategy: DeviceImageLoadStrategy) =>
     ({
-      [DeviceImageLoadStrategy.DISK]: strings.floorPlan.properties.imageLoadStrategyDisk,
-      [DeviceImageLoadStrategy.MEMORY]: strings.floorPlan.properties.imageLoadStrategyMemory,
-      [DeviceImageLoadStrategy.DISKRAW]: strings.floorPlan.properties.imageLoadStrategyDiskRaw
+      [DeviceImageLoadStrategy.Disk]: strings.floorPlan.properties.imageLoadStrategyDisk,
+      [DeviceImageLoadStrategy.Memory]: strings.floorPlan.properties.imageLoadStrategyMemory,
+      [DeviceImageLoadStrategy.DiskRaw]: strings.floorPlan.properties.imageLoadStrategyDiskRaw
     })[imageLoadStrategy];
 
   /**

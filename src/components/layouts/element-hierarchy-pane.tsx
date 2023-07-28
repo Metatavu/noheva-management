@@ -10,6 +10,7 @@ import * as React from "react";
 interface Props extends WithStyles<typeof styles> {
   title: string;
   width?: number;
+  children?: React.ReactNode;
 }
 
 /**

@@ -24,13 +24,13 @@ export const constructTreeDeleteData = (
   pageLayout: PageLayout | SubLayout,
   layoutViewPath: string
 ): PageLayout | SubLayout => {
-  if (pageLayout.data.id === layoutViewPath) {
+  if ((pageLayout.data as PageLayoutView).id === layoutViewPath) {
     pageLayout.data = { ...pageLayout.data, children: [] };
   } else {
-    pageLayout.data.children = deleteViewFromLayoutTree(
-      pageLayout.data.children,
+    (pageLayout.data as PageLayoutView).children = deleteViewFromLayoutTree(
+      (pageLayout.data as PageLayoutView).children,
       layoutViewPath,
-      pageLayout.data.id
+      (pageLayout.data as PageLayoutView).id
     );
   }
   return pageLayout;
@@ -87,13 +87,13 @@ export const constructTreeUpdateData = (
   pageLayoutView: PageLayoutView,
   layoutViewPath: string
 ): PageLayout | SubLayout => {
-  if (layout.data.id === layoutViewPath) {
+  if ((layout.data as PageLayoutView).id === layoutViewPath) {
     layout.data = pageLayoutView;
   } else {
-    layout.data.children = updateViewFromLayoutTree(
-      layout.data.children,
+    (layout.data as PageLayoutView).children = updateViewFromLayoutTree(
+      (layout.data as PageLayoutView).children,
       layoutViewPath,
-      layout.data.id,
+      (layout.data as PageLayoutView).id,
       pageLayoutView
     );
   }
@@ -159,13 +159,13 @@ export const pushNewPageLayoutViewToTree = (
   pageLayoutView: PageLayoutView,
   layoutViewPath: string
 ): PageLayout | SubLayout => {
-  if (pageLayout.data.id === layoutViewPath) {
-    pageLayout.data.children.push(pageLayoutView);
+  if ((pageLayout.data as PageLayoutView).id === layoutViewPath) {
+    (pageLayout.data as PageLayoutView).children.push(pageLayoutView);
   } else {
-    pageLayout.data.children = pushNewViewToLayoutTree(
-      pageLayout.data.children,
+    (pageLayout.data as PageLayoutView).children = pushNewViewToLayoutTree(
+      (pageLayout.data as PageLayoutView).children,
       layoutViewPath,
-      pageLayout.data.id,
+      (pageLayout.data as PageLayoutView).id,
       pageLayoutView
     );
   }

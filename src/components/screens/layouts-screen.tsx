@@ -556,4 +556,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(LayoutsScreen));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(LayoutsScreen));

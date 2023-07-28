@@ -133,7 +133,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
           clearError={() => this.setState({ error: undefined })}
         >
           <div className={classes.loader}>
-            <CircularProgress size={50} color="secondary"></CircularProgress>
+            <CircularProgress size={50} color="secondary" />
           </div>
         </BasicLayout>
       );
@@ -258,12 +258,11 @@ class ContentVersionsScreen extends React.Component<Props, State> {
           value={activeCondition?.userVariable || ""}
           onChange={this.onActiveConditionSelectChange}
         >
-          {visitorVariables &&
-            visitorVariables.map((variable) => (
-              <MenuItem key={variable.id} value={variable.name}>
-                {variable.name}
-              </MenuItem>
-            ))}
+          {visitorVariables?.map((variable) => (
+            <MenuItem key={variable.id} value={variable.name}>
+              {variable.name}
+            </MenuItem>
+          ))}
           {
             <MenuItem key={"no-value"} value={""}>
               {strings.generic.noSelection}
@@ -275,12 +274,11 @@ class ContentVersionsScreen extends React.Component<Props, State> {
             <Box mt={2} mb={2}>
               <Typography variant="body1">{strings.contentVersion.equals}</Typography>
             </Box>
-            {visitorVariables &&
-              visitorVariables
-                .filter((variable) => variable.name === activeCondition?.userVariable)
-                .map((variable) => {
-                  return this.renderVariables(variable, activeCondition?.equals);
-                })}
+            {visitorVariables
+              ?.filter((variable) => variable.name === activeCondition?.userVariable)
+              .map((variable) => {
+                return this.renderVariables(variable, activeCondition?.equals);
+              })}
           </>
         )}
       </>
@@ -329,7 +327,6 @@ class ContentVersionsScreen extends React.Component<Props, State> {
         );
       case VisitorVariableType.Number:
         return <TextField {...textFieldProps} type="number" />;
-      case VisitorVariableType.Text:
       default:
         return <TextField {...textFieldProps} />;
     }
@@ -367,12 +364,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
     const exhibitionRoomsApi = Api.getExhibitionRoomsApi(accessToken);
     const contentVersionsApi = Api.getContentVersionsApi(accessToken);
     const visitorVariablesApi = Api.getVisitorVariablesApi(accessToken);
-    const [exhibition, room, contentVersions, visitorVariables] = await Promise.all<
-      Exhibition,
-      ExhibitionRoom,
-      ContentVersion[],
-      VisitorVariable[]
-    >([
+    const [exhibition, room, contentVersions, visitorVariables] = await Promise.all([
       exhibitionsApi.findExhibition({ exhibitionId }),
       exhibitionRoomsApi.findExhibitionRoom({ exhibitionId: exhibitionId, roomId: roomId }),
       contentVersionsApi.listContentVersions({ exhibitionId, roomId }),
@@ -460,7 +452,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
           })
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       this.setState({ error: new Error(error) });
       return;
     }
@@ -499,10 +491,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
     const allPages: ExhibitionPage[] = [];
 
     for (const contentVersion of multiLingualContentVersion.languageVersions) {
-      const [groupContentVersions, pages] = await Promise.all<
-        GroupContentVersion[],
-        ExhibitionPage[]
-      >([
+      const [groupContentVersions, pages] = await Promise.all([
         groupContentVersionsApi.listGroupContentVersions({
           exhibitionId: exhibitionId,
           contentVersionId: contentVersion.id
@@ -617,7 +606,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
       multiLingualContentVersions
     );
     const otherVersions = multiLingualContentVersions.filter(
-      (version, index) => index !== selectedVersionIndex
+      (_, index) => index !== selectedVersionIndex
     );
     const existingName = this.isExistingName(value, otherVersions);
     if (existingName) {
@@ -875,11 +864,10 @@ function mapStateToProps(state: ReduxState) {
  *
  * @param dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(ContentVersionsScreen));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(ContentVersionsScreen)
+);

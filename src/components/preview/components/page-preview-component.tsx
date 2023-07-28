@@ -21,7 +21,7 @@ import { ContentRect } from "react-measure";
 import { ResourceMap } from "../../../types";
 import DisplayMetrics from "../../../types/display-metrics";
 import { ExhibitionPageTabHolder } from "../../content-editor/constants";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 
 /**
  * Interface representing component properties

@@ -12,7 +12,7 @@ import DisplayMetrics from "../../types/display-metrics";
 import AndroidUtils from "../../utils/android-utils";
 import { ExhibitionPageTabHolder } from "../content-editor/constants";
 import PagePreviewComponentEditor from "./components/page-preview-component";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -117,7 +117,11 @@ class PagePreview extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreview: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreview: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**
@@ -174,7 +178,7 @@ class PagePreview extends React.Component<Props, State> {
           case "layout_marginTop":
           case "layout_marginRight":
           case "layout_marginBottom":
-          case "layout_marginLeft":
+          case "layout_marginLeft": {
             const propertyName = property.name.substring(7);
             if (property.value.includes("px")) {
               result[propertyName] = property.value;
@@ -191,10 +195,11 @@ class PagePreview extends React.Component<Props, State> {
               this.handleUnknownProperty(property, `Unknown $propertyName value ${property.value}`);
             }
             break;
+          }
           case "paddingTop":
           case "paddingRight":
           case "paddingBottom":
-          case "paddingLeft":
+          case "paddingLeft": {
             if (property.value.includes("px")) {
               result[property.name] = property.value;
               break;
@@ -210,6 +215,7 @@ class PagePreview extends React.Component<Props, State> {
               this.handleUnknownProperty(property, `Unknown $propertyName value ${property.value}`);
             }
             break;
+          }
           default:
             this.handleUnknownProperty(property, "Unknown layout property");
             break;

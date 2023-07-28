@@ -192,7 +192,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     if (!exhibition || !exhibition.id || this.state.loading) {
       return (
         <div className={classes.loader}>
-          <CircularProgress size={50} color="secondary"></CircularProgress>
+          <CircularProgress size={50} color="secondary" />
         </div>
       );
     }
@@ -281,7 +281,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       );
     }
 
-    if (selectedFloor && selectedFloor.floorPlanUrl && selectedFloor.floorPlanBounds) {
+    if (selectedFloor?.floorPlanUrl && selectedFloor.floorPlanBounds) {
       const floorBounds = selectedFloor.floorPlanBounds;
       const swCorner = floorBounds.southWestCorner;
       const neCorner = floorBounds.northEastCorner;
@@ -411,13 +411,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     const exhibitionDeviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
     const exhibitionDevicesApi = Api.getExhibitionDevicesApi(accessToken);
     const rfidAntennasApi = Api.getRfidAntennasApi(accessToken);
-    const [floors, rooms, deviceGroups, devices, antennas] = await Promise.all<
-      ExhibitionFloor[],
-      ExhibitionRoom[],
-      ExhibitionDeviceGroup[],
-      ExhibitionDevice[],
-      RfidAntenna[]
-    >([
+    const [floors, rooms, deviceGroups, devices, antennas] = await Promise.all([
       exhibitionFloorsApi.listExhibitionFloors({ exhibitionId }),
       exhibitionRoomsApi.listExhibitionRooms({ exhibitionId }),
       exhibitionDeviceGroupsApi.listExhibitionDeviceGroups({ exhibitionId }),
@@ -1163,7 +1157,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
 
     const devicesApi = Api.getExhibitionDevicesApi(accessToken);
     const antennasApi = Api.getRfidAntennasApi(accessToken);
-    const [devices, antennas] = await Promise.all<ExhibitionDevice[], RfidAntenna[]>([
+    const [devices, antennas] = await Promise.all([
       devicesApi.listExhibitionDevices({
         exhibitionId: exhibitionId,
         exhibitionGroupId: selectedDeviceGroup.id
@@ -2074,8 +2068,8 @@ function mapStateToProps(state: ReduxState) {
  *
  * @param dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FloorPlanScreen));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(FloorPlanScreen));

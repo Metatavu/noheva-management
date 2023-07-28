@@ -71,7 +71,7 @@ const TagMonitoringView: React.FC<Props> = ({
     });
 
     const activeSession = visitorSessions.find(
-      (session) => session.state === VisitorSessionState.ACTIVE
+      (session) => session.state === VisitorSessionState.Active
     );
 
     activeSession && setTagSessions({ ...tagSessions, [tagId]: activeSession });
@@ -220,7 +220,7 @@ const TagMonitoringView: React.FC<Props> = ({
   /**
    * Effect that stops update visible tags interval when component will unmount
    */
-  React.useEffect(() => () => stopInterval && stopInterval(), [stopInterval]);
+  React.useEffect(() => () => stopInterval?.(), [stopInterval]);
 
   /**
    * Component render
@@ -261,4 +261,4 @@ const mapStateToProps = (state: ReduxState) => ({
   selectedExhibition: state.exhibitions.selectedExhibition
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(TagMonitoringView));
+export default withStyles(styles)(connect(mapStateToProps)(TagMonitoringView));

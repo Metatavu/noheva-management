@@ -83,7 +83,7 @@ class BasicLayout extends React.Component<Props, State> {
           title={title}
           hideHeader={hideHeader}
         />
-        <div className={classes.content}>{this.props.children}</div>
+        <div className={classes.content}>{children}</div>
         {this.renderErrorDialog()}
         {dataChanged && <Prompt when={dataChanged} message={strings.generic.unsaved} />}
         {openDataChangedPrompt && <Beforeunload onBeforeunload={() => ""} />}

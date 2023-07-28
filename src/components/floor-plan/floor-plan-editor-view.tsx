@@ -135,7 +135,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
         clearError={() => this.setState({ error: undefined })}
       >
         <div className={classes.editorLayout}>
-          <ElementNavigationPane title={strings.floorPlan.title}></ElementNavigationPane>
+          <ElementNavigationPane title={strings.floorPlan.title} />
           <EditorView>{this.renderEditor()}</EditorView>
           <ElementSettingsPane
             open={true}

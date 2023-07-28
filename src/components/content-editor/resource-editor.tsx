@@ -185,9 +185,8 @@ class ResourceEditor extends React.Component<Props, {}> {
    * Event handler for mode change
    *
    * @param event React change event
-   * @param child selected child
    */
-  private onModeChange = (event: SelectChangeEvent<string>, child: React.ReactNode) => {
+  private onModeChange = (event: SelectChangeEvent<string>) => {
     const { resource, onUpdate } = this.props;
     const mode = event.target.value as PageResourceMode;
 
@@ -198,10 +197,11 @@ class ResourceEditor extends React.Component<Props, {}> {
     onUpdate(
       produce(resource, (draft) => {
         switch (mode || PageResourceMode.Static) {
-          case PageResourceMode.Dynamic:
+          case PageResourceMode.Dynamic: {
             const dynamicData = this.createDynamicResourceDataStructure();
             draft.data = JSON.stringify(dynamicData);
             break;
+          }
           default:
             draft.data = "";
             break;
@@ -282,8 +282,8 @@ function mapStateToProps(state: ReduxState) {
  *
  * @param dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ResourceEditor));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(ResourceEditor));

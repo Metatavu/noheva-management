@@ -19,7 +19,7 @@ export const MqttListener: React.FC<Props> = ({ onError, children }) => {
     (async () => {
       try {
         await mqtt.connect();
-      } catch (error) {
+      } catch (error: any) {
         onError(error);
       }
 

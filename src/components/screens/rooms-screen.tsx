@@ -238,4 +238,4 @@ const mapStateToProps = (state: ReduxState) => ({
   accessToken: state.auth.accessToken
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(RoomsScreen));
+export default withStyles(styles)(connect(mapStateToProps)(RoomsScreen));

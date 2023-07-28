@@ -7,7 +7,6 @@ import {
   DeviceModelDisplayMetrics,
   Exhibition,
   ExhibitionDevice,
-  PageLayout,
   ScreenOrientation
 } from "../../generated/client";
 import strings from "../../localization/strings";
@@ -127,7 +126,7 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
     if (this.state.loading) {
       return (
         <div className={classes.loader}>
-          <CircularProgress size={50} color="secondary"></CircularProgress>
+          <CircularProgress size={50} color="secondary" />
         </div>
       );
     }
@@ -780,7 +779,7 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
     const pageLayoutsApi = Api.getPageLayoutsApi(accessToken);
     const devicesApi = Api.getExhibitionDevicesApi(accessToken);
 
-    const [allExhibitions, layouts] = await Promise.all<Exhibition[], PageLayout[]>([
+    const [allExhibitions, layouts] = await Promise.all([
       exhibitionsApi.listExhibitions(),
       pageLayoutsApi.listPageLayouts({ deviceModelId: selectedDeviceModel.id })
     ]);
@@ -952,4 +951,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DeviceModelsScreen));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(DeviceModelsScreen));

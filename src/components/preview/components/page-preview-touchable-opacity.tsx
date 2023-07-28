@@ -7,7 +7,7 @@ import styles from "../../../styles/page-preview";
 import { ResourceMap } from "../../../types";
 import DisplayMetrics from "../../../types/display-metrics";
 import AndroidUtils from "../../../utils/android-utils";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -159,7 +159,7 @@ class PagePreviewTouchableOpacity extends React.Component<Props, State> {
   private onClick = (event: React.MouseEvent) => {
     const { view, onViewClick } = this.props;
     event.stopPropagation();
-    onViewClick && onViewClick(view);
+    onViewClick?.(view);
   };
 }
 

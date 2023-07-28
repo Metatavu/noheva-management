@@ -10,7 +10,7 @@ import AndroidUtils from "../../../utils/android-utils";
 import { ExhibitionPageTabHolder } from "../../content-editor/constants";
 import { SelectedTabIndicatorGravityValues } from "../../layout/editor-constants/values";
 import { Tab, Tabs } from "@mui/material";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -38,14 +38,9 @@ interface Props extends WithStyles<typeof styles> {
 }
 
 /**
- * Interface representing component state
- */
-interface State {}
-
-/**
  * Component for rendering MaterialTabLayout views
  */
-class PagePreviewMaterialTab extends React.Component<Props, State> {
+class PagePreviewMaterialTab extends React.Component<Props, {}> {
   /**
    * Constructor
    *
@@ -102,7 +97,6 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
           key={`${tab.label}-${index}`}
           label={tab.label}
           value={index}
-          fullWidth
         />
       );
     });
@@ -133,12 +127,13 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
    */
   private findTabProperty = (key: string) => {
     switch (key) {
-      case "variant":
+      case "variant": {
         const tabMode = this.searchForTabProperty("tabMode");
         if (!tabMode) {
           return "standard";
         }
         return tabMode.name === "fixed" ? "standard" : "scrollable";
+      }
       default:
         break;
     }
@@ -176,7 +171,11 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewFrameLayout: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewFrameLayout: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**
@@ -224,7 +223,7 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
         case "background":
           result.backgroundColor = property.value;
           break;
-        case "layout_height":
+        case "layout_height": {
           const px = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (px) {
             result.height = px;
@@ -232,6 +231,7 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
             this.handleUnknownProperty(property, "Unknown value");
           }
           break;
+        }
 
         case "unboundedRipple":
           // console.log("unboundedRipple")
@@ -263,7 +263,7 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
           result.backgroundColor = property.value;
           break;
 
-        case "selectedTabIndicatorGravity":
+        case "selectedTabIndicatorGravity": {
           const gravityProps: CSSPropertyValuePairs[] =
             AndroidUtils.tabIndicatorGravityToCSSPositioning(
               property.value as SelectedTabIndicatorGravityValues
@@ -272,7 +272,8 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
             result[prop.key] = prop.value;
           });
           break;
-        case "selectedTabIndicatorHeight":
+        }
+        case "selectedTabIndicatorHeight": {
           const px = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (px) {
             result.height = px;
@@ -280,6 +281,7 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
             this.handleUnknownProperty(property, "Unknown value");
           }
           break;
+        }
 
         case "tabIndicatorFullWidth":
           // console.log("tabIndicatorFullWidth")
@@ -307,7 +309,7 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
 
     properties.forEach((property) => {
       switch (property.name) {
-        case "layout_height":
+        case "layout_height": {
           const px = AndroidUtils.stringToPx(displayMetrics, property.value, scale);
           if (px) {
             result.height = px;
@@ -315,11 +317,12 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
             this.handleUnknownProperty(property, "Unknown value");
           }
           break;
+        }
         case "tabGravity":
           // console.log("tabGravity")
           break;
 
-        case "tabTextColorNormal":
+        case "tabTextColorNormal": {
           const tabTextColorNormal = AndroidUtils.toCssColor(property.value);
           if (tabTextColorNormal) {
             result.color = tabTextColorNormal;
@@ -327,6 +330,7 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
             this.handleUnknownProperty(property, "Unknown text color");
           }
           break;
+        }
         case "tabTextColorSelected":
           if (activeIndex === buttonIndex) {
             const tabTextColorSelected = AndroidUtils.toCssColor(property.value);
@@ -355,7 +359,7 @@ class PagePreviewMaterialTab extends React.Component<Props, State> {
    * @param viewId view id
    * @param event react change event
    */
-  private onTabClick = (viewId: string) => (event: React.ChangeEvent<{}>, value: any) => {
+  private onTabClick = (viewId: string) => (_: React.ChangeEvent<{}>, value: any) => {
     const { onTabClick } = this.props;
     if (!onTabClick) {
       return;

@@ -17,7 +17,6 @@ import { Link as RouterLink } from "react-router-dom";
  */
 interface Props extends WithStyles<typeof styles> {
   history: History;
-  xs;
   breadcrumbs: BreadcrumbData[];
   actionBarButtons?: ActionButton[];
   noBackButton?: boolean;
@@ -65,8 +64,8 @@ class TopBar extends React.Component<Props, {}> {
       hideHeader
     } = this.props;
 
-    const firstName = (keycloak.profile && keycloak.profile.firstName) ?? "";
-    const lastName = (keycloak.profile && keycloak.profile.lastName) ?? "";
+    const firstName = keycloak.profile?.firstName ?? "";
+    const lastName = keycloak.profile?.lastName ?? "";
     const initials = `${firstName.charAt(0).toUpperCase()}`;
 
     return (

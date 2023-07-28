@@ -695,7 +695,6 @@ function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(VisitorVariablesScreen));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(VisitorVariablesScreen)
+);

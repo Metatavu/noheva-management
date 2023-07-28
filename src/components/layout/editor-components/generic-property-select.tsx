@@ -140,7 +140,7 @@ class GenericPropertySelect extends React.Component<Props, State> {
  *
  * @param enumObject enum object
  */
-function enumKeys<T>(enumObject: T) {
+function enumKeys<T extends {}>(enumObject: T): string[] {
   return Object.keys(enumObject);
 }
 
@@ -149,7 +149,7 @@ function enumKeys<T>(enumObject: T) {
  *
  * @param enumObject enum object
  */
-function enumValues<T>(enumObject: T) {
+function enumValues<T extends {}>(enumObject: T): string[] {
   return Object.values(enumObject);
 }
 

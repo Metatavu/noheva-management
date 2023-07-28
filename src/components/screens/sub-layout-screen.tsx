@@ -748,4 +748,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SubLayoutScreen));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(SubLayoutScreen));

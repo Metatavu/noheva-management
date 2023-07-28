@@ -12,7 +12,7 @@ import { ExhibitionPageTabHolder } from "../../content-editor/constants";
 import TabItem from "../../generic/tab-item";
 import { LayoutGravityValuePairs } from "../../layout/editor-constants/values";
 import PagePreviewComponentEditor from "./page-preview-component";
-import { CSSProperties } from "@mui/material/styles";
+import { CSSProperties } from "@mui/styles";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
@@ -160,7 +160,11 @@ class PagePreviewRelativeLayout extends React.Component<Props, State> {
    * @param reason reason why the property was unknown
    */
   private handleUnknownProperty = (property: PageLayoutViewProperty, reason: string) => {
-    // console.log(`PagePreviewRelativeLayout: don't know how to handle layout property because ${reason}`, property.name, property.value);
+    console.log(
+      `PagePreviewRelativeLayout: don't know how to handle layout property because ${reason}`,
+      property.name,
+      property.value
+    );
   };
 
   /**

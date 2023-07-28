@@ -210,7 +210,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
             value={trigger?.keyDown || ""}
             onChange={this.onEventTriggerChange}
           >
-            <MenuItem key={`clickViewId-empty`} value="">
+            <MenuItem key={"clickViewId-empty"} value="">
               {strings.removeSelection}
             </MenuItem>
             {menuItems}
@@ -234,7 +234,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
             value={trigger?.keyUp || ""}
             onChange={this.onEventTriggerChange}
           >
-            <MenuItem key={`clickViewId-empty`} value="">
+            <MenuItem key={"clickViewId-empty"} value="">
               {strings.removeSelection}
             </MenuItem>
             {menuItems}
@@ -344,7 +344,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
     const { showPageEventDialog, addingNewPageEvent, selectedPageEventIndex } = this.state;
 
     const selectedEvent = selectedEventTrigger?.events?.find(
-      (event, index) => index === selectedPageEventIndex
+      (_, index) => index === selectedPageEventIndex
     );
 
     return (
@@ -421,13 +421,14 @@ class EventTriggerEditor extends React.Component<Props, State> {
     const value = (event.target.value as string) === "" ? undefined : event.target.value;
 
     switch (propertyName) {
-      case "delay":
+      case "delay": {
         const valueString = value as string;
         onSave({
           ...selectedEventTrigger,
           [propertyName]: isNumber(valueString) ? Number(valueString) : 0
         });
         break;
+      }
       case "clickViewId":
       case "deviceGroupEvent":
         onSave({ ...selectedEventTrigger, [propertyName]: value as string });
@@ -506,7 +507,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
 
     onSave({
       ...selectedEventTrigger,
-      events: selectedEventTrigger.events.filter((event, index) => index !== pageEventIndex)
+      events: selectedEventTrigger.events.filter((_, index) => index !== pageEventIndex)
     });
 
     this.setState({ selectedPageEventIndex: undefined });
@@ -576,4 +577,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(EventTriggerEditor));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(EventTriggerEditor));

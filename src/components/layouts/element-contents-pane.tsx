@@ -12,6 +12,7 @@ interface Props extends WithStyles<typeof styles> {
    * Panel title
    */
   title?: string;
+  children?: React.ReactNode;
 }
 
 /**
