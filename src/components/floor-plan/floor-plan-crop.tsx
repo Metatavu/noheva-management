@@ -2,7 +2,7 @@ import PanZoom from "../generic/pan-zoom";
 import * as cropperjs from "cropperjs";
 import "cropperjs/dist/cropper.css";
 import * as React from "react";
-import Cropper from "react-cropper";
+import Cropper, { ReactCropperElement } from "react-cropper";
 
 /**
  * Component props
@@ -27,7 +27,7 @@ interface State {
  * Component for floor plan crop
  */
 export default class FloorPlanCrop extends React.Component<Props, State> {
-  private cropperRef = React.createRef<Cropper>();
+  private cropperRef = React.createRef<ReactCropperElement>();
 
   /**
    * Constructor
@@ -83,16 +83,22 @@ export default class FloorPlanCrop extends React.Component<Props, State> {
    */
   private onCropEnd = () => {
     const cropper = this.cropperRef.current;
+
     if (cropper) {
-      cropper.getCroppedCanvas().toBlob(
-        (data: Blob | null) => {
-          if (data) {
-            this.props.onDataUpdate(data);
-          }
-        },
-        "image/png",
-        1
-      );
+      const cropperInstance = cropper.cropper;
+      if (cropperInstance) {
+        cropperInstance.getCroppedCanvas().toBlob(
+          (data: Blob | null) => {
+            if (data) {
+              this.props.onDataUpdate(data);
+            }
+          },
+          "image/png",
+          1
+        );
+      } else {
+        console.error("Invalid cropper reference");
+      }
     }
   };
 }

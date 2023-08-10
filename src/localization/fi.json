@@ -236,7 +236,9 @@
       "pageDeviceLabel": "Sivun laite"
     },
 
-    "deviceSettingsEditor": {},
+    "deviceSettingsEditor": {
+      "indexPageId": "Laitteen etusivu"
+    },
 
     "addDeviceEditor": {
       "title": "Lisää uusi laite",

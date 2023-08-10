@@ -4,11 +4,11 @@ import {
   DeviceModel,
   Exhibition,
   LayoutType,
-  PageLayout,
-  PageLayoutView,
   ScreenOrientation,
   SubLayout
 } from "../../generated/client";
+import { PageLayout } from "../../generated/client/models/PageLayout";
+import { PageLayoutView } from "../../generated/client/models/PageLayoutView";
 import { PageLayoutWidgetType } from "../../generated/client/models/PageLayoutWidgetType";
 import strings from "../../localization/strings";
 import { ReduxActions, ReduxState } from "../../store";
@@ -163,7 +163,7 @@ export class LayoutScreenAndroid extends React.Component<Props, State> {
     if (!layout || !layout.id || loading || deviceModels.length === 0) {
       return (
         <div className={classes.loader}>
-          <CircularProgress size={50} color="secondary"></CircularProgress>
+          <CircularProgress size={50} color="secondary" />
         </div>
       );
     }
@@ -629,10 +629,10 @@ export class LayoutScreenAndroid extends React.Component<Props, State> {
   private onLayoutSave = async (layout: PageLayout) => {
     try {
       const pageLayoutsApi = Api.getPageLayoutsApi(this.props.accessToken);
-      const pageLayoutId = layout.id!;
+      const pageLayoutId = layout.id;
 
       const updatedLayout = await pageLayoutsApi.updatePageLayout({
-        pageLayoutId: pageLayoutId,
+        pageLayoutId: pageLayoutId as string,
         pageLayout: layout
       });
 

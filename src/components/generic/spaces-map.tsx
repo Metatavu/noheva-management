@@ -463,7 +463,7 @@ export default class SpacesMap extends React.Component<Props, State> {
     }
 
     const marker = event.layer;
-    if (marker && marker._latlng) {
+    if (marker?._latlng) {
       const markerOptions: MarkerOptions = {
         icon: this.antennaIcon,
         draggable: false
@@ -500,7 +500,7 @@ export default class SpacesMap extends React.Component<Props, State> {
     }
 
     const room = event.layer;
-    if (room && room._latlngs) {
+    if (room?._latlngs) {
       const newRoom = new L.Rectangle(room._latlngs);
       this.addedLayers.addLayer(newRoom);
 
@@ -534,7 +534,10 @@ export default class SpacesMap extends React.Component<Props, State> {
     if (!onRoomClick || !selectedItems.floor || !foundRoom || !selectedItems.selectedItemHasNodes) {
       return;
     }
-    onRoomClick(selectedItems.floor.id!, foundRoom.id!, selectedItems.selectedItemHasNodes);
+
+    if (selectedItems.floor.id && foundRoom.id) {
+      onRoomClick(selectedItems.floor.id, foundRoom.id, selectedItems.selectedItemHasNodes);
+    }
   };
 
   /**
@@ -549,18 +552,18 @@ export default class SpacesMap extends React.Component<Props, State> {
 
     if (
       !onDeviceGroupClick ||
-      !selectedItems.floor ||
-      !selectedItems.room ||
-      !foundDeviceGroup ||
+      !selectedItems.floor?.id ||
+      !selectedItems.room?.id ||
+      !foundDeviceGroup?.id ||
       !selectedItems.selectedItemHasNodes
     ) {
       return;
     }
 
     onDeviceGroupClick(
-      selectedItems.floor.id!,
-      selectedItems.room.id!,
-      foundDeviceGroup.id!,
+      selectedItems.floor.id,
+      selectedItems.room.id,
+      foundDeviceGroup.id,
       selectedItems.selectedItemHasNodes
     );
   };
@@ -574,21 +577,23 @@ export default class SpacesMap extends React.Component<Props, State> {
     const { onDeviceClick, selectedItems } = this.props;
     const { leafletIdToDeviceMap } = this.state;
     const foundDevice = leafletIdToDeviceMap.get(event.layer._leaflet_id);
+
     if (
       !onDeviceClick ||
-      !selectedItems.floor ||
-      !selectedItems.room ||
-      !selectedItems.deviceGroup ||
-      !foundDevice ||
+      !selectedItems.floor?.id ||
+      !selectedItems.room?.id ||
+      !selectedItems.deviceGroup?.id ||
+      !foundDevice?.id ||
       selectedItems.selectedItemHasNodes === undefined
     ) {
       return;
     }
+
     onDeviceClick(
-      selectedItems.floor.id!,
-      selectedItems.room.id!,
-      selectedItems.deviceGroup.id!,
-      foundDevice.id!,
+      selectedItems.floor.id,
+      selectedItems.room.id,
+      selectedItems.deviceGroup.id,
+      foundDevice.id,
       selectedItems.selectedItemHasNodes
     );
   };
@@ -602,21 +607,23 @@ export default class SpacesMap extends React.Component<Props, State> {
     const { onAntennaClick, selectedItems } = this.props;
     const { leafletIdToAntennaMap } = this.state;
     const foundAntenna = leafletIdToAntennaMap.get(event.layer._leaflet_id);
+
     if (
       !onAntennaClick ||
-      !selectedItems.floor ||
-      !selectedItems.room ||
-      !selectedItems.deviceGroup ||
-      !foundAntenna ||
+      !selectedItems.floor?.id ||
+      !selectedItems.room?.id ||
+      !selectedItems.deviceGroup?.id ||
+      !foundAntenna?.id ||
       selectedItems.selectedItemHasNodes === undefined
     ) {
       return;
     }
+
     onAntennaClick(
-      selectedItems.floor.id!,
-      selectedItems.room.id!,
-      selectedItems.deviceGroup.id!,
-      foundAntenna.id!,
+      selectedItems.floor.id,
+      selectedItems.room.id,
+      selectedItems.deviceGroup.id,
+      foundAntenna.id,
       selectedItems.selectedItemHasNodes
     );
   };
@@ -904,7 +911,6 @@ export default class SpacesMap extends React.Component<Props, State> {
    * @param tempDevices list of devices
    * @param tempAntennas list of antennas
    */
-  // tslint:disable-next-line: max-line-length
   private addSelectedDeviceGroupLayer = (
     selectedDeviceGroup: ExhibitionDeviceGroup,
     tempDeviceGroups: ExhibitionDeviceGroup[],
@@ -924,7 +930,7 @@ export default class SpacesMap extends React.Component<Props, State> {
     tempDevices
       .filter((device) => device.groupId === selectedDeviceGroup.id)
       .forEach((device) => {
-        if (device.location && device.location.x && device.location.y) {
+        if (device.location?.x && device.location.y) {
           const latLng: LatLngTuple = [device.location.x, device.location.y];
           devicePoints.push(latLng);
         }
@@ -1020,10 +1026,11 @@ export default class SpacesMap extends React.Component<Props, State> {
   private addDeviceMarkers = (tempDevices: ExhibitionDevice[]) => {
     const { layerStyleOptions } = this;
     const { selectedItems } = this.props;
-    if (!this.mapInstance) {
+    if (!this.mapInstance || !selectedItems.deviceGroup) {
       return;
     }
 
+    const deviceGroupId = selectedItems.deviceGroup.id;
     const tempLeafletIdToDeviceMap = new Map<number, ExhibitionDevice>();
     let opacity = layerStyleOptions.selectedMarkerOpacity;
 
@@ -1032,7 +1039,7 @@ export default class SpacesMap extends React.Component<Props, State> {
     }
 
     tempDevices
-      .filter((device) => device.groupId === selectedItems.deviceGroup!.id)
+      .filter((device) => device.groupId === deviceGroupId)
       .forEach((device) => {
         const marker = this.getCustomMarker(device, this.deviceIcon, opacity);
         this.deviceMarkers.addLayer(marker);
@@ -1082,10 +1089,11 @@ export default class SpacesMap extends React.Component<Props, State> {
     const { layerStyleOptions } = this;
     const { selectedItems } = this.props;
 
-    if (!this.mapInstance) {
+    if (!this.mapInstance || !selectedItems.deviceGroup) {
       return;
     }
 
+    const deviceGroupId = selectedItems.deviceGroup.id;
     const tempLeafletIdToAntennaMap = new Map<number, RfidAntenna>();
 
     let opacity = layerStyleOptions.selectedMarkerOpacity;
@@ -1095,11 +1103,8 @@ export default class SpacesMap extends React.Component<Props, State> {
     }
 
     tempAntennas
-      .filter((antenna) => antenna.groupId === selectedItems.deviceGroup!.id)
+      .filter((antenna) => antenna.groupId === deviceGroupId)
       .forEach((antenna) => {
-        if (selectedItems.deviceGroup && selectedItems.deviceGroup.id !== antenna.groupId) {
-          return;
-        }
         const marker = this.getCustomMarker(antenna, this.antennaIcon, opacity);
         this.antennaMarkers.addLayer(marker);
         const antennaMarkerId = this.antennaMarkers.getLayerId(marker);
@@ -1193,7 +1198,7 @@ export default class SpacesMap extends React.Component<Props, State> {
     tempDevices
       .filter((device) => device.groupId === selectedDeviceGroup.id)
       .forEach((device) => {
-        if (device.location && device.location.x && device.location.y) {
+        if (device.location?.x && device.location.y) {
           const latLng: LatLngTuple = [device.location.x, device.location.y];
           devicePoints.push(latLng);
         }
@@ -1253,7 +1258,7 @@ export default class SpacesMap extends React.Component<Props, State> {
     }
 
     L.geoJSON(leafletFeatureGroup.toGeoJSON(), {
-      onEachFeature(_feature, layer) {
+      onEachFeature(_feature, _layer) {
         if (!deviceToUpdate || !deviceToUpdate.location) {
           return;
         }
@@ -1286,7 +1291,7 @@ export default class SpacesMap extends React.Component<Props, State> {
       return;
     }
     L.geoJSON(leafletFeatureGroup.toGeoJSON(), {
-      onEachFeature(_feature, layer) {
+      onEachFeature(_feature, _layer) {
         if (!antennaToUpdate || !antennaToUpdate.location) {
           return;
         }
@@ -1321,7 +1326,7 @@ export default class SpacesMap extends React.Component<Props, State> {
     }
 
     L.geoJSON(leafletFeatureGroup.toGeoJSON(), {
-      onEachFeature(_feature, layer) {
+      onEachFeature(_feature, _layer) {
         const roomPolygon = _feature.geometry as ApiPolygon;
         roomToUpdate.geoShape = roomPolygon;
       }

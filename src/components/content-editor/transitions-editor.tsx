@@ -182,15 +182,16 @@ class TransitionsEditor extends React.Component<Props, State> {
             <InputLabel id={strings.contentEditor.editor.dialog.animation}>
               {strings.contentEditor.editor.dialog.animation}
             </InputLabel>
-            <Select
+            <TextField
               label={strings.contentEditor.editor.dialog.animation}
+              select
               id="transitionDialogAnimation"
               onChange={this.handleSelectChange}
               name="animation"
               value={selectedTransition?.transition.animation}
             >
               {this.getSelectItems([Animation.Fade])}
-            </Select>
+            </TextField>
             <FormHelperText>
               {strings.contentEditor.editor.dialog.animationHelperText}
             </FormHelperText>
@@ -207,8 +208,9 @@ class TransitionsEditor extends React.Component<Props, State> {
             <InputLabel id={strings.contentEditor.editor.dialog.timeInterpolation}>
               {strings.contentEditor.editor.dialog.timeInterpolation}
             </InputLabel>
-            <Select
+            <TextField
               label={strings.contentEditor.editor.dialog.timeInterpolation}
+              select
               id="transitionDialogTimeInterpolation"
               onChange={this.handleSelectChange}
               name="timeInterpolation"
@@ -219,7 +221,7 @@ class TransitionsEditor extends React.Component<Props, State> {
                   this.filterAnimationTimeInterpolationOption
                 )
               )}
-            </Select>
+            </TextField>
             <FormHelperText>{this.helpTextBySelectedTransitionType()}</FormHelperText>
           </FormControl>
           <Divider

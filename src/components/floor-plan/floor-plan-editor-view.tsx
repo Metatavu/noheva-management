@@ -43,6 +43,9 @@ interface Props extends WithStyles<typeof styles> {
   contentVersionId?: string;
   exhibitions: Exhibition[];
   readOnly: boolean;
+  open: boolean;
+  width: number;
+  title: string;
 }
 
 /**
@@ -118,7 +121,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
     if (!exhibition || !exhibition.id || this.state.loading) {
       return (
         <div className={classes.loader}>
-          <CircularProgress size={50} color="secondary"></CircularProgress>
+          <CircularProgress size={50} color="secondary" />
         </div>
       );
     }
@@ -135,13 +138,16 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
         clearError={() => this.setState({ error: undefined })}
       >
         <div className={classes.editorLayout}>
-          <ElementNavigationPane title={strings.floorPlan.title} />
+          <ElementNavigationPane title={strings.floorPlan.title}>
+            {this.renderEditor()}
+          </ElementNavigationPane>
           <EditorView>{this.renderEditor()}</EditorView>
           <ElementSettingsPane
             open={true}
             width={320}
             title={strings.floorPlan.properties.title}
-          ></ElementSettingsPane>
+            children={undefined}
+          />
         </div>
       </BasicLayout>
     );
@@ -154,7 +160,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
     const { selectedFloor, selectedRoom, selectedDeviceGroup } = this.state;
     const { exhibitionId, readOnly } = this.props;
 
-    if (selectedFloor && selectedFloor.floorPlanUrl && selectedFloor.floorPlanBounds) {
+    if (selectedFloor?.floorPlanUrl && selectedFloor.floorPlanBounds) {
       const floorBounds = selectedFloor.floorPlanBounds;
       const swCorner = floorBounds.southWestCorner;
       const neCorner = floorBounds.northEastCorner;
@@ -228,9 +234,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
     }
 
     const exhibitionsApi = Api.getExhibitionsApi(accessToken);
-    const [exhibition] = await Promise.all<Exhibition>([
-      exhibitionsApi.findExhibition({ exhibitionId })
-    ]);
+    const [exhibition] = await Promise.all([exhibitionsApi.findExhibition({ exhibitionId })]);
 
     breadCrumbs.push({ name: exhibition?.name, url: "" });
     this.setState({ exhibition, breadCrumbs });
@@ -240,7 +244,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
     }
 
     const exhibitionFloorsApi = Api.getExhibitionFloorsApi(accessToken);
-    const [floor] = await Promise.all<ExhibitionFloor>([
+    const [floor] = await Promise.all([
       exhibitionFloorsApi.findExhibitionFloor({
         exhibitionId: exhibitionId,
         floorId: exhibitionFloorId
@@ -258,7 +262,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
     }
 
     const exhibitionRoomsApi = Api.getExhibitionRoomsApi(accessToken);
-    const [selectedRoom, rooms] = await Promise.all<ExhibitionRoom, ExhibitionRoom[]>([
+    const [selectedRoom, rooms] = await Promise.all([
       exhibitionRoomsApi.findExhibitionRoom({ exhibitionId: exhibitionId, roomId: roomId }),
       exhibitionRoomsApi.listExhibitionRooms({ exhibitionId: exhibitionId })
     ]);
@@ -280,11 +284,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
     const contentVersionsApi = Api.getContentVersionsApi(accessToken);
     const deviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
     const groupContentVersionsApi = Api.getGroupContentVersionsApi(accessToken);
-    const [contentVersion, deviceGroups, groupContentVersions] = await Promise.all<
-      ContentVersion,
-      ExhibitionDeviceGroup[],
-      GroupContentVersion[]
-    >([
+    const [contentVersion, deviceGroups, groupContentVersions] = await Promise.all([
       contentVersionsApi.findContentVersion({
         exhibitionId: exhibitionId,
         contentVersionId: contentVersionId
@@ -320,7 +320,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
 
     const devicesApi = Api.getExhibitionDevicesApi(accessToken);
     const antennasApi = Api.getRfidAntennasApi(accessToken);
-    const [allDevices, allAntennas] = await Promise.all<ExhibitionDevice[], RfidAntenna[]>([
+    const [allDevices, allAntennas] = await Promise.all([
       devicesApi.listExhibitionDevices({ exhibitionId: exhibitionId }),
       antennasApi.listRfidAntennas({ exhibitionId: exhibitionId })
     ]);
@@ -358,7 +358,7 @@ export class FloorPlanEditorView extends React.Component<Props, State> {
    * Handle dashboard click
    */
   private onDashboardButtonClick = () => {
-    this.props.history.push(`/dashboard/overview`);
+    this.props.history.push("/dashboard/overview");
   };
 }
 
@@ -380,11 +380,10 @@ function mapStateToProps(state: ReduxState) {
  *
  * @param dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(FloorPlanEditorView));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(FloorPlanEditorView)
+);

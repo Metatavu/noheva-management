@@ -145,6 +145,13 @@ interface State {
 }
 
 /**
+ *
+ */
+interface ExtendedPageLayoutView extends PageLayoutView {
+  data: any;
+}
+
+/**
  * Component for content editor screen
  */
 class ContentEditorScreen extends React.Component<Props, State> {
@@ -648,16 +655,18 @@ class ContentEditorScreen extends React.Component<Props, State> {
   /**
    * Construct page elements
    */
-  private constructPageElements = () => {
-    const { selectedPage, pageLayout } = this.state;
+  private constructPageElements() {
+    const { selectedPage } = this.state;
 
-    if (!selectedPage || !pageLayout) {
+    if (!selectedPage) {
       return null;
     }
 
+    const pageLayoutView: ExtendedPageLayoutView = this.state
+      .selectedPage as unknown as ExtendedPageLayoutView;
     const elementList: JSX.Element[] = [];
-    return this.constructSingleElement(elementList, [pageLayout.data]);
-  };
+    return this.constructSingleElement(elementList, [pageLayoutView.data]);
+  }
 
   /**
    * Construct single page layout view element for accordion listing
@@ -1102,7 +1111,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
    *
    * @param event event
    */
-  private onLayoutChange = (event: React.ChangeEvent<{ name?: string; value: any }>) => {
+  private onLayoutChange = (event: SelectChangeEvent<string>) => {
     const { selectedPage, layouts } = this.state;
     if (!selectedPage) {
       return;
@@ -2274,9 +2283,11 @@ class ContentEditorScreen extends React.Component<Props, State> {
     } catch (e) {
       console.error(e);
 
-      this.setState({
-        error: e
-      });
+      if (e instanceof Error) {
+        this.setState({
+          error: e
+        });
+      }
     }
   };
 

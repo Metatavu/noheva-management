@@ -273,15 +273,16 @@ class GroupContentVersionsScreen extends React.Component<Props, State> {
         <Grid item xs={12}>
           <FormControl>
             <InputLabel>{strings.groupContentVersion.deviceGroup}</InputLabel>
-            <Select
+            <TextField
               fullWidth
+              select
               label={strings.groupContentVersion.deviceGroup}
               name="deviceGroupId"
               value={selectedGroupContentVersion ? selectedGroupContentVersion.deviceGroupId : ""}
               onChange={this.onValueChange}
             >
               {deviceGroupSelectItems}
-            </Select>
+            </TextField>
             <FormHelperText>
               {strings.helpTexts.groupContentVersions.selectDeviceGroupDescription}
             </FormHelperText>

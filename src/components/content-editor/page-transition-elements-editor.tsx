@@ -303,9 +303,12 @@ class PageTransitionsViewsEditor extends React.Component<Props, {}> {
    */
   private getTargetLayoutViews = (layouts: PageLayout[]) => {
     return layouts.map((layout) => {
-      return layout.data.children.map((view) => {
+      const children = (layout.data as { children: any[] }).children;
+      if (!children) return null;
+
+      return children.map((view: any) => {
         return (
-          <MenuItem value={`${layout.id}:${view.id}`}>{layout.name + " : " + view.id}</MenuItem>
+          <MenuItem value={`${layout.id}:${view.id}`}>{`${layout.name} : ${view.id}`}</MenuItem>
         );
       });
     });
@@ -315,7 +318,10 @@ class PageTransitionsViewsEditor extends React.Component<Props, {}> {
    * Generate source layout select menu items
    */
   private getSourceLayoutViews = (layout: PageLayout) => {
-    return layout.data.children.map((view) => {
+    const children = (layout.data as any).children;
+    if (!children) return [];
+
+    return children.map((view: any) => {
       return <MenuItem value={view.id}>{view.id}</MenuItem>;
     });
   };
@@ -365,13 +371,12 @@ function mapStateToProps(state: ReduxState) {
 /**
  * Redux mapper for mapping component dispatches
  *
- * @param dispatch dispatch method
+ * @param _dispatch dispatch method
  */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
+function mapDispatchToProps(_dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(PageTransitionsViewsEditor));
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(PageTransitionsViewsEditor)
+);

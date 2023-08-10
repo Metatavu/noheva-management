@@ -113,7 +113,7 @@ const LayoutScreenHTML: FC<Props> = ({
         breadcrumbs={[]}
         keycloak={keycloak}
         error={error}
-        clearError={() => history.goBack()}
+        clearError={() => history.back()}
       />
     );
   }

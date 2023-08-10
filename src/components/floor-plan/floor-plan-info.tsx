@@ -183,15 +183,16 @@ class FloorPlanInfo extends React.Component<Props, State> {
         <InputLabel id="groupId-label" style={{ marginTop: theme.spacing(2) }}>
           {strings.floorPlan.properties.deviceGroup}
         </InputLabel>
-        <Select
+        <TextField
           {...this.selectFieldGenericProps}
-          labelId="groupId-label"
+          select
+          label="groupId-label"
           name="groupId"
           value={selectedAntenna.groupId || ""}
           onChange={onChangeAntennaProperties}
         >
           {deviceGroupMenuItems}
-        </Select>
+        </TextField>
 
         <Box display="flex" mt={2} alignItems="center">
           <TextField
@@ -246,8 +247,9 @@ class FloorPlanInfo extends React.Component<Props, State> {
         <InputLabel id="modelId-label" style={{ marginTop: theme.spacing(2) }}>
           {strings.floorPlan.properties.model}
         </InputLabel>
-        <Select
+        <TextField
           {...this.selectFieldGenericProps}
+          select
           label={strings.device.dialog.model}
           name="modelId"
           value={selectedDevice.modelId || ""}
@@ -258,13 +260,14 @@ class FloorPlanInfo extends React.Component<Props, State> {
               {`${model.manufacturer} ${model.model}`}
             </MenuItem>
           ))}
-        </Select>
+        </TextField>
         <InputLabel id="screenOrientation-label" style={{ marginTop: theme.spacing(2) }}>
           {strings.floorPlan.properties.screenOrientation}
         </InputLabel>
-        <Select
+        <TextField
           {...this.selectFieldGenericProps}
-          labelId="screenOrientation-label"
+          select
+          label="screenOrientation-label"
           name="screenOrientation"
           value={selectedDevice.screenOrientation || ""}
           onChange={onChangeDeviceProperties}
@@ -278,28 +281,29 @@ class FloorPlanInfo extends React.Component<Props, State> {
           <MenuItem key={"forcedPortrait"} value={ScreenOrientation.ForcedPortrait}>
             {strings.floorPlan.properties.forcedPortrait}
           </MenuItem>
-        </Select>
+        </TextField>
 
         <InputLabel id="imageLoadStrategy-label" style={{ marginTop: theme.spacing(2) }}>
           {strings.floorPlan.properties.imageLoadStrategy}
         </InputLabel>
-        <Select
+        <TextField
           {...this.selectFieldGenericProps}
-          labelId="imageLoadStrategy-label"
+          select
+          label="imageLoadStrategy-label"
           name="imageLoadStrategy"
           value={selectedDevice.imageLoadStrategy || ""}
           onChange={onChangeDeviceProperties}
         >
-          <MenuItem key={"memory"} value={DeviceImageLoadStrategy.MEMORY}>
+          <MenuItem key={"memory"} value={DeviceImageLoadStrategy.Memory}>
             {strings.floorPlan.properties.imageLoadStrategyMemory}
           </MenuItem>
-          <MenuItem key={"disk"} value={DeviceImageLoadStrategy.DISK}>
+          <MenuItem key={"disk"} value={DeviceImageLoadStrategy.Disk}>
             {strings.floorPlan.properties.imageLoadStrategyDisk}
           </MenuItem>
-          <MenuItem key={"diskraw"} value={DeviceImageLoadStrategy.DISKRAW}>
+          <MenuItem key={"diskraw"} value={DeviceImageLoadStrategy.DiskRaw}>
             {strings.floorPlan.properties.imageLoadStrategyDiskRaw}
           </MenuItem>
-        </Select>
+        </TextField>
       </>
     );
   };
@@ -470,4 +474,4 @@ const mapStateToProps = (state: ReduxState) => ({
   accessToken: state.auth.accessToken as AccessToken
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(FloorPlanInfo));
+export default withStyles(styles)(connect(mapStateToProps)(FloorPlanInfo));

@@ -32,7 +32,6 @@ import {
   ListItemText,
   MenuItem,
   Paper,
-  Select,
   TextField,
   Typography
 } from "@mui/material";
@@ -204,9 +203,10 @@ class EventTriggerEditor extends React.Component<Props, State> {
         </Box>
         <FormControl>
           <InputLabel>{strings.contentEditor.editor.eventTriggers.physicalButton}</InputLabel>
-          <Select
+          <TextField
             label={strings.contentEditor.editor.eventTriggers.physicalButton}
             name="keyDown"
+            select
             value={trigger?.keyDown || ""}
             onChange={this.onEventTriggerChange}
           >
@@ -214,7 +214,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
               {strings.removeSelection}
             </MenuItem>
             {menuItems}
-          </Select>
+          </TextField>
         </FormControl>
         <Box mt={2} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h6">
@@ -228,8 +228,9 @@ class EventTriggerEditor extends React.Component<Props, State> {
         </Box>
         <FormControl>
           <InputLabel>{strings.contentEditor.editor.eventTriggers.physicalButton}</InputLabel>
-          <Select
+          <TextField
             label={strings.contentEditor.editor.eventTriggers.physicalButton}
+            select
             name="keyUp"
             value={trigger?.keyUp || ""}
             onChange={this.onEventTriggerChange}
@@ -238,7 +239,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
               {strings.removeSelection}
             </MenuItem>
             {menuItems}
-          </Select>
+          </TextField>
         </FormControl>
       </Box>
     );
@@ -409,7 +410,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
    * @param event React change event
    */
   private onEventTriggerChange = (
-    event: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { selectedEventTrigger, onSave } = this.props;
 
@@ -418,7 +419,7 @@ class EventTriggerEditor extends React.Component<Props, State> {
     }
 
     const propertyName = event.target.name as keyof ExhibitionPageEventTrigger;
-    const value = (event.target.value as string) === "" ? undefined : event.target.value;
+    const value = event.target.value === "" ? undefined : event.target.value;
 
     switch (propertyName) {
       case "delay": {

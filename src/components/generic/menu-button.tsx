@@ -15,9 +15,6 @@ import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
 
-/**
- * Component props
- */
 interface Props extends WithStyles<typeof styles> {
   menuOptions: ActionButton[];
   icon?: JSX.Element;
@@ -26,6 +23,8 @@ interface Props extends WithStyles<typeof styles> {
 /**
  * Generic menu button component
  */
+type MouseOrTouchEvent = React.MouseEvent<HTMLElement, MouseEvent> | React.TouchEvent<Element>;
+
 const MenuButton: React.FC<Props> = (props) => {
   const { menuOptions, icon } = props;
   const [open, setOpen] = React.useState(false);
@@ -43,7 +42,7 @@ const MenuButton: React.FC<Props> = (props) => {
   /**
    * Handler for toggle menu
    */
-  const handleToggle = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     setOpen((prevOpen) => !prevOpen);
     event.stopPropagation();
   };
@@ -52,17 +51,17 @@ const MenuButton: React.FC<Props> = (props) => {
    * Handler for close menu
    * @param event
    */
-  const handleClose = (event: React.MouseEvent<EventTarget>) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
-      return;
-    }
+  const handleClose = (event: MouseOrTouchEvent) => {
+    const target = event.target as HTMLElement;
 
-    setOpen(false);
+    if (!anchorRef.current?.contains(target)) {
+      setOpen(false);
+    }
   };
 
   const optionMenuItems = menuOptions.map((option) => {
     const { name, action } = option;
-    const onClick = (event: React.MouseEvent<HTMLElement>) => {
+    const onClick = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       action();
       handleClose(event);
       event.stopPropagation();
@@ -91,7 +90,7 @@ const MenuButton: React.FC<Props> = (props) => {
         {({ TransitionProps }) => (
           <Grow {...TransitionProps} style={{ transformOrigin: "right top" }}>
             <Paper elevation={5} style={{ borderRadius: theme.shape.borderRadius }}>
-              <ClickAwayListener onClickAway={handleClose}>
+              <ClickAwayListener onClickAway={handleClose as any}>
                 <MenuList autoFocusItem={open}>{optionMenuItems}</MenuList>
               </ClickAwayListener>
             </Paper>

@@ -7,7 +7,8 @@ import {
   DialogContentText,
   DialogTitle
 } from "@mui/material";
-import * as moment from "moment";
+import moment from "moment";
+
 import * as React from "react";
 
 /**
@@ -73,7 +74,7 @@ export default class ErrorDialog extends React.Component<Props> {
    * @returns current time
    */
   private getTime = () => {
-    return moment.default().format();
+    return moment().format();
   };
 
   /**
@@ -104,6 +105,6 @@ export default class ErrorDialog extends React.Component<Props> {
    * Reload button click event handler
    */
   private onReloadClick = () => {
-    window.location.reload(true);
+    window.location.reload();
   };
 }

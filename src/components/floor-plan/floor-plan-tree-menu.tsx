@@ -207,4 +207,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   return {};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FloorPlanTreeMenu));
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(FloorPlanTreeMenu));

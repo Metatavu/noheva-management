@@ -29,7 +29,7 @@ import "moment/locale/en-gb";
 import "moment/locale/fi";
 import * as React from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
 import { createStore } from "redux";
 
 declare module "@mui/styles/defaultTheme" {}
@@ -83,6 +83,9 @@ class App extends React.Component<{}, {}> {
                             exhibitionId={match.params.exhibitionId}
                             exhibitionFloorId={match.params.floorId}
                             readOnly
+                            width={0}
+                            title={""}
+                            open={false}
                           />
                         )}
                       />
@@ -117,6 +120,9 @@ class App extends React.Component<{}, {}> {
                             exhibitionFloorId={match.params.floorId}
                             roomId={match.params.roomId}
                             readOnly
+                            width={0}
+                            open={false}
+                            title={""}
                           />
                         )}
                       />
@@ -140,9 +146,10 @@ class App extends React.Component<{}, {}> {
                             history={history}
                             exhibitionId={match.params.exhibitionId}
                             exhibitionFloorId={match.params.floorId}
-                            roomId={match.params.roomId}
-                            contentVersionId={match.params.contentVersionId}
                             readOnly
+                            width={0}
+                            title={""}
+                            open={false}
                           />
                         )}
                       />
@@ -166,7 +173,9 @@ class App extends React.Component<{}, {}> {
                       <Route
                         path="/layouts"
                         exact
-                        render={({ history }) => <LayoutsScreen history={history} />}
+                        render={({ history, match }: RouteComponentProps) => (
+                          <LayoutsScreen history={history} location={undefined} match={match} />
+                        )}
                       />
                       <Route
                         path="/layouts/HTML/:layoutId"

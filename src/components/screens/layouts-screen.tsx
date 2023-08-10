@@ -31,16 +31,18 @@ import BasicLayout from "../layouts/basic-layout";
 import { CircularProgress, SelectChangeEvent } from "@mui/material";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
+import { History } from "history";
 import produce from "immer";
 import { KeycloakInstance } from "keycloak-js";
 import { Component } from "react";
 import { connect } from "react-redux";
+import { RouteComponentProps } from "react-router-dom";
 import { Dispatch } from "redux";
 
 /**
  * Component props
  */
-interface Props extends WithStyles<typeof styles> {
+interface Props extends WithStyles<typeof styles>, RouteComponentProps {
   history: History;
   keycloak: KeycloakInstance;
   accessToken: AccessToken;
@@ -293,7 +295,7 @@ class LayoutsScreen extends Component<Props, State> {
 
     for (const exhibition of allExhibitions) {
       const exhibitionPages = await pagesApi.listExhibitionPages({
-        exhibitionId: exhibition.id!,
+        exhibitionId: exhibition.id as string,
         pageLayoutId: pageLayout.id
       });
 
@@ -365,9 +367,10 @@ class LayoutsScreen extends Component<Props, State> {
       modelId: deviceModelId,
       layoutType: LayoutType.Html,
       data: {
-        html: HtmlComponentsUtils.getSerializedHtmlElement(HtmlComponentType.LAYOUT)
+        html: HtmlComponentType.LAYOUT
       }
     };
+
     const layoutsApi = Api.getPageLayoutsApi(accessToken);
     const createdLayout = await layoutsApi.createPageLayout({ pageLayout });
     layouts.push(createdLayout);

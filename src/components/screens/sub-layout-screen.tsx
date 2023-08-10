@@ -1,6 +1,6 @@
 import { setSelectedSubLayout, setSubLayouts } from "../../actions/subLayouts";
 import Api from "../../api/api";
-import { PageLayoutView, SubLayout } from "../../generated/client";
+import { LayoutType, PageLayoutView, SubLayout } from "../../generated/client";
 import { PageLayoutWidgetType } from "../../generated/client/models/PageLayoutWidgetType";
 import strings from "../../localization/strings";
 import { ReduxActions, ReduxState } from "../../store";
@@ -611,10 +611,15 @@ export class SubLayoutScreen extends React.Component<Props, State> {
    * Event handler for save button click
    */
   private onSaveClick = () => {
+    if (!this.props.subLayout) {
+      // handle this case, maybe show an error or return early
+      return;
+    }
     const subLayout = {
       ...this.props.subLayout,
       name: this.state.name,
-      data: JSON.parse(this.state.jsonCode)
+      data: JSON.parse(this.state.jsonCode),
+      layoutType: this.props.subLayout.layoutType || undefined
     };
 
     this.onSubLayoutSave(subLayout);
@@ -648,7 +653,7 @@ export class SubLayoutScreen extends React.Component<Props, State> {
       console.error(e);
 
       this.setState({
-        error: e
+        error: e as Error
       });
     }
   };

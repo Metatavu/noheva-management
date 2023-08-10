@@ -79,6 +79,9 @@ export interface IStrings extends LocalizedStringsMethods {
     cancel: string;
     save: string;
   };
+  deviceSettingsEditor: {
+    indexPageId: string;
+  };
 
   errorDialog: {
     title: string;
@@ -1133,8 +1136,8 @@ export interface IStrings extends LocalizedStringsMethods {
 }
 
 const strings: IStrings = new LocalizedStrings({
-  en: en,
-  fi: fi
+  en: en as unknown as IStrings,
+  fi: fi as IStrings
 });
 
 export default strings;

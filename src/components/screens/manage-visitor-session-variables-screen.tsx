@@ -486,7 +486,7 @@ export class ManageVisitorSessionVariablesScreen extends React.Component<Props, 
       });
     } catch (error) {
       this.setState({
-        error: error
+        error: error as Error
       });
     }
   };

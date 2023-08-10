@@ -236,7 +236,9 @@
       "pageDeviceLabel": "Page device"
     },
 
-    "deviceSettingsEditor": {},
+    "deviceSettingsEditor": {
+      "indexPageId": "Device front page"
+    },
 
     "addDeviceEditor": {
       "title": "Add new device",

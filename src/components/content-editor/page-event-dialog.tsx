@@ -208,8 +208,9 @@ class PageEventDialog extends React.Component<Props, State> {
           {strings.contentEditor.editor.eventTriggers.variableName}
         </Typography>
 
-        <Select
+        <TextField
           fullWidth={false}
+          select
           name="name"
           value={variableName}
           onChange={this.onEventTriggerEventPropertyChange}
@@ -218,7 +219,7 @@ class PageEventDialog extends React.Component<Props, State> {
           {visitorVariables.map((visitorVariable) => {
             return <MenuItem value={visitorVariable.name}>{visitorVariable.name}</MenuItem>;
           })}
-        </Select>
+        </TextField>
 
         <Typography variant="h6">
           {strings.contentEditor.editor.eventTriggers.variableValue}
@@ -244,8 +245,9 @@ class PageEventDialog extends React.Component<Props, State> {
     if (visitorVariableType === VisitorVariableType.Enumerated) {
       const values = visitorVariable?._enum || [];
       return (
-        <Select
+        <TextField
           fullWidth={false}
+          select
           name="value"
           value={variableValue}
           onChange={this.onEventTriggerEventPropertyChange}
@@ -254,14 +256,15 @@ class PageEventDialog extends React.Component<Props, State> {
           {values.map((value) => {
             return <MenuItem value={value}>{value}</MenuItem>;
           })}
-        </Select>
+        </TextField>
       );
     }
 
     if (visitorVariableType === VisitorVariableType.Boolean) {
       return (
-        <Select
+        <TextField
           fullWidth={false}
+          select
           name="value"
           value={variableValue}
           onChange={this.onEventTriggerEventPropertyChange}
@@ -273,7 +276,7 @@ class PageEventDialog extends React.Component<Props, State> {
           <MenuItem value={"false"}>
             {strings.contentEditor.editor.eventTriggers.variableBooleanFalse}
           </MenuItem>
-        </Select>
+        </TextField>
       );
     }
 
@@ -305,13 +308,14 @@ class PageEventDialog extends React.Component<Props, State> {
         <Typography variant="h6">
           {strings.contentEditor.editor.eventTriggers.selectPage}
         </Typography>
-        <Select
+        <TextField
           name={"pageId"}
+          select
           value={property ? property.value : ""}
           onChange={this.onEventTriggerEventPropertyChange}
         >
           {this.renderPagesInExhibition()}
-        </Select>
+        </TextField>
       </div>
     );
   };
@@ -390,13 +394,14 @@ class PageEventDialog extends React.Component<Props, State> {
           <Typography variant="h6">
             {strings.contentEditor.editor.eventTriggers.selectPage}
           </Typography>
-          <Select
+          <TextField
             name={"webViewId"}
+            select
             value={webViewProperty?.value ?? ""}
             onChange={this.onEventTriggerEventPropertyChange}
           >
             {this.renderWebViewOptions(webViewOptions)}
-          </Select>
+          </TextField>
         </div>
         <div style={{ marginTop: theme.spacing(2) }}>
           <TextField
@@ -441,13 +446,14 @@ class PageEventDialog extends React.Component<Props, State> {
         <Typography variant="h6">
           {strings.contentEditor.editor.eventTriggers.selectLanguage}
         </Typography>
-        <Select
+        <TextField
           name={"language"}
+          select
           value={language}
           onChange={this.onEventTriggerEventPropertyChange}
         >
           {this.renderLanguageOptions()}
-        </Select>
+        </TextField>
       </div>
     );
   };

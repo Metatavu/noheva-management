@@ -459,7 +459,10 @@ class LayoutTreeMenu extends React.Component<Props, State> {
     const pageLayoutView: PageLayoutView = {
       ...subLayout.data,
       id: uuid(),
-      sublayoutId: subLayoutId
+      sublayoutId: subLayoutId,
+      widget: PageLayoutWidgetType.TextView,
+      properties: [],
+      children: []
     };
 
     this.setState({
