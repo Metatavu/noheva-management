@@ -88,7 +88,7 @@ class TopBar extends React.Component<Props, {}> {
         </div>
 
         <div className={classes.middleRow}>
-          {this.props.history.length > 1 && !noBackButton && (
+          {!noBackButton && (
             <IconButton
               size="small"
               className={classes.backBtn}
