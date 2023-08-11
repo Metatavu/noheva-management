@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --open",
-    "build": "vite build",
+    "build": "npm run build-client && tsc && vite build",
     "preview": "vite preview",
     "build-client": "openapi-generator-cli generate -i noheva-api-spec/swagger.yaml -o src/generated/client -c generator-config.json -g typescript-fetch",
     "postinstall": "npm run build-client",
