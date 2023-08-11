@@ -36,13 +36,12 @@ import produce from "immer";
 import { KeycloakInstance } from "keycloak-js";
 import { Component } from "react";
 import { connect } from "react-redux";
-import { RouteComponentProps } from "react-router-dom";
 import { Dispatch } from "redux";
 
 /**
  * Component props
  */
-interface Props extends WithStyles<typeof styles>, RouteComponentProps {
+interface Props extends WithStyles<typeof styles> {
   history: History;
   keycloak: KeycloakInstance;
   accessToken: AccessToken;

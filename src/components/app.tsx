@@ -29,7 +29,7 @@ import "moment/locale/en-gb";
 import "moment/locale/fi";
 import * as React from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { createStore } from "redux";
 
 declare module "@mui/styles/defaultTheme" {}
@@ -173,9 +173,7 @@ class App extends React.Component<{}, {}> {
                       <Route
                         path="/layouts"
                         exact
-                        render={({ history, match }: RouteComponentProps) => (
-                          <LayoutsScreen history={history} location={undefined} match={match} />
-                        )}
+                        render={({ history }) => <LayoutsScreen history={history} />}
                       />
                       <Route
                         path="/layouts/HTML/:layoutId"

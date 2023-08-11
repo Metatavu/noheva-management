@@ -1,4 +1,4 @@
-import { adaptV4Theme, createTheme } from "@mui/material";
+import { createTheme } from "@mui/material";
 import { grey, red } from "@mui/material/colors";
 
 const theme = createTheme();
@@ -7,69 +7,68 @@ const { spacing } = theme;
 const uiHighlightMain = "#0079E9";
 const uiHighlightLight = "rgba(0, 121, 233, 0.25)";
 
-export default createTheme(
-  adaptV4Theme({
-    palette: {
-      primary: { main: grey[900] },
-      secondary: {
-        main: uiHighlightMain,
-        light: uiHighlightLight
-      },
-      background: {
-        default: "#f2f2f2",
-        paper: "#fff"
-      },
-      text: {
-        primary: "#000",
-        secondary: "#222"
-      },
-      error: red
+export default createTheme({
+  palette: {
+    primary: { main: grey[900] },
+    secondary: {
+      main: uiHighlightMain,
+      light: uiHighlightLight
     },
+    background: {
+      default: "#f2f2f2",
+      paper: "#fff"
+    },
+    text: {
+      primary: "#000",
+      secondary: "#222"
+    },
+    error: red
+  },
 
-    typography: {
-      fontFamily: "TTNorms-Regular",
-      h1: {
-        fontFamily: "TTNorms-Bold",
-        fontSize: "24px",
-        fontWeight: "normal"
-      },
-      h2: {
-        fontFamily: "TTNorms-Bold",
-        fontSize: "20px",
-        fontWeight: "normal"
-      },
-      h3: {
-        fontFamily: "TTNorms-Bold",
-        fontSize: "18px",
-        fontWeight: "normal"
-      },
-      h4: {
-        fontFamily: "TTNorms-Bold",
-        fontSize: "16px",
-        fontWeight: "normal"
-      },
-      h5: {
-        fontFamily: "TTNorms-Medium",
-        fontSize: "16px",
-        fontWeight: "normal"
-      },
-      h6: {
-        fontFamily: "TTNorms-Regular",
-        fontSize: "14px",
-        fontWeight: "normal",
-        color: "#666666"
-      },
-      body1: {
-        fontSize: "14px"
-      },
-      body2: {
-        fontSize: "14px",
-        fontFamily: "TTNorms-Bold"
-      }
+  typography: {
+    fontFamily: "TTNorms-Regular",
+    h1: {
+      fontFamily: "TTNorms-Bold",
+      fontSize: "24px",
+      fontWeight: "normal"
     },
-    // TODO: May need updating see upgrading to mui5 notes
-    overrides: {
-      MuiCssBaseline: {
+    h2: {
+      fontFamily: "TTNorms-Bold",
+      fontSize: "20px",
+      fontWeight: "normal"
+    },
+    h3: {
+      fontFamily: "TTNorms-Bold",
+      fontSize: "18px",
+      fontWeight: "normal"
+    },
+    h4: {
+      fontFamily: "TTNorms-Bold",
+      fontSize: "16px",
+      fontWeight: "normal"
+    },
+    h5: {
+      fontFamily: "TTNorms-Medium",
+      fontSize: "16px",
+      fontWeight: "normal"
+    },
+    h6: {
+      fontFamily: "TTNorms-Regular",
+      fontSize: "14px",
+      fontWeight: "normal",
+      color: "#666666"
+    },
+    body1: {
+      fontSize: "14px"
+    },
+    body2: {
+      fontSize: "14px",
+      fontFamily: "TTNorms-Bold"
+    }
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
         "@global": {
           "::-webkit-scrollbar-track": {
             backgroundColor: theme.palette.grey[300]
@@ -84,9 +83,10 @@ export default createTheme(
             borderRadius: 30
           }
         }
-      },
-
-      MuiTableRow: {
+      }
+    },
+    MuiTableRow: {
+      styleOverrides: {
         root: {
           cursor: "pointer",
           transition: "background 0.2s ease-out",
@@ -97,8 +97,10 @@ export default createTheme(
             backgroundColor: "rgba(0, 121, 233, 0.15)"
           }
         }
-      },
-      MuiTableCell: {
+      }
+    },
+    MuiTableCell: {
+      styleOverrides: {
         root: {
           fontFamily: "TTNorms-Regular",
           padding: 10
@@ -107,8 +109,10 @@ export default createTheme(
           fontFamily: "TTNorms-Bold",
           backgroundColor: "#efefef"
         }
-      },
-      MuiAccordion: {
+      }
+    },
+    MuiAccordion: {
+      styleOverrides: {
         root: {
           "&.Mui-expanded": {
             margin: 0
@@ -118,7 +122,12 @@ export default createTheme(
           }
         }
       },
-      MuiAccordionSummary: {
+      defaultProps: {
+        elevation: 0
+      }
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
         root: {
           backgroundColor: "#eaeaea",
           padding: "0 12px",
@@ -134,31 +143,39 @@ export default createTheme(
             margin: "12px 0"
           }
         },
-        expandIcon: {
+        expandIconWrapper: {
           "&.Mui-expanded": {
             // Note: this only works with ChevronRight icon - use default setting when using ExpandMore icon
             transform: "rotate(90deg)"
           }
         }
-      },
-      MuiAccordionDetails: {
+      }
+    },
+    MuiAccordionDetails: {
+      styleOverrides: {
         root: {
           flexDirection: "column",
           padding: spacing(2),
           backgroundColor: "#f7f7f7"
         }
-      },
-      MuiBackdrop: {
+      }
+    },
+    MuiBackdrop: {
+      styleOverrides: {
         root: {
           backgroundColor: "rgba(0,0,0,0.1)"
         }
-      },
-      MuiPaper: {
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
         rounded: {
           borderRadius: 10
         }
-      },
-      MuiButton: {
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
         root: {
           fontFamily: "TTNorms-Medium",
           textTransform: "initial"
@@ -191,16 +208,20 @@ export default createTheme(
             backgroundColor: "rgba(138,192,203, 0.7)"
           }
         }
-      },
-      MuiInputLabel: {
+      }
+    },
+    MuiInputLabel: {
+      styleOverrides: {
         filled: {
           transform: "translate(12px, 13px) scale(1)",
           "&.MuiInputLabel-shrink": {
             transform: "translate(0px, -16px) scale(0.9)"
           }
         }
-      },
-      MuiFilledInput: {
+      }
+    },
+    MuiFilledInput: {
+      styleOverrides: {
         root: {
           backgroundColor: "#f3f3f3",
           borderRadius: 4,
@@ -227,23 +248,29 @@ export default createTheme(
             }
           }
         }
-      },
-      MuiInput: {
+      }
+    },
+    MuiInput: {
+      styleOverrides: {
         underline: {
           "&::before": {
             content: "none"
           }
         }
-      },
-      MuiInputBase: {
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
         root: {
           fontSize: 14
         },
         input: {
           background: "#fff"
         }
-      },
-      MuiSelect: {
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
         filled: {
           padding: "10px 12px"
         },
@@ -259,7 +286,13 @@ export default createTheme(
           color: "#999"
         }
       },
-      MuiListItem: {
+      defaultProps: {
+        fullWidth: true,
+        variant: "outlined"
+      }
+    },
+    MuiListItem: {
+      styleOverrides: {
         root: {
           cursor: "pointer",
           borderRadius: 4,
@@ -280,8 +313,10 @@ export default createTheme(
             }
           }
         }
-      },
-      MuiListItemIcon: {
+      }
+    },
+    MuiListItemIcon: {
+      styleOverrides: {
         root: {
           height: 30,
           width: 30,
@@ -295,8 +330,10 @@ export default createTheme(
             fontSize: 16
           }
         }
-      },
-      MuiListItemText: {
+      }
+    },
+    MuiListItemText: {
+      styleOverrides: {
         primary: {
           fontFamily: "TTNorms-Medium",
           fontSize: "14px"
@@ -304,71 +341,37 @@ export default createTheme(
         secondary: {
           color: "#888"
         }
-      },
-      MuiGridListTile: {
-        tile: {
-          cursor: "pointer",
-          backgroundColor: uiHighlightMain,
-          borderRadius: 10,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          transition: "background-color 0.2s ease-out",
-          "&:hover": {
-            backgroundColor: uiHighlightLight
-          }
-        },
-        imgFullWidth: {
-          width: 100,
-          top: 0,
-          transform: "initial"
-        },
-        imgFullHeight: {
-          width: "50%"
-        }
-      },
-      MuiGridListTileBar: {
-        root: {
-          backgroundColor: "transparent"
-        }
-      },
-      MuiDialogTitle: {
+      }
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
         root: {
           fontFamily: "TTNorms-Medium",
           fontSize: "16px",
           fontWeight: "normal",
           color: "#000"
         }
-      },
-      MuiTab: {
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
         root: {
           fontWeight: "bold",
           textTransform: "initial"
         }
       }
     },
-    // TODO: May need updating see upgrading to mui5 notes
-    components: {
-      MuiAccordionSummary: {
-        IconButtonProps: {
-          edge: "start"
-        }
-      },
-      MuiAccordion: {
-        elevation: 0
-      },
-      MuiTextField: {
+    MuiTextField: {
+      defaultProps: {
         fullWidth: true,
         variant: "outlined"
-      },
-      MuiSelect: {
-        fullWidth: true,
-        variant: "outlined"
-      },
-      MuiFormControl: {
+      }
+    },
+    MuiFormControl: {
+      defaultProps: {
         fullWidth: true,
         variant: "outlined"
       }
     }
-  })
-);
+  }
+});
