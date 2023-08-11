@@ -14,6 +14,7 @@ import {
   LayoutType,
   PageLayout,
   PageLayoutView,
+  PageLayoutViewHtml,
   PageLayoutWidgetType,
   VisitorVariable
 } from "../../generated/client";
@@ -52,11 +53,13 @@ import EditorView from "../editor/editor-view";
 import ConfirmDialog from "../generic/confirm-dialog";
 import GenericDialog from "../generic/generic-dialog";
 import PanZoom from "../generic/pan-zoom";
+import { constructTree } from "../layout/utils/tree-html-data-utils";
 import BasicLayout from "../layouts/basic-layout";
 import ElementContentsPane from "../layouts/element-contents-pane";
 import ElementPropertiesPane from "../layouts/element-properties-pane";
 import ElementTimelinePane from "../layouts/element-timeline-pane";
 import PagePreview from "../preview/page-preview";
+import PagePreviewHtml from "../preview/page-preview-html";
 import ExpandMoreIcon from "@mui/icons-material/ChevronRight";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
@@ -476,7 +479,13 @@ class ContentEditorScreen extends React.Component<Props, State> {
               onTabClick={this.onPreviewTabClick}
               tabMap={tabMap}
             />
-          ) : null}
+          ) : (
+            <PagePreviewHtml
+              deviceModels={deviceModels}
+              layout={previewLayout}
+              treeObjects={[...constructTree((view as PageLayoutViewHtml).html)]}
+            />
+          )}
         </div>
       );
     });
@@ -679,7 +688,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
     }
 
     pageLayoutViews.forEach((pageLayoutView) => {
-      if (allowedWidgetTypes.includes(pageLayoutView.widget)) {
+      if (allowedWidgetTypes.includes(pageLayoutView?.widget)) {
         if (pageLayoutView.widget === PageLayoutWidgetType.TouchableOpacity) {
           elementList.push(this.renderResources(selectedPage, pageLayoutView, []));
         }
@@ -695,7 +704,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         }
       }
 
-      if (pageLayoutView.children.length > 0) {
+      if (pageLayoutView?.children.length > 0) {
         this.constructSingleElement(elementList, pageLayoutView.children);
       }
     });
@@ -2039,7 +2048,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
           }
         });
 
-        draft.selectedPage.eventTriggers = tempTriggers;
+        draft.selectedPage = { ...draft.selectedPage, eventTriggers: tempTriggers };
         draft.resourceWidgetIdList = resourceHolder.widgetIds;
         draft.pageLayout = pageLayout;
       })
