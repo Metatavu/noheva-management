@@ -82,8 +82,7 @@ export default class FloorPlanCrop extends React.Component<Props, State> {
    * Event handler for crop component crop end
    */
   private onCropEnd = () => {
-    const cropper = this.cropperRef.current;
-
+    const cropper = this.cropperRef.current?.cropper;
     if (cropper) {
       const cropperInstance = cropper.cropper;
       if (cropperInstance) {

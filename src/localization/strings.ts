@@ -676,6 +676,7 @@ export interface IStrings extends LocalizedStringsMethods {
   };
 
   contentVersion: {
+    title: string;
     add: string;
     addDialogTitle: string;
     addDialogDescription: string;

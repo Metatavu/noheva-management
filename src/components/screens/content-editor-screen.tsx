@@ -11,8 +11,6 @@ import {
   ExhibitionPageResource,
   ExhibitionPageResourceFromJSON,
   ExhibitionPageTransition,
-  GroupContentVersion,
-  GroupContentVersionStatus,
   LayoutType,
   PageLayout,
   PageLayoutView,
@@ -105,7 +103,6 @@ interface Props extends WithStyles<typeof styles> {
   floorId: string;
   roomId: string;
   contentVersionId: string;
-  groupContentVersionId: string;
   deviceModels: DeviceModel[];
 }
 
@@ -116,8 +113,7 @@ interface State {
   error?: Error;
   loading: boolean;
   contentVersions: ContentVersion[];
-  groupContentVersions: GroupContentVersion[];
-  groupContentVersion?: GroupContentVersion;
+  contentVersion?: ContentVersion;
   devices: ExhibitionDevice[];
   previewDevicesData: PreviewDeviceData[];
   layouts: PageLayout[];
@@ -172,7 +168,6 @@ class ContentEditorScreen extends React.Component<Props, State> {
       visitorVariables: [],
       layouts: [],
       contentVersions: [],
-      groupContentVersions: [],
       view: "VISUAL",
       propertiesExpanded: false,
       tabMap: new Map(),
@@ -235,7 +230,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
   public render = () => {
     const { classes, history, keycloak } = this.props;
     const {
-      groupContentVersion,
+      contentVersion,
       selectedResource,
       selectedTriggerIndex,
       selectedTabIndex,
@@ -270,7 +265,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       <BasicLayout
         keycloak={keycloak}
         history={history}
-        title={groupContentVersion?.name || ""}
+        title={contentVersion?.name || ""}
         breadcrumbs={[]}
         actionBarButtons={this.getActionButtons()}
         noBackButton
@@ -370,7 +365,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
    * @param event event object
    * @param newIndex new tab index value
    */
-  private setTabIndex = (_: React.ChangeEvent<{}>, newIndex: number) => {
+  private setTabIndex = (_event: React.ChangeEvent<{}>, newIndex: number) => {
     this.setState({
       timelineTabIndex: newIndex,
       selectedContentVersion: this.state.contentVersions[0],
@@ -1197,12 +1192,10 @@ class ContentEditorScreen extends React.Component<Props, State> {
    * Fetches component data
    */
   private fetchComponentData = async () => {
-    const { accessToken, exhibitionId, roomId, contentVersionId, groupContentVersionId } =
-      this.props;
+    const { accessToken, exhibitionId, roomId, contentVersionId } = this.props;
 
     const layoutsApi = Api.getPageLayoutsApi(accessToken);
     const contentVersionsApi = Api.getContentVersionsApi(accessToken);
-    const groupContentVersionsApi = Api.getGroupContentVersionsApi(accessToken);
     const exhibitionDevicesApi = Api.getExhibitionDevicesApi(accessToken);
     const exhibitionPagesApi = Api.getExhibitionPagesApi(accessToken);
     const visitorVariablesApi = Api.getVisitorVariablesApi(accessToken);
@@ -1210,13 +1203,13 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const [
       initialContentVersion,
       contentVersionsInRoom,
-      groupContentVersion,
+      contentVersion,
       layouts,
       visitorVariables
     ] = await Promise.all([
       contentVersionsApi.findContentVersion({ exhibitionId, contentVersionId }),
       contentVersionsApi.listContentVersions({ exhibitionId, roomId }),
-      groupContentVersionsApi.findGroupContentVersion({ exhibitionId, groupContentVersionId }),
+      contentVersionsApi.findContentVersion({ exhibitionId, contentVersionId }),
       layoutsApi.listPageLayouts({}),
       visitorVariablesApi.listVisitorVariables({ exhibitionId: exhibitionId })
     ]);
@@ -1224,7 +1217,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
     /**
      * Devices from device group
      */
-    const deviceGroupId = groupContentVersion.deviceGroupId;
+    const deviceGroupId = contentVersion.deviceGroupId;
     const devices = await exhibitionDevicesApi.listExhibitionDevices({
       exhibitionId,
       exhibitionGroupId: deviceGroupId
@@ -1245,42 +1238,6 @@ class ContentEditorScreen extends React.Component<Props, State> {
         contentVersions.push(contentVersionInRoom);
       }
     });
-
-    /**
-     * Group content versions for different content versions
-     * Creates new group content version for a content version if one does not exist yet
-     */
-    const groupContentVersions: GroupContentVersion[] = [];
-    for (const contentVersion of contentVersions) {
-      const foundGroupContentVersions = await groupContentVersionsApi.listGroupContentVersions({
-        exhibitionId,
-        contentVersionId: contentVersion.id!,
-        deviceGroupId: deviceGroupId
-      });
-
-      if (foundGroupContentVersions.length < 1) {
-        const newGroupContentVersion = await groupContentVersionsApi.createGroupContentVersion({
-          exhibitionId,
-          groupContentVersion: {
-            contentVersionId: contentVersion.id!,
-            deviceGroupId: deviceGroupId,
-            name: groupContentVersion.name,
-            status: GroupContentVersionStatus.Inprogress,
-            exhibitionId: exhibitionId
-          }
-        });
-
-        groupContentVersions.push(newGroupContentVersion);
-      } else {
-        if (foundGroupContentVersions.length > 1) {
-          console.error(
-            "More than one group content version with same device group found under one content version. This should not be possible!"
-          );
-        }
-
-        groupContentVersions.push(foundGroupContentVersions[0]);
-      }
-    }
 
     contentVersions.sort((a, b) => {
       return a.language.localeCompare(b.language);
@@ -1312,8 +1269,6 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
     this.setState({
       contentVersions,
-      groupContentVersions,
-      groupContentVersion,
       devices,
       previewDevicesData,
       pages,
@@ -1412,34 +1367,21 @@ class ContentEditorScreen extends React.Component<Props, State> {
    */
   private addContentVersion = async () => {
     const { accessToken, exhibitionId } = this.props;
-    const { newContentVersion, groupContentVersion, contentVersions, groupContentVersions } =
-      this.state;
+    const { newContentVersion, contentVersions } = this.state;
 
-    if (!newContentVersion || !groupContentVersion) {
+    if (!newContentVersion) {
       return;
     }
 
     try {
       const contentVersionsApi = Api.getContentVersionsApi(accessToken);
-      const groupContentVersionsApi = Api.getGroupContentVersionsApi(accessToken);
       const createdContentVersion = await contentVersionsApi.createContentVersion({
         exhibitionId: exhibitionId,
         contentVersion: newContentVersion
       });
 
-      const createdGroupContentVersion = await groupContentVersionsApi.createGroupContentVersion({
-        exhibitionId: exhibitionId,
-        groupContentVersion: {
-          contentVersionId: createdContentVersion.id!,
-          deviceGroupId: groupContentVersion.deviceGroupId,
-          name: groupContentVersion.name,
-          status: GroupContentVersionStatus.Inprogress
-        }
-      });
-
       this.setState({
-        contentVersions: [...contentVersions, createdContentVersion],
-        groupContentVersions: [...groupContentVersions, createdGroupContentVersion]
+        contentVersions: [...contentVersions, createdContentVersion]
       });
     } catch (error) {
       console.error(`Could not add new language.\nError: ${error}`);
@@ -1832,7 +1774,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
    * @param expanded is element expanded
    */
   private onExpandElement =
-    (view: PageLayoutView) => (_: React.ChangeEvent<{}>, expanded: boolean) => {
+    (view: PageLayoutView) => (_event: React.ChangeEvent<{}>, expanded: boolean) => {
       this.setState({
         selectedLayoutView: expanded ? view : undefined
       });
@@ -1846,7 +1788,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
    * @param expanded is content version expanded
    */
   private onExpandContentVersion =
-    (contentVersion: ContentVersion) => (_: React.ChangeEvent<{}>, expanded: boolean) => {
+    (contentVersion: ContentVersion) => (_event: React.ChangeEvent<{}>, expanded: boolean) => {
       this.setState({
         selectedContentVersion: expanded ? contentVersion : undefined,
         selectedPage: expanded ? this.getCorrespondingSelectedPage(contentVersion) : undefined,
@@ -2192,18 +2134,18 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const deviceId = selectedDevice.id;
     const temp = ResourceUtils.getResourcesFromLayoutData(layouts[0].data as PageLayoutView);
 
-    if (!layoutId || !deviceId || !selectedContentVersion) {
+    if (!layoutId || !deviceId || !selectedContentVersion || !selectedContentVersion.id) {
       return;
     }
 
     const filteredPages = pages.filter(
-      (page) => page.deviceId === deviceId && page.contentVersionId === selectedContentVersion.id!
+      (page) => page.deviceId === deviceId && page.contentVersionId === selectedContentVersion.id
     );
 
     const newPage: ExhibitionPage = {
       layoutId: layoutId,
       deviceId: deviceId,
-      contentVersionId: selectedContentVersion.id!,
+      contentVersionId: selectedContentVersion.id,
       name: strings.exhibition.newPage,
       eventTriggers: [],
       resources: temp.resources,
@@ -2236,7 +2178,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
       const updatedDevice = await exhibitionDevicesApi.updateExhibitionDevice({
         exhibitionId: exhibitionId,
-        deviceId: selectedDevice.id!,
+        deviceId: selectedDevice.id,
         exhibitionDevice: {
           ...selectedDevice,
           idlePageId: createdPage.id

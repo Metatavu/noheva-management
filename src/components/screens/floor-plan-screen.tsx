@@ -898,7 +898,6 @@ export class FloorPlanScreen extends React.Component<Props, State> {
   private onFloorSaveClick = async () => {
     const { exhibitionId } = this.props;
     const { cropping, cropImageData, selectedFloor } = this.state;
-
     if (cropping && cropImageData) {
       await this.updateFloorPlanImage(cropImageData);
 

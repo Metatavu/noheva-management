@@ -1,6 +1,17 @@
 import { setExhibitions } from "../../actions/exhibitions";
 import Api from "../../api/api";
-import { Exhibition } from "../../generated/client";
+import {
+  ContentVersion,
+  Exhibition,
+  ExhibitionDevice,
+  ExhibitionDeviceGroup,
+  ExhibitionFloor,
+  ExhibitionPage,
+  ExhibitionRoom,
+  RfidAntenna,
+  Visitor,
+  VisitorSession
+} from "../../generated/client";
 import strings from "../../localization/strings";
 import { ReduxActions, ReduxState } from "../../store";
 import styles from "../../styles/exhibition-view";
@@ -419,7 +430,6 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
     const deviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
     const floorsApi = Api.getExhibitionFloorsApi(accessToken);
     const roomsApi = Api.getExhibitionRoomsApi(accessToken);
-    const groupContentVersionsApi = Api.getGroupContentVersionsApi(accessToken);
     const antennasApi = Api.getRfidAntennasApi(accessToken);
     const visitorsApi = Api.getVisitorsApi(accessToken);
     const visitorSessionsApi = Api.getVisitorSessionsApi(accessToken);
@@ -432,7 +442,6 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
       deviceGroups,
       floors,
       rooms,
-      groupContentVersions,
       antennas,
       visitors,
       visitorSessions
@@ -443,7 +452,6 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
       deviceGroupsApi.listExhibitionDeviceGroups({ exhibitionId: selectedExhibition.id }),
       floorsApi.listExhibitionFloors({ exhibitionId: selectedExhibition.id }),
       roomsApi.listExhibitionRooms({ exhibitionId: selectedExhibition.id }),
-      groupContentVersionsApi.listGroupContentVersions({ exhibitionId: selectedExhibition.id }),
       antennasApi.listRfidAntennas({ exhibitionId: selectedExhibition.id }),
       visitorsApi.listVisitors({ exhibitionId: selectedExhibition.id }),
       visitorSessionsApi.listVisitorSessions({ exhibitionId: selectedExhibition.id })
@@ -461,7 +469,6 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
       deviceGroups.length > 0 ||
       floors.length > 0 ||
       rooms.length > 0 ||
-      groupContentVersions.length > 0 ||
       antennas.length > 0 ||
       visitors.length > 0 ||
       visitorSessions.length > 0 ||
@@ -480,10 +487,6 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
       holder.push({ objects: deviceGroups, localizedMessage: strings.deleteContent.deviceGroups });
       holder.push({ objects: floors, localizedMessage: strings.deleteContent.floors });
       holder.push({ objects: rooms, localizedMessage: strings.deleteContent.rooms });
-      holder.push({
-        objects: groupContentVersions,
-        localizedMessage: strings.deleteContent.groupContentVersions
-      });
       holder.push({ objects: antennas, localizedMessage: strings.deleteContent.antennas });
       holder.push({ objects: visitors, localizedMessage: strings.deleteContent.visitors });
       holder.push({
