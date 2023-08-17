@@ -14,6 +14,7 @@ import styles from "../../styles/components/layout-screen/layout-editor-view";
 import { AccessToken, ActionButton, LayoutEditorView, TreeObject } from "../../types";
 import AddNewElementDialog from "../dialogs/add-new-element-dialog";
 import EditorView from "../editor/editor-view";
+import PanZoom from "../generic/pan-zoom";
 import {
   addNewHtmlComponent,
   constructTree,
@@ -223,15 +224,33 @@ const LayoutScreenHTML: FC<Props> = ({
             onCodeChange={onCodeChange}
           />
         );
-      case LayoutEditorView.VISUAL:
+      case LayoutEditorView.VISUAL: {
+        const deviceModel = deviceModels.find((model) => model.id === foundLayout.modelId);
+        if (!deviceModel) return;
+
+        const {
+          dimensions: { screenHeight, screenWidth }
+        } = deviceModel;
+
         return (
-          <PagePreviewHtml
-            deviceModels={deviceModels}
-            layout={foundLayout}
-            treeObjects={treeObjects}
-            selectedComponentId={selectedComponent?.id}
-          />
+          <PanZoom
+            minScale={0.1}
+            fitContent={true}
+            contentWidth={screenWidth}
+            contentHeight={screenHeight}
+            defaultPositionX={150}
+            defaultPositionY={150}
+          >
+            <PagePreviewHtml
+              deviceModel={deviceModel}
+              layout={foundLayout}
+              treeObjects={treeObjects}
+              selectedComponentId={selectedComponent?.id}
+              showBorderToggle
+            />
+          </PanZoom>
         );
+      }
     }
   };
 

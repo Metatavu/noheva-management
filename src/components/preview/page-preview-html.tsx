@@ -1,7 +1,6 @@
 import { DeviceModel, PageLayout } from "../../generated/client";
 import strings from "../../localization/strings";
 import { TreeObject } from "../../types";
-import PanZoom from "../generic/pan-zoom";
 import { treeObjectToHtmlElement, wrapHtmlLayout } from "../layout/utils/tree-html-data-utils";
 import { FormControlLabel, Switch, Typography } from "@mui/material";
 import { styled } from "@mui/styles";
@@ -12,10 +11,11 @@ import { useState } from "react";
  * Components properties
  */
 interface Props {
-  deviceModels: DeviceModel[];
+  deviceModel: DeviceModel;
   layout: PageLayout;
   treeObjects: TreeObject[];
   selectedComponentId?: string;
+  showBorderToggle?: boolean;
 }
 
 /**
@@ -61,14 +61,14 @@ const Preview = styled("iframe")(({ width, height }: PreviewProps) => ({
 /**
  * HTML Layouts Page Preview Component
  */
-const PagePreviewHtml = ({ deviceModels, layout, treeObjects, selectedComponentId }: Props) => {
+const PagePreviewHtml = ({
+  deviceModel,
+  layout,
+  treeObjects,
+  selectedComponentId,
+  showBorderToggle
+}: Props) => {
   const [showElementBorders, setShowElementBorders] = useState(false);
-
-  if (deviceModels.length === 0) return null;
-
-  const deviceModel = deviceModels.find((model) => model.id === layout.modelId);
-
-  if (!deviceModel) return null;
 
   const {
     dimensions: { screenHeight, screenWidth }
@@ -96,40 +96,13 @@ const PagePreviewHtml = ({ deviceModels, layout, treeObjects, selectedComponentI
     };
   };
 
-  return (
-    <PreviewContainer>
-      <PanZoom
-        minScale={0.1}
-        fitContent={true}
-        contentWidth={screenWidth}
-        contentHeight={screenHeight}
-        defaultPositionX={150}
-        defaultPositionY={150}
-      >
-        <Typography
-          sx={{
-            position: "absolute",
-            top: -20,
-            opacity: 0.6
-          }}
-        >
-          {deviceModel.model} / {screenHeight}x{screenWidth} /{" "}
-          {new Fraction((screenHeight ?? 0) / (screenWidth ?? 0)).toFraction().replace("/", ":")}
-        </Typography>
-        <Preview
-          srcDoc={wrapHtmlLayout(
-            treeObjects?.map((treeObject) =>
-              treeObjectToHtmlElement(
-                treeObject,
-                selectedComponentId,
-                layout.defaultResources,
-                showElementBorders
-              )
-            )[0]?.outerHTML
-          )}
-          {...getPreviewDimensions()}
-        />
-      </PanZoom>
+  /**
+   * Renders element border toggle switch
+   */
+  const renderShowBordersToggle = () => {
+    if (!showBorderToggle) return;
+
+    return (
       <FormControlLabel
         sx={{
           position: "absolute",
@@ -140,6 +113,35 @@ const PagePreviewHtml = ({ deviceModels, layout, treeObjects, selectedComponentI
         value={showElementBorders}
         control={<Switch checked={showElementBorders} color="secondary" />}
       />
+    );
+  };
+
+  return (
+    <PreviewContainer>
+      <Typography
+        sx={{
+          position: "absolute",
+          top: -20,
+          opacity: 0.6
+        }}
+      >
+        {deviceModel.model} / {screenHeight}x{screenWidth} /{" "}
+        {new Fraction((screenHeight ?? 0) / (screenWidth ?? 0)).toFraction().replace("/", ":")}
+      </Typography>
+      <Preview
+        srcDoc={wrapHtmlLayout(
+          treeObjects?.map((treeObject) =>
+            treeObjectToHtmlElement(
+              treeObject,
+              selectedComponentId,
+              layout.defaultResources,
+              showElementBorders
+            )
+          )[0]?.outerHTML
+        )}
+        {...getPreviewDimensions()}
+      />
+      {renderShowBordersToggle()}
     </PreviewContainer>
   );
 };

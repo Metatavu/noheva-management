@@ -14,6 +14,7 @@ import {
   LayoutType,
   PageLayout,
   PageLayoutView,
+  PageLayoutViewHtml,
   PageLayoutWidgetType,
   VisitorVariable
 } from "../../generated/client";
@@ -52,11 +53,13 @@ import EditorView from "../editor/editor-view";
 import ConfirmDialog from "../generic/confirm-dialog";
 import GenericDialog from "../generic/generic-dialog";
 import PanZoom from "../generic/pan-zoom";
+import { constructTree } from "../layout/utils/tree-html-data-utils";
 import BasicLayout from "../layouts/basic-layout";
 import ElementContentsPane from "../layouts/element-contents-pane";
 import ElementPropertiesPane from "../layouts/element-properties-pane";
 import ElementTimelinePane from "../layouts/element-timeline-pane";
 import PagePreview from "../preview/page-preview";
+import PagePreviewHtml from "../preview/page-preview-html";
 import ExpandMoreIcon from "@mui/icons-material/ChevronRight";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
@@ -435,6 +438,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
       const view = previewLayout.data;
       const resources = previewPage.resources;
       const deviceModel = deviceModels.find((model) => model.id === previewLayout.modelId);
+      if (!deviceModel) return;
+
       const displayMetrics = AndroidUtils.getDisplayMetrics(
         deviceModel ? deviceModel : deviceModels[0]
       );
@@ -451,25 +456,33 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
       return (
         <div key={previewData.device.id} className={classes.previewDeviceContainer}>
-          <Typography variant="h1" style={{ fontSize: 72 }}>
-            {`${previewData.device?.name} - ${previewPage.name}`}
-          </Typography>
           {previewLayout.layoutType === LayoutType.Android ? (
-            <PagePreview
-              screenOrientation={previewLayout.screenOrientation}
-              deviceOrientation={deviceModel?.screenOrientation}
-              device={previewData.device}
-              page={previewPage}
-              view={view}
-              selectedView={selectedLayoutView}
-              resources={resources}
-              displayMetrics={displayMetrics}
-              scale={scale}
-              onViewClick={this.onLayoutViewClick}
-              onTabClick={this.onPreviewTabClick}
-              tabMap={tabMap}
+            <>
+              <Typography variant="h1" style={{ fontSize: 20 }}>
+                {`${previewData.device?.name} - ${previewPage.name}`}
+              </Typography>
+              <PagePreview
+                screenOrientation={previewLayout.screenOrientation}
+                deviceOrientation={deviceModel?.screenOrientation}
+                device={previewData.device}
+                page={previewPage}
+                view={view as PageLayoutView}
+                selectedView={selectedLayoutView}
+                resources={resources}
+                displayMetrics={displayMetrics}
+                scale={scale}
+                onViewClick={this.onLayoutViewClick}
+                onTabClick={this.onPreviewTabClick}
+                tabMap={tabMap}
+              />
+            </>
+          ) : (
+            <PagePreviewHtml
+              deviceModel={deviceModel}
+              layout={previewLayout}
+              treeObjects={[...constructTree((view as PageLayoutViewHtml).html)]}
             />
-          ) : null}
+          )}
         </div>
       );
     });
@@ -643,7 +656,33 @@ class ContentEditorScreen extends React.Component<Props, State> {
     }
 
     const elementList: JSX.Element[] = [];
-    return this.constructSingleElement(elementList, [pageLayout.data]);
+
+    if (pageLayout.layoutType === LayoutType.Html) {
+      return this.constructSingleElementHtml(elementList, pageLayout);
+    }
+    return this.constructSingleElement(elementList, [pageLayout.data] as PageLayoutView[]);
+  };
+
+  /**
+   * Construct single page layout view element for accordion listing
+   *
+   * @param elementList JSX element list
+   * @param pageLayoutViews list of page layout views
+   */
+  private constructSingleElementHtml = (elementList: JSX.Element[], pageLayout: PageLayout) => {
+    const { selectedPage } = this.state;
+    if (!selectedPage) return;
+
+    // TODO: Don't want to get resources, similar type but also include name?
+    const resources = ResourceUtils.getResourcesFromLayoutDataHtml(
+      pageLayout.data as PageLayoutViewHtml
+    );
+
+    resources.forEach((resource) => {
+      elementList.push(this.renderResourcesHtml(selectedPage, resource, pageLayout));
+    });
+
+    return elementList;
   };
 
   /**
@@ -684,6 +723,57 @@ class ContentEditorScreen extends React.Component<Props, State> {
     });
 
     return elementList;
+  };
+
+  // TODO: This is now outdated after @resource changes? Don't want to use resource here but some html equivalent to PageLayoutView, but not PageLayoutViewHtml?
+  /**
+   * Render individual resources inside accordion element
+   *
+   * @param selectedPage selected page
+   * @param pageLayoutView page layout view
+   * @param idList list resource ids
+   */
+  private renderResourcesHtml = (
+    selectedPage: ExhibitionPage,
+    resource: ExhibitionPageResource,
+    pageLayout: PageLayout
+  ) => {
+    const { classes } = this.props;
+    const { selectedLayoutView, selectedResource } = this.state;
+    // const eventTriggerItems = this.getEventTriggerItems(selectedPage, pageLayout);
+
+    return (
+      <Accordion
+        key={resource.id}
+        className={classes.resource}
+        expanded={selectedLayoutView?.id === resource.id}
+        // TODO: resource is wrong here
+        onChange={this.onExpandElementHtml(resource)}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} className={classes.resourceItem}>
+          <Typography variant="h5">{resource.type || ""}</Typography>
+          {/* rome-ignore lint/style/noNonNullAssertion: <explanation> */}
+          <Button variant="text" onClick={this.onAddEventTrigger(resource.id!)}>
+            {strings.contentEditor.editor.eventTriggers.add}
+          </Button>
+        </AccordionSummary>
+        <AccordionDetails>
+          <LayoutViewResourcesList
+            resources={[resource]}
+            selectedResource={selectedResource}
+            onClick={this.onResourceClick}
+          />
+          {/* {eventTriggerItems && (
+            <div style={{ marginLeft: theme.spacing(4) }}>
+              <Typography style={{ padding: theme.spacing(1) }} variant="h5">
+                {strings.contentEditor.editor.eventTriggers.title}
+              </Typography>
+              {eventTriggerItems}
+            </div>
+          )} */}
+        </AccordionDetails>
+      </Accordion>
+    );
   };
 
   /**
@@ -1102,18 +1192,32 @@ class ContentEditorScreen extends React.Component<Props, State> {
       return;
     }
 
-    const resourceHolder = ResourceUtils.getResourcesFromLayoutData(
-      selectedLayout.data as PageLayoutView
-    );
+    if (selectedLayout.layoutType === LayoutType.Android) {
+      const resourceHolderAndroid = ResourceUtils.getResourcesFromLayoutData(
+        selectedLayout.data as PageLayoutView
+      );
 
-    this.setState(
-      produce((draft: State) => {
-        draft.selectedPage!.layoutId = layoutId;
-        draft.selectedPage!.resources = resourceHolder.resources;
-        draft.resourceWidgetIdList = resourceHolder.widgetIds;
-        draft.dataChanged = true;
-      })
-    );
+      this.setState(
+        produce((draft: State) => {
+          draft.selectedPage!.layoutId = layoutId;
+          draft.selectedPage!.resources = resourceHolderAndroid.resources;
+          draft.resourceWidgetIdList = resourceHolderAndroid.widgetIds;
+          draft.dataChanged = true;
+        })
+      );
+    } else {
+      const resourceHolderHtml = ResourceUtils.getResourcesFromLayoutDataHtml(
+        selectedLayout.data as PageLayoutViewHtml
+      );
+
+      this.setState(
+        produce((draft: State) => {
+          draft.selectedPage!.layoutId = layoutId;
+          draft.selectedPage!.resources = resourceHolderHtml;
+          draft.dataChanged = true;
+        })
+      );
+    }
   };
 
   /**
@@ -1254,7 +1358,9 @@ class ContentEditorScreen extends React.Component<Props, State> {
       previewDevicesData,
       pages,
       visitorVariables: visitorVariables,
-      layouts,
+      // TODO: Eventually display only html layouts?
+      // layouts: layouts.filter((layout) => layout.layoutType === LayoutType.Html),
+      layouts: layouts,
       selectedContentVersion,
       selectedDevice
     });
@@ -1852,6 +1958,21 @@ class ContentEditorScreen extends React.Component<Props, State> {
       });
     };
 
+  // TODO: This should be typed according to the new object from PageLayoutViewHtml
+  /**
+   * Event handler for expand element
+   *
+   * @param view page layout view
+   * @param event React change event
+   * @param expanded is element expanded
+   */
+  private onExpandElementHtml =
+    (view: PageLayoutView) => (_event: React.ChangeEvent<{}>, expanded: boolean) => {
+      this.setState({
+        selectedLayoutView: expanded ? view : undefined
+      });
+    };
+
   /**
    * Event handler for expand content version
    *
@@ -2058,62 +2179,106 @@ class ContentEditorScreen extends React.Component<Props, State> {
       return;
     }
 
-    this.setState(
-      produce((draft: State) => {
-        const resourceHolder = ResourceUtils.getResourcesFromLayoutData(pageLayout.data);
+    if (pageLayout.layoutType === LayoutType.Android) {
+      this.setState(
+        produce((draft: State) => {
+          const resourceHolder = ResourceUtils.getResourcesFromLayoutData(pageLayout.data);
 
-        draft.selectedPage = selectedPage;
-        draft.selectedLayoutView = undefined;
+          draft.selectedPage = selectedPage;
+          draft.selectedLayoutView = undefined;
 
-        resourceHolder.resources
-          .filter(
-            (layoutResource) =>
-              !selectedPage.resources.find((pageResource) => pageResource.id === layoutResource.id)
-          )
-          .forEach((missingLayoutResource) => {
-            selectedPage.resources.push(missingLayoutResource);
+          resourceHolder.resources
+            .filter(
+              (layoutResource) =>
+                !selectedPage.resources.find(
+                  (pageResource) => pageResource.id === layoutResource.id
+                )
+            )
+            .forEach((missingLayoutResource) => {
+              selectedPage.resources.push(missingLayoutResource);
+            });
+
+          const tempTriggers = [
+            ...draft.selectedPage.eventTriggers
+          ] as ExhibitionPageEventTrigger[];
+          tempTriggers.forEach((trigger) => {
+            if (!trigger.id) {
+              trigger.id = uuid();
+            }
+            if (!trigger.name) {
+              trigger.name = "Name";
+            }
           });
 
-        const tempTriggers = [...draft.selectedPage.eventTriggers] as ExhibitionPageEventTrigger[];
-        tempTriggers.forEach((trigger) => {
-          if (!trigger.id) {
-            trigger.id = uuid();
-          }
-          if (!trigger.name) {
-            trigger.name = "Name";
-          }
-        });
+          draft.selectedPage.resources.forEach((resource, index) => {
+            const resourceWidgetType = resourceHolder.resourceToWidgetType.get(resource.id);
+            if (
+              resourceWidgetType &&
+              resourceWidgetType === PageLayoutWidgetType.MaterialTabLayout
+            ) {
+              draft.tabResourceIndex = index;
+              return;
+            }
+          });
 
-        draft.selectedPage.resources.forEach((resource, index) => {
-          const resourceWidgetType = resourceHolder.resourceToWidgetType.get(resource.id);
-          if (resourceWidgetType && resourceWidgetType === PageLayoutWidgetType.MaterialTabLayout) {
-            draft.tabResourceIndex = index;
-            return;
-          }
-        });
-
-        resourceHolder.tabPropertyIdToTabResourceId.forEach((value, key) => {
-          const tabIndex = draft.selectedPage?.resources.findIndex(
-            (resource) => resource.id === value.tabResourceId
-          );
-          if (tabIndex !== undefined && tabIndex > -1 && draft.selectedPage) {
-            const tabComponent = ResourceUtils.getResourcesForTabComponent(
-              draft.selectedPage.resources,
-              tabIndex,
-              value.tabContentContainerId
+          resourceHolder.tabPropertyIdToTabResourceId.forEach((value, key) => {
+            const tabIndex = draft.selectedPage?.resources.findIndex(
+              (resource) => resource.id === value.tabResourceId
             );
-            draft.tabMap.set(key, {
-              activeTabIndex: 0,
-              tabComponent: tabComponent
-            });
-          }
-        });
+            if (tabIndex !== undefined && tabIndex > -1 && draft.selectedPage) {
+              const tabComponent = ResourceUtils.getResourcesForTabComponent(
+                draft.selectedPage.resources,
+                tabIndex,
+                value.tabContentContainerId
+              );
+              draft.tabMap.set(key, {
+                activeTabIndex: 0,
+                tabComponent: tabComponent
+              });
+            }
+          });
 
-        draft.selectedPage.eventTriggers = tempTriggers;
-        draft.resourceWidgetIdList = resourceHolder.widgetIds;
-        draft.pageLayout = pageLayout;
-      })
-    );
+          draft.selectedPage.eventTriggers = tempTriggers;
+          draft.resourceWidgetIdList = resourceHolder.widgetIds;
+          draft.pageLayout = pageLayout;
+        })
+      );
+    } else {
+      this.setState(
+        produce((draft: State) => {
+          // TODO: Outdated: Change this to use @resources
+          const foundResources = ResourceUtils.getResourcesFromLayoutDataHtml(
+            pageLayout.data as PageLayoutViewHtml
+          );
+
+          draft.selectedPage = selectedPage;
+          draft.selectedLayoutView = undefined;
+          foundResources
+            .filter(
+              (layoutResource) =>
+                !selectedPage.resources.find(
+                  (pageResource) => pageResource.id === layoutResource.id
+                )
+            )
+            .forEach((missingLayoutResource) => {
+              selectedPage.resources.push(missingLayoutResource);
+            });
+          const tempTriggers = [
+            ...draft.selectedPage.eventTriggers
+          ] as ExhibitionPageEventTrigger[];
+          tempTriggers.forEach((trigger) => {
+            if (!trigger.id) {
+              trigger.id = uuid();
+            }
+            if (!trigger.name) {
+              trigger.name = "Name";
+            }
+          });
+          draft.selectedPage.eventTriggers = tempTriggers;
+          draft.pageLayout = pageLayout;
+        })
+      );
+    }
   };
 
   /**
@@ -2202,9 +2367,10 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const isIdlePage = timelineTabIndex === 0;
     const layoutId = layouts?.length ? layouts[0].id : null;
     const deviceId = selectedDevice.id;
-    const temp = ResourceUtils.getResourcesFromLayoutData(layouts[0].data);
+    // TODO: Do we still want to be able to add pages to android layouts? If so need conditional for this
+    const temp = ResourceUtils.getResourcesFromLayoutDataHtml(layouts[0].data);
 
-    if (!layoutId || !deviceId || !selectedContentVersion || !selectedContentVersion.id) {
+    if (!layoutId || !deviceId || !selectedContentVersion?.id) {
       return;
     }
 
@@ -2218,7 +2384,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       contentVersionId: selectedContentVersion.id,
       name: strings.exhibition.newPage,
       eventTriggers: [],
-      resources: temp.resources,
+      resources: temp,
       orderNumber: isIdlePage ? 0 : filteredPages.length,
       enterTransitions: [],
       exitTransitions: []

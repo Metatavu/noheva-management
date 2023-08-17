@@ -1,7 +1,8 @@
-import { ExhibitionDevice, ExhibitionPage, PageLayout } from "../../generated/client";
+import { ExhibitionDevice, ExhibitionPage, LayoutType, PageLayout } from "../../generated/client";
 import strings from "../../localization/strings";
 import styles from "../../styles/page-settings-editor";
 import theme from "../../styles/theme";
+import { Android as AndroidIcon, Html as HtmlIcon } from "@mui/icons-material/";
 import {
   FormControl,
   InputLabel,
@@ -82,6 +83,11 @@ class CommonSettingsEditor extends React.Component<Props, State> {
       .map((layout) => (
         <MenuItem key={layout.id} value={layout.id}>
           {layout.name}
+          {layout.layoutType === LayoutType.Android ? (
+            <AndroidIcon sx={{ color: "#3DDC84", marginLeft: 1 }} />
+          ) : (
+            <HtmlIcon sx={{ marginLeft: 1 }} />
+          )}
         </MenuItem>
       ));
 

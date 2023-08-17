@@ -1,8 +1,10 @@
 import { TabStructure } from "../components/content-editor/constants";
+import { deserializeElement } from "../components/layout/utils/tree-html-data-utils";
 import {
   ExhibitionPageResource,
   ExhibitionPageResourceType,
   PageLayoutView,
+  PageLayoutViewHtml,
   PageLayoutViewProperty,
   PageLayoutWidgetType,
   PageResourceMode
@@ -29,7 +31,7 @@ export interface PageResourceCache {
   tabPropertyIdToTabResourceId: Map<string, TabResourceCache>;
 }
 
-/**
+/**§
  * Utility class for resources
  */
 export default class ResourceUtils {
@@ -112,6 +114,50 @@ export default class ResourceUtils {
       resourceToWidgetType: resourceToWidgetType,
       tabPropertyIdToTabResourceId
     } as PageResourceCache;
+  };
+
+  /**
+   * Function to recursively traverse the DOM and extract data
+   *
+   * @param element HTMLElement
+   */
+  public static extractResourceDataFromElement = (
+    element: HTMLElement
+  ): ExhibitionPageResource[] => {
+    // TODO: Resource type to be inferred from this?
+    const componentType = element.getAttribute("data-component-type") as ExhibitionPageResourceType;
+    const id = element.getAttribute("id") as string;
+
+    const data: ExhibitionPageResource = {
+      id: id,
+      type: ExhibitionPageResourceType.Text,
+      data: ""
+    };
+
+    const flatData: ExhibitionPageResource[] = [data];
+
+    const childElements = element.children;
+
+    for (const childElement of childElements) {
+      flatData.push(...ResourceUtils.extractResourceDataFromElement(childElement as HTMLElement));
+    }
+
+    return flatData;
+  };
+
+  /**
+   * Returns a custom resource holder object that contains all page layout resources
+   *
+   * @param layoutView html layout view
+   * @returns custom resource holder
+   */
+  public static getResourcesFromLayoutDataHtml = (
+    layoutView: PageLayoutViewHtml
+  ): ExhibitionPageResource[] => {
+    const deserializedHtml = deserializeElement(layoutView.html);
+    const foundResources = this.extractResourceDataFromElement(deserializedHtml);
+
+    return foundResources;
   };
 
   /**
