@@ -21,6 +21,11 @@ interface Props {
  */
 const LayoutComponentProperties: FC<Props> = ({ component, updateComponent }) => {
   /**
+   * Gets layout direction
+   */
+  const getDirection = () => component.element.style.flexDirection;
+
+  /**
    * Event handler for layout alignment change events
    *
    * @param name name
@@ -55,7 +60,7 @@ const LayoutComponentProperties: FC<Props> = ({ component, updateComponent }) =>
       <Divider sx={{ color: "#F5F5F5" }} />
       <PropertyBox>
         <PanelSubtitle subtitle={strings.layoutEditorV2.layoutProperties.contentEmphasis} />
-        <AlignmentEditorHtml onChange={onAlignmentChange} />
+        <AlignmentEditorHtml onChange={onAlignmentChange} direction={getDirection()} />
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
       <PropertyBox>

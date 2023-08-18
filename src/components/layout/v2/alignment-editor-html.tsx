@@ -27,14 +27,14 @@ type AlignmentIconRow = {
  * Components props
  */
 interface Props {
+  direction: string;
   onChange: (name: string, value: string) => void;
 }
 
-// TODO: Not yet implemented as a controlled componenet
 /**
  * HTML Component Alignment editor component
  */
-const AlignmentEditorHtml = ({ onChange }: Props) => {
+const AlignmentEditorHtml = ({ direction, onChange }: Props) => {
   const [selected, setSelected] = useState<LayoutAlignment>();
 
   const topRowIcons: AlignmentIconRow[] = [
@@ -88,6 +88,46 @@ const AlignmentEditorHtml = ({ onChange }: Props) => {
     </Stack>
   );
 
+  const getAlignment = (name: LayoutAlignment) =>
+    ({
+      [LayoutAlignment.NORTH_WEST]: [
+        { name: "align-content", value: "flex-start" },
+        { name: "justify-content", value: "flex-start" }
+      ],
+      [LayoutAlignment.NORTH]: [
+        { name: "align-content", value: "center" },
+        { name: "justify-content", value: "flex-start" }
+      ],
+      [LayoutAlignment.NORTH_EAST]: [
+        { name: "align-content", value: "flex-end" },
+        { name: "justify-content", value: "flex-start" }
+      ],
+      [LayoutAlignment.WEST]: [
+        { name: "align-content", value: "flex-start" },
+        { name: "justify-content", value: "center" }
+      ],
+      [LayoutAlignment.CENTER]: [
+        { name: "align-content", value: "center" },
+        { name: "justify-content", value: "center" }
+      ],
+      [LayoutAlignment.EAST]: [
+        { name: "align-content", value: "flex-end" },
+        { name: "justify-content", value: "center" }
+      ],
+      [LayoutAlignment.SOUTH_WEST]: [
+        { name: "align-content", value: "flex-start" },
+        { name: "justify-content", value: "flex-end" }
+      ],
+      [LayoutAlignment.SOUTH]: [
+        { name: "align-content", value: "center" },
+        { name: "justify-content", value: "flex-end" }
+      ],
+      [LayoutAlignment.SOUTH_EAST]: [
+        { name: "align-content", value: "flex-end" },
+        { name: "justify-content", value: "flex-end" }
+      ]
+    })[name as LayoutAlignment];
+
   /**
    * Event handler
    */
@@ -98,53 +138,9 @@ const AlignmentEditorHtml = ({ onChange }: Props) => {
 
     setSelected(name as LayoutAlignment);
 
-    switch (name) {
-      case "nw": {
-        onChange("align-content", "flex-start");
-        onChange("justify-content", "flex-start");
-        break;
-      }
-      case "n": {
-        onChange("align-content", "center");
-        onChange("justify-content", "flex-start");
-        break;
-      }
-      case "ne": {
-        onChange("align-content", "flex-end");
-        onChange("justify-content", "flex-start");
-        break;
-      }
-      case "w": {
-        onChange("align-content", "flex-start");
-        onChange("justify-content", "center");
-        break;
-      }
-      case "c": {
-        onChange("align-content", "center");
-        onChange("justify-content", "center");
-        break;
-      }
-      case "e": {
-        onChange("align-content", "flex-end");
-        onChange("justify-content", "center");
-        break;
-      }
-      case "sw": {
-        onChange("align-content", "flex-start");
-        onChange("justify-content", "flex-end");
-        break;
-      }
-      case "s": {
-        onChange("align-content", "center");
-        onChange("justify-content", "flex-end");
-        break;
-      }
-      case "se": {
-        onChange("align-content", "flex-end");
-        onChange("justify-content", "flex-end");
-        break;
-      }
-    }
+    getAlignment(name as LayoutAlignment).forEach((alignemnt) =>
+      onChange(alignemnt.name, alignemnt.value)
+    );
   };
 
   const renderIcon = (icon: AlignmentIconRow) => {

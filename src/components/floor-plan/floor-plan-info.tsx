@@ -68,6 +68,36 @@ interface State {
  * Component for group content version info view
  */
 class FloorPlanInfo extends React.Component<Props, State> {
+  private mockDevices = [
+    {
+      serialNumber: "123",
+      approvalStatus: "PENDING",
+      status: "ONLINE",
+      version: "1.0.0",
+      id: "a0a1d371-6a13-4943-a916-943623dcb1db",
+      deviceModelId: "93001891-5af0-4d1a-ab3d-5e4649406583",
+      name: "Laite 1",
+      description: "asd",
+      lastSeen: "18-08-2023",
+      lastModifierId: "f8f7e1be-d08d-4637-9bb7-93636e5fc87a",
+      createdAt: "18-08-2023",
+      modifiedAt: "18-08-2023"
+    },
+    {
+      serialNumber: "1234",
+      approvalStatus: "APPROVED",
+      status: "ONLINE",
+      version: "1.0.0",
+      id: "a0a1d371-6a13-4943-a916-943623dcb1db",
+      deviceModelId: "93001891-5af0-4d1a-ab3d-5e4649406583",
+      name: "Laite 1",
+      description: "asd",
+      lastSeen: "18-08-2023",
+      lastModifierId: "f8f7e1be-d08d-4637-9bb7-93636e5fc87a",
+      createdAt: "18-08-2023",
+      modifiedAt: "18-08-2023"
+    }
+  ];
   /**
    * Generic text filed properties
    */
