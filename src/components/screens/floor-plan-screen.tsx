@@ -1,40 +1,48 @@
-import * as React from "react";
-
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
-import { ReduxActions, ReduxState } from "../../store";
-import { produce, Draft } from "immer";
 import Api from "../../api/api";
-import { History } from "history";
-import styles from "../../styles/floor-plan-editor-view";
-// eslint-disable-next-line max-len
-import { CircularProgress } from "@mui/material";
-import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
-import { KeycloakInstance } from "keycloak-js";
-// eslint-disable-next-line max-len
-import { Exhibition, ExhibitionFloor, Coordinates, Bounds, ExhibitionRoom, ExhibitionDevice, ExhibitionDeviceGroup, DeviceModel, RfidAntenna, DeviceGroupVisitorSessionStartStrategy } from "../../generated/client";
-import BasicLayout from "../layouts/basic-layout";
-import FileUploader from "../generic/file-uploader";
-import ElementSettingsPane from "../layouts/element-settings-pane";
-import ElementNavigationPane from "../layouts/element-navigation-pane";
-import EditorView from "../editor/editor-view";
-import { AccessToken, ActionButton, ConfirmDialogData, DeleteDataHolder } from "../../types";
+import {
+  Bounds,
+  Coordinates,
+  DeviceGroupVisitorSessionStartStrategy,
+  DeviceModel,
+  Exhibition,
+  ExhibitionDevice,
+  ExhibitionDeviceGroup,
+  ExhibitionFloor,
+  ExhibitionRoom,
+  RfidAntenna
+} from "../../generated/client";
 import strings from "../../localization/strings";
-import "cropperjs/dist/cropper.css";
+import { ReduxActions, ReduxState } from "../../store";
+import styles from "../../styles/floor-plan-editor-view";
+import { AccessToken, ActionButton, ConfirmDialogData, DeleteDataHolder } from "../../types";
+import DeleteUtils from "../../utils/delete-utils";
+import FileUpload from "../../utils/file-upload";
+import EditorView from "../editor/editor-view";
 import FloorPlanCrop from "../floor-plan/floor-plan-crop";
 import FloorPlanCropProperties from "../floor-plan/floor-plan-crop-properties";
-import * as cropperjs from "cropperjs";
-import FileUpload from "../../utils/file-upload";
-import { LatLngExpression, LatLngBounds } from "leaflet";
-import SpacesMap from "../generic/spaces-map";
-import TreeMenu, { TreeNodeInArray } from "react-simple-tree-menu";
-import FloorPlanTreeMenu from "../floor-plan/floor-plan-tree-menu";
 import FloorPlanInfo from "../floor-plan/floor-plan-info";
+import FloorPlanTreeMenu from "../floor-plan/floor-plan-tree-menu";
+import ConfirmDialog from "../generic/confirm-dialog";
+import FileUploader from "../generic/file-uploader";
+import SpacesMap from "../generic/spaces-map";
+import BasicLayout from "../layouts/basic-layout";
+import ElementNavigationPane from "../layouts/element-navigation-pane";
+import ElementSettingsPane from "../layouts/element-settings-pane";
+import { CircularProgress } from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import withStyles from "@mui/styles/withStyles";
+import * as cropperjs from "cropperjs";
+import "cropperjs/dist/cropper.css";
+import { History } from "history";
+import { Draft, produce } from "immer";
+import { KeycloakInstance } from "keycloak-js";
+import { LatLngBounds, LatLngExpression } from "leaflet";
+import * as React from "react";
 import { createRef } from "react";
 import { ColorResult } from "react-color";
-import ConfirmDialog from "../generic/confirm-dialog";
-import DeleteUtils from "../../utils/delete-utils";
+import { connect } from "react-redux";
+import TreeMenu, { TreeNodeInArray } from "react-simple-tree-menu";
+import { Dispatch } from "redux";
 
 /**
  * Component props
@@ -84,7 +92,6 @@ interface State {
  * Component for exhibition floor plan editor
  */
 export class FloorPlanScreen extends React.Component<Props, State> {
-
   private prevMapRef: SpacesMap | null = null;
   private mapRef = createRef<SpacesMap>();
   private treeRef = createRef<TreeMenu>();
@@ -121,7 +128,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     this.setState({ loading: true });
     await this.fetchData();
     this.setState({ loading: false });
-  }
+  };
 
   /**
    * Component did update life cycle handler
@@ -140,7 +147,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     }
 
     this.prevMapRef = this.mapRef.current;
-  }
+  };
 
   /**
    * Event handler for clear dialog
@@ -150,7 +157,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       deleteDialogOpen: false,
       confirmDialogData: this.defaultDeleteData
     });
-  }
+  };
 
   /**
    * Default values for delete dialog
@@ -162,7 +169,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     positiveButtonText: strings.confirmDialog.delete,
     deletePossible: true,
     onCancel: this.clearDialog,
-    onClose: this.clearDialog,
+    onClose: this.clearDialog
   };
 
   /**
@@ -182,10 +189,10 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       error
     } = this.state;
 
-    if (!exhibition || !exhibition.id || this.state.loading ) {
+    if (!exhibition || !exhibition.id || this.state.loading) {
       return (
-        <div className={ classes.loader }>
-          <CircularProgress size={ 50 } color="secondary"></CircularProgress>
+        <div className={classes.loader}>
+          <CircularProgress size={50} color="secondary" />
         </div>
       );
     }
@@ -193,65 +200,57 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     const treeNodes = this.constructTreeData();
     const firstSelected = selectedFloor?.id || "";
 
-    const devicePropertiesTitle =
-      selectedAntenna ?
-      strings.floorPlan.antenna.properties :
-      selectedDevice ?
-      strings.floorPlan.device.properties :
-      selectedDeviceGroup ?
-      strings.floorPlan.deviceGroup.properties :
-      selectedRoom ?
-      strings.floorPlan.room.properties :
-      selectedFloor ?
-      strings.floorPlan.floor.properties :
-      "";
+    const devicePropertiesTitle = selectedAntenna
+      ? strings.floorPlan.antenna.properties
+      : selectedDevice
+      ? strings.floorPlan.device.properties
+      : selectedDeviceGroup
+      ? strings.floorPlan.deviceGroup.properties
+      : selectedRoom
+      ? strings.floorPlan.room.properties
+      : selectedFloor
+      ? strings.floorPlan.floor.properties
+      : "";
 
-      return (
+    return (
       <BasicLayout
-        history={ history }
-        title={ exhibition.name }
-        breadcrumbs={ [] }
-        actionBarButtons={ this.getActionButtons() }
-        keycloak={ keycloak }
-        error={ error }
-        clearError={ () => this.setState({ error: undefined }) }
-        dataChanged={ dataChanged }
-        openDataChangedPrompt={ true }
-        >
-
-        <div className={ classes.editorLayout }>
-          <ElementNavigationPane title={ strings.floorPlan.structure }>
+        history={history}
+        title={exhibition.name}
+        breadcrumbs={[]}
+        actionBarButtons={this.getActionButtons()}
+        keycloak={keycloak}
+        error={error}
+        clearError={() => this.setState({ error: undefined })}
+        dataChanged={dataChanged}
+        openDataChangedPrompt={true}
+      >
+        <div className={classes.editorLayout}>
+          <ElementNavigationPane title={strings.floorPlan.structure}>
             <FloorPlanTreeMenu
-              treeRef={ this.treeRef }
-              treeNodes={ treeNodes }
-              firstSelected={ firstSelected }
+              treeRef={this.treeRef}
+              treeNodes={treeNodes}
+              firstSelected={firstSelected}
             />
           </ElementNavigationPane>
-          <EditorView>
-            { this.renderEditor() }
-          </EditorView>
+          <EditorView>{this.renderEditor()}</EditorView>
 
-          <ElementSettingsPane
-            open={ true }
-            width={ 420 }
-            title={ devicePropertiesTitle }
-          >
-            { this.renderRightPanel() }
+          <ElementSettingsPane open={true} width={420} title={devicePropertiesTitle}>
+            {this.renderRightPanel()}
           </ElementSettingsPane>
         </div>
         <FileUploader
           controlled
-          open={ addImageDialogOpen }
-          onClose={ this.toggleUploadNewImageDialog }
+          open={addImageDialogOpen}
+          onClose={this.toggleUploadNewImageDialog}
           uploadKey="new"
-          buttonText={ strings.floorPlan.toolbar.upload }
-          allowedFileTypes={ [ "image/png" ] }
-          onSave={ this.onUploadSave }
+          buttonText={strings.floorPlan.toolbar.upload}
+          allowedFileTypes={["image/png"]}
+          onSave={this.onUploadSave}
         />
-        { this.renderConfirmDialog() }
+        {this.renderConfirmDialog()}
       </BasicLayout>
     );
-  }
+  };
 
   /**
    * Renders editor view
@@ -273,11 +272,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     if (cropping && cropImageDataUrl && imageWidth && imageHeight) {
       return (
         <FloorPlanCrop
-          imageWidth={ imageWidth }
-          imageHeight={ imageHeight }
-          imageDataUrl={ cropImageDataUrl }
-          onDetailsUpdate={ this.onCropDetailsUpdate }
-          onDataUpdate={ this.onCropDataUpdate }
+          imageWidth={imageWidth}
+          imageHeight={imageHeight}
+          imageDataUrl={cropImageDataUrl}
+          onDetailsUpdate={this.onCropDetailsUpdate}
+          onDataUpdate={this.onCropDataUpdate}
         />
       );
     }
@@ -286,8 +285,8 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       const floorBounds = selectedFloor.floorPlanBounds;
       const swCorner = floorBounds.southWestCorner;
       const neCorner = floorBounds.northEastCorner;
-      const sw: LatLngExpression = [ swCorner.longitude, swCorner.latitude ];
-      const ne: LatLngExpression = [ neCorner.longitude, neCorner.latitude ];
+      const sw: LatLngExpression = [swCorner.longitude, swCorner.latitude];
+      const ne: LatLngExpression = [neCorner.longitude, neCorner.latitude];
       const bounds = new LatLngBounds(sw, ne);
 
       const floorPlanInfo = {
@@ -305,68 +304,84 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         room: selectedRoom,
         deviceGroup: selectedDeviceGroup,
         device: selectedDevice,
-        antenna: selectedAntenna,
+        antenna: selectedAntenna
       };
 
-      return <SpacesMap
-        ref={ this.mapRef }
-        key={ "SpacesMap" }
-        deviceModels={ deviceModels }
-        exhibitionId={ exhibitionId }
-        mapData={ mapData }
-        floorPlanInfo={ floorPlanInfo }
-        selectedItems={ selectedItems }
-        onRoomAdd={ this.onRoomAddClick }
-        onRoomSave={ this.onRoomSaveClick }
-        onRoomClick={ this.onRoomClick }
-        onDeviceGroupClick={ this.onDeviceGroupClick }
-        onDeviceAdd={ this.onDeviceAddClick }
-        onDeviceSave={ this.onDeviceSaveClick }
-        onDeviceClick={ this.onDeviceClick }
-        onAntennaAdd={ this.onAntennaAddClick }
-        onAntennaSave={ this.onAntennaSaveClick }
-        onAntennaClick={ this.onAntennaClick }
-        onDataChange={ () => this.setState({ dataChanged: true }) }
-      />;
+      return (
+        <SpacesMap
+          ref={this.mapRef}
+          key={"SpacesMap"}
+          deviceModels={deviceModels}
+          exhibitionId={exhibitionId}
+          mapData={mapData}
+          floorPlanInfo={floorPlanInfo}
+          selectedItems={selectedItems}
+          onRoomAdd={this.onRoomAddClick}
+          onRoomSave={this.onRoomSaveClick}
+          onRoomClick={this.onRoomClick}
+          onDeviceGroupClick={this.onDeviceGroupClick}
+          onDeviceAdd={this.onDeviceAddClick}
+          onDeviceSave={this.onDeviceSaveClick}
+          onDeviceClick={this.onDeviceClick}
+          onAntennaAdd={this.onAntennaAddClick}
+          onAntennaSave={this.onAntennaSaveClick}
+          onAntennaClick={this.onAntennaClick}
+          onDataChange={() => this.setState({ dataChanged: true })}
+        />
+      );
     }
     return null;
-  }
+  };
 
   /**
    * Renders right panel
    */
   private renderRightPanel = () => {
     const { deviceModels } = this.props;
-    const { cropping, cropImageDataUrl, selectedFloor, rooms, selectedRoom, selectedDeviceGroup, deviceGroups, selectedDevice, selectedAntenna } = this.state;
+    const {
+      cropping,
+      cropImageDataUrl,
+      selectedFloor,
+      rooms,
+      selectedRoom,
+      selectedDeviceGroup,
+      deviceGroups,
+      selectedDevice,
+      selectedAntenna
+    } = this.state;
     if (cropping && cropImageDataUrl) {
-      return <FloorPlanCropProperties
-        imageHeight={ this.state.cropImageDetails?.height }
-        imageWidth={ this.state.cropImageDetails?.width }
-        naturalWidth={ this.state.cropImageDetails?.naturalWidth }
-        naturalHeight={ this.state.cropImageDetails?.naturalHeight }
-        onCropPropertyChange={ this.onCropPropertyChange }
-      />;
+      return (
+        <FloorPlanCropProperties
+          imageHeight={this.state.cropImageDetails?.height}
+          imageWidth={this.state.cropImageDetails?.width}
+          naturalWidth={this.state.cropImageDetails?.naturalWidth}
+          naturalHeight={this.state.cropImageDetails?.naturalHeight}
+          onCropPropertyChange={this.onCropPropertyChange}
+        />
+      );
     } else {
       return (
         <FloorPlanInfo
-          selectedFloor={ selectedFloor }
-          selectedRoom={ selectedRoom }
-          selectedDeviceGroup={ selectedDeviceGroup }
-          selectedDevice={ selectedDevice }
-          selectedAntenna={ selectedAntenna }
-          deviceModels={ deviceModels }
-          rooms={ selectedRoom ? rooms.filter(room => room.id === selectedRoom.id) : [] }
-          deviceGroups={ selectedRoom ? deviceGroups.filter(group => group.roomId === selectedRoom.id) : [] }
-          onChangeFloorProperties={ this.onChangeFloorProperties }
-          onChangeRoomProperties={ this.onChangeRoomProperties }
-          onChangeRoomColor={ this.onChangeRoomColor }
-          onChangeDeviceGroupProperties={ this.onChangeDeviceGroupProperties }
-          onChangeDeviceProperties={ this.onChangeDeviceProperties }
-          onChangeAntennaProperties={ this.onChangeAntennaProperties }
+          selectedFloor={selectedFloor}
+          selectedRoom={selectedRoom}
+          selectedDeviceGroup={selectedDeviceGroup}
+          selectedDevice={selectedDevice}
+          selectedAntenna={selectedAntenna}
+          deviceModels={deviceModels}
+          rooms={selectedRoom ? rooms.filter((room) => room.id === selectedRoom.id) : []}
+          deviceGroups={
+            selectedRoom ? deviceGroups.filter((group) => group.roomId === selectedRoom.id) : []
+          }
+          onChangeFloorProperties={this.onChangeFloorProperties}
+          onChangeRoomProperties={this.onChangeRoomProperties}
+          onChangeRoomColor={this.onChangeRoomColor}
+          onChangeDeviceGroupProperties={this.onChangeDeviceGroupProperties}
+          onChangeDeviceProperties={this.onChangeDeviceProperties}
+          onChangeAntennaProperties={this.onChangeAntennaProperties}
         />
       );
     }
-  }
+  };
 
   /**
    * Renders confirm dialog
@@ -374,13 +389,8 @@ export class FloorPlanScreen extends React.Component<Props, State> {
   private renderConfirmDialog = () => {
     const { confirmDialogData, deleteDialogOpen } = this.state;
 
-    return (
-      <ConfirmDialog
-        open={ deleteDialogOpen }
-        confirmDialogData={ confirmDialogData }
-      />
-    );
-  }
+    return <ConfirmDialog open={deleteDialogOpen} confirmDialogData={confirmDialogData} />;
+  };
 
   /**
    * Fetches component data
@@ -391,7 +401,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const exhibition = exhibitions.find(x => x.id === exhibitionId);
+    const exhibition = exhibitions.find((x) => x.id === exhibitionId);
     if (!exhibition) {
       return;
     }
@@ -401,16 +411,13 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     const exhibitionDeviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
     const exhibitionDevicesApi = Api.getExhibitionDevicesApi(accessToken);
     const rfidAntennasApi = Api.getRfidAntennasApi(accessToken);
-    const [ floors, rooms, deviceGroups, devices, antennas ] =
-      await Promise.all<ExhibitionFloor[], ExhibitionRoom[], ExhibitionDeviceGroup[], ExhibitionDevice[], RfidAntenna[]>(
-        [
-          exhibitionFloorsApi.listExhibitionFloors({ exhibitionId }),
-          exhibitionRoomsApi.listExhibitionRooms({ exhibitionId }),
-          exhibitionDeviceGroupsApi.listExhibitionDeviceGroups({ exhibitionId }),
-          exhibitionDevicesApi.listExhibitionDevices({ exhibitionId }),
-          rfidAntennasApi.listRfidAntennas({ exhibitionId })
-        ]
-      );
+    const [floors, rooms, deviceGroups, devices, antennas] = await Promise.all([
+      exhibitionFloorsApi.listExhibitionFloors({ exhibitionId }),
+      exhibitionRoomsApi.listExhibitionRooms({ exhibitionId }),
+      exhibitionDeviceGroupsApi.listExhibitionDeviceGroups({ exhibitionId }),
+      exhibitionDevicesApi.listExhibitionDevices({ exhibitionId }),
+      rfidAntennasApi.listRfidAntennas({ exhibitionId })
+    ]);
     const selectedFloor = floors[0];
 
     this.setState({
@@ -420,9 +427,9 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       deviceGroups,
       devices,
       antennas,
-      selectedFloor,
+      selectedFloor
     });
-  }
+  };
 
   /**
    * Constructs tree data
@@ -432,52 +439,61 @@ export class FloorPlanScreen extends React.Component<Props, State> {
   private constructTreeData = (): TreeNodeInArray[] => {
     const { floors, rooms, deviceGroups, devices, antennas } = this.state;
 
-    return floors.map(floor => {
+    return floors.map((floor) => {
       return {
         key: floor.id!,
         label: floor.name,
         pathInTree: `${floor.id}`,
         onClick: () => this.onFloorClick(floor.id!),
-        nodes: rooms.filter(room => room.floorId === floor.id).map(room => {
-          return {
-            key: room.id!,
-            label: room.name,
-            pathInTree: `${floor.id}/${room.id}`,
-            onClick: () => this.onRoomClick(floor.id!, room.id!),
-            nodes: deviceGroups.filter(group => group.roomId === room.id).map(group => {
-              return {
-                key: group.id!,
-                label: group.name,
-                pathInTree: `${floor.id}/${room.id}/${group.id}`,
-                onClick: () => this.onDeviceGroupClick(floor.id!, room.id!, group.id!),
-                nodes:
-                  [
-                    ...devices.filter(device => device.groupId === group.id).map(device => {
-                      return {
-                        key: device.id!,
-                        label: device.name,
-                        pathInTree: `${floor.id}/${room.id}/${group.id}/${device.id}`,
-                        onClick: () => this.onDeviceClick(floor.id!, room.id!, group.id!, device.id!),
-                        nodes: [],
-                      };
-                    }),
-                    ...antennas.filter(antenna => antenna.groupId === group.id).map(antenna => {
-                      return {
-                        key: antenna.id!,
-                        label: antenna.name,
-                        pathInTree: `${floor.id}/${room.id}/${group.id}/${antenna.id}`,
-                        onClick: () => this.onAntennaClick(floor.id!, room.id!, group.id!, antenna.id!),
-                        nodes: [],
-                      };
-                    }),
-                  ]
-              };
-            })
-          };
-        })
+        nodes: rooms
+          .filter((room) => room.floorId === floor.id)
+          .map((room) => {
+            return {
+              key: room.id!,
+              label: room.name,
+              pathInTree: `${floor.id}/${room.id}`,
+              onClick: () => this.onRoomClick(floor.id!, room.id!),
+              nodes: deviceGroups
+                .filter((group) => group.roomId === room.id)
+                .map((group) => {
+                  return {
+                    key: group.id!,
+                    label: group.name,
+                    pathInTree: `${floor.id}/${room.id}/${group.id}`,
+                    onClick: () => this.onDeviceGroupClick(floor.id!, room.id!, group.id!),
+                    nodes: [
+                      ...devices
+                        .filter((device) => device.groupId === group.id)
+                        .map((device) => {
+                          return {
+                            key: device.id!,
+                            label: device.name,
+                            pathInTree: `${floor.id}/${room.id}/${group.id}/${device.id}`,
+                            onClick: () =>
+                              this.onDeviceClick(floor.id!, room.id!, group.id!, device.id!),
+                            nodes: []
+                          };
+                        }),
+                      ...antennas
+                        .filter((antenna) => antenna.groupId === group.id)
+                        .map((antenna) => {
+                          return {
+                            key: antenna.id!,
+                            label: antenna.name,
+                            pathInTree: `${floor.id}/${room.id}/${group.id}/${antenna.id}`,
+                            onClick: () =>
+                              this.onAntennaClick(floor.id!, room.id!, group.id!, antenna.id!),
+                            nodes: []
+                          };
+                        })
+                    ]
+                  };
+                })
+            };
+          })
       };
     });
-  }
+  };
 
   /**
    * Gets action buttons
@@ -496,7 +512,10 @@ export class FloorPlanScreen extends React.Component<Props, State> {
 
     if (selectedAntenna) {
       return [
-        { name: strings.floorPlan.antenna.move, action: () => this.mapRef.current!.editAntennaMarker() },
+        {
+          name: strings.floorPlan.antenna.move,
+          action: () => this.mapRef.current!.editAntennaMarker()
+        },
         {
           name: strings.generic.save,
           action: () => this.mapRef.current!.saveAntennaMarker(),
@@ -508,20 +527,30 @@ export class FloorPlanScreen extends React.Component<Props, State> {
 
     if (selectedDevice) {
       return [
-        { name: strings.floorPlan.device.move, action: () => this.mapRef.current!.editDeviceMarker() },
+        {
+          name: strings.floorPlan.device.move,
+          action: () => this.mapRef.current!.editDeviceMarker()
+        },
         {
           name: strings.generic.save,
           action: () => this.mapRef.current!.saveDeviceMarker(),
           disabled: !dataChanged
         },
-        { name: strings.floorPlan.delete.device.deleteTitle, action: this.onDeviceDeleteClick },
+        { name: strings.floorPlan.delete.device.deleteTitle, action: this.onDeviceDeleteClick }
       ] as ActionButton[];
     }
 
     if (selectedDeviceGroup) {
       return [
-        { name: strings.floorPlan.device.add, action: () => this.mapRef.current!.addDeviceMarker() },
-        { name: strings.floorPlan.antenna.add, action: () => this.mapRef.current!.addAntennaMarker() },
+        {
+          name: strings.floorPlan.device.add,
+          action: () => this.mapRef.current!.addDeviceMarker()
+        },
+        // Antennas are not used in the current version
+        // {
+        //   name: strings.floorPlan.antenna.add,
+        //   action: () => this.mapRef.current!.addAntennaMarker()
+        // },
         {
           name: strings.floorPlan.deviceGroup.copy,
           action: this.onDeviceGroupCopyClick
@@ -560,8 +589,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
           { name: strings.floorPlan.toolbar.upload, action: this.toggleUploadNewImageDialog },
           {
             name: strings.generic.save,
-            action:
-            this.onFloorSaveClick,
+            action: this.onFloorSaveClick,
             disabled: !dataChanged
           },
           {
@@ -588,37 +616,44 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     }
 
     return [{ name: strings.floorPlan.floor.add, action: this.onFloorAddClick }];
-  }
+  };
 
   /**
    * Filter map data for leaflet
    */
   private filterMapData = () => {
-    const { selectedFloor, rooms, selectedRoom, deviceGroups, selectedDeviceGroup, devices, antennas } = this.state;
-    const data: any = { };
+    const {
+      selectedFloor,
+      rooms,
+      selectedRoom,
+      deviceGroups,
+      selectedDeviceGroup,
+      devices,
+      antennas
+    } = this.state;
+    const data: any = {};
 
     if (selectedDeviceGroup || selectedRoom || selectedFloor) {
       const floorId = selectedFloor ? selectedFloor.id : "";
       const roomId = selectedRoom ? selectedRoom.id : "";
-      const foundDeviceGroups = deviceGroups.filter(deviceGroup => deviceGroup.roomId === roomId);
+      const foundDeviceGroups = deviceGroups.filter((deviceGroup) => deviceGroup.roomId === roomId);
       const foundDevices: ExhibitionDevice[] = [];
       const foundAntennas: RfidAntenna[] = [];
 
-
-      foundDeviceGroups.forEach(group => {
-        foundDevices.push(...devices.filter(device => device.groupId === group.id));
-        foundAntennas.push(...antennas.filter(antenna => antenna.groupId === group.id));
+      foundDeviceGroups.forEach((group) => {
+        foundDevices.push(...devices.filter((device) => device.groupId === group.id));
+        foundAntennas.push(...antennas.filter((antenna) => antenna.groupId === group.id));
       });
 
-      data.rooms = rooms.filter(room => room.floorId === floorId);
-      data.deviceGroups = deviceGroups.filter(deviceGroup => deviceGroup.roomId === roomId);
+      data.rooms = rooms.filter((room) => room.floorId === floorId);
+      data.deviceGroups = deviceGroups.filter((deviceGroup) => deviceGroup.roomId === roomId);
       data.devices = foundDevices;
       data.antennas = foundAntennas;
       return data;
     }
 
     return data;
-  }
+  };
 
   /**
    * Get bounds from cropImageDetails
@@ -643,12 +678,12 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     };
 
     const floorBounds: Bounds = {
-      northEastCorner : neCorner,
-      southWestCorner : swCorner
+      northEastCorner: neCorner,
+      southWestCorner: swCorner
     };
 
     return floorBounds;
-  }
+  };
 
   /**
    * Updates floor's floor plan image
@@ -657,40 +692,43 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    */
   private updateFloorPlanImage = async (data: Blob) => {
     const { selectedFloor } = this.state;
-    if (!selectedFloor || !selectedFloor.id || !selectedFloor.exhibitionId) {
+    if (!selectedFloor || !selectedFloor.id || !selectedFloor.exhibitionId) {
       return;
     }
 
     const exhibitionFloorsApi = Api.getExhibitionFloorsApi(this.props.accessToken);
-    const uploadedFile = await FileUpload.uploadFile(data, `/floorplans/${selectedFloor.exhibitionId}`);
+    const uploadedFile = await FileUpload.uploadFile(
+      data,
+      `/floorplans/${selectedFloor.exhibitionId}`
+    );
     const updatedFloor = await exhibitionFloorsApi.updateExhibitionFloor({
       floorId: selectedFloor.id,
       exhibitionId: selectedFloor.exhibitionId,
       exhibitionFloor: {
         ...selectedFloor,
         floorPlanUrl: uploadedFile.uri,
-        floorPlanBounds : this.getBounds()
+        floorPlanBounds: this.getBounds()
       }
     });
 
     this.setState(
       produce((draft: Draft<State>) => {
         const { floors } = draft;
-        const floorIndex = floors.findIndex(floor => floor.id === selectedFloor.id);
+        const floorIndex = floors.findIndex((floor) => floor.id === selectedFloor.id);
         if (floorIndex > -1) {
           draft.floors.splice(floorIndex, 1, updatedFloor);
           draft.selectedFloor = updatedFloor;
         }
       })
     );
-  }
+  };
 
   /**
    * Toggle upload new image dialog
    */
   private toggleUploadNewImageDialog = () => {
     this.setState({ addImageDialogOpen: !this.state.addImageDialogOpen });
-  }
+  };
 
   /**
    * Event handler for crop details update
@@ -702,7 +740,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       cropImageDetails: details,
       dataChanged: details.naturalHeight !== undefined && details.naturalWidth !== undefined
     });
-  }
+  };
 
   /**
    * Event handler for crop data update
@@ -711,9 +749,9 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    */
   private onCropDataUpdate = (data: Blob) => {
     this.setState({
-      cropImageData: data,
+      cropImageData: data
     });
-  }
+  };
 
   /**
    * Event handler for crop property data change
@@ -722,12 +760,13 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param value crop property value
    */
   private onCropPropertyChange = (key: string, value: number) => {
-    const updatedDetails = { ...this.state.cropImageDetails!, [key] : value };
+    const updatedDetails = { ...this.state.cropImageDetails!, [key]: value };
     this.setState({
       cropImageDetails: updatedDetails,
-      dataChanged: updatedDetails.naturalHeight !== undefined && updatedDetails.naturalWidth !== undefined
+      dataChanged:
+        updatedDetails.naturalHeight !== undefined && updatedDetails.naturalWidth !== undefined
     });
-  }
+  };
 
   /**
    * Event handler for upload save click
@@ -738,22 +777,19 @@ export class FloorPlanScreen extends React.Component<Props, State> {
   private onUploadSave = (files: File[], _key?: string) => {
     const file = files[0];
     if (file) {
-
       const reader = new FileReader();
 
-      reader.onload = event => {
+      reader.onload = (event) => {
         const dataUrl = event.target?.result;
         if (dataUrl) {
           const image = new Image();
           image.onload = () => {
-
             this.setState({
               imageWidth: image.width,
               imageHeight: image.height,
               cropImageDataUrl: dataUrl as string,
               cropping: true
             });
-
           };
           image.src = dataUrl as string;
         }
@@ -764,7 +800,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         addImageDialogOpen: false
       });
     }
-  }
+  };
 
   /**
    * Event handler for add floor click
@@ -775,7 +811,9 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const newFloor = await this.createFloor(accessToken, exhibitionId, { name: strings.floorPlan.floor.new });
+    const newFloor = await this.createFloor(accessToken, exhibitionId, {
+      name: strings.floorPlan.floor.new
+    });
 
     this.setState(
       produce((draft: Draft<State>) => {
@@ -787,7 +825,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.selectedRoom = undefined;
       })
     );
-  }
+  };
 
   /**
    * Event handler for floor delete click
@@ -825,7 +863,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       deleteDialogOpen: true,
       confirmDialogData: tempDeleteData
     });
-  }
+  };
 
   /**
    * Event handler for confirm floor delete click
@@ -842,7 +880,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     this.setState(
       produce((draft: Draft<State>) => {
         const { floors } = draft;
-        const floorIndex = floors.findIndex(floor => floor.id === selectedFloor.id);
+        const floorIndex = floors.findIndex((floor) => floor.id === selectedFloor.id);
         if (floorIndex > -1) {
           floors.splice(floorIndex, 1);
           draft.selectedFloor = undefined;
@@ -853,7 +891,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         }
       })
     );
-  }
+  };
 
   /**
    * Event handler for save floor click
@@ -861,7 +899,6 @@ export class FloorPlanScreen extends React.Component<Props, State> {
   private onFloorSaveClick = async () => {
     const { exhibitionId } = this.props;
     const { cropping, cropImageData, selectedFloor } = this.state;
-
     if (cropping && cropImageData) {
       await this.updateFloorPlanImage(cropImageData);
 
@@ -874,12 +911,17 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         return;
       }
 
-      const updatedFloor = await this.updateFloor(accessToken, exhibitionId, selectedFloor, selectedFloor.id);
+      const updatedFloor = await this.updateFloor(
+        accessToken,
+        exhibitionId,
+        selectedFloor,
+        selectedFloor.id
+      );
 
       this.setState(
         produce((draft: Draft<State>) => {
           const { floors } = draft;
-          const floorIndex = floors.findIndex(floor => floor.id === selectedFloor.id);
+          const floorIndex = floors.findIndex((floor) => floor.id === selectedFloor.id);
           if (floorIndex > -1) {
             floors.splice(floorIndex, 1, updatedFloor);
             draft.selectedFloor = updatedFloor;
@@ -888,7 +930,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         })
       );
     }
-  }
+  };
 
   /**
    * Event handler for add room click
@@ -912,7 +954,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.selectedDeviceGroup = undefined;
       })
     );
-  }
+  };
 
   /**
    * Event handler for room delete click
@@ -949,7 +991,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       deleteDialogOpen: true,
       confirmDialogData: tempDeleteData
     });
-  }
+  };
 
   /**
    * Event handler for confirm delete room click
@@ -966,7 +1008,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     this.setState(
       produce((draft: Draft<State>) => {
         const { rooms } = draft;
-        const roomIndex = rooms.findIndex(room => room.id === selectedRoom.id);
+        const roomIndex = rooms.findIndex((room) => room.id === selectedRoom.id);
         if (roomIndex > -1) {
           rooms.splice(roomIndex, 1);
           draft.selectedRoom = undefined;
@@ -978,7 +1020,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     );
 
     this.mapRef.current!.deleteRoom();
-  }
+  };
 
   /**
    * Event handler for on save room click
@@ -990,12 +1032,17 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const updatedRoom = await this.updateRoom(accessToken, exhibitionId, roomToUpdate, roomToUpdate.id);
+    const updatedRoom = await this.updateRoom(
+      accessToken,
+      exhibitionId,
+      roomToUpdate,
+      roomToUpdate.id
+    );
 
     this.setState(
       produce((draft: Draft<State>) => {
         const { rooms } = draft;
-        const roomIndex = rooms.findIndex(room => room.id === roomToUpdate.id);
+        const roomIndex = rooms.findIndex((room) => room.id === roomToUpdate.id);
         if (roomIndex > -1) {
           rooms.splice(roomIndex, 1, updatedRoom);
           draft.selectedRoom = updatedRoom;
@@ -1003,7 +1050,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.dataChanged = false;
       })
     );
-  }
+  };
 
   /**
    * Event handler for add device group click
@@ -1033,7 +1080,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.selectedDevice = undefined;
       })
     );
-  }
+  };
 
   /**
    * Event handler for on save device group click
@@ -1046,19 +1093,24 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const updatedDeviceGroup = await this.updateDeviceGroup(accessToken, exhibitionId, selectedDeviceGroup, selectedDeviceGroup.id);
+    const updatedDeviceGroup = await this.updateDeviceGroup(
+      accessToken,
+      exhibitionId,
+      selectedDeviceGroup,
+      selectedDeviceGroup.id
+    );
 
     this.setState(
       produce((draft: Draft<State>) => {
         const { deviceGroups } = draft;
-        const groupIndex = deviceGroups.findIndex(group => group.id === selectedDeviceGroup.id);
+        const groupIndex = deviceGroups.findIndex((group) => group.id === selectedDeviceGroup.id);
         if (groupIndex > -1) {
           deviceGroups.splice(groupIndex, 1, updatedDeviceGroup);
         }
         draft.dataChanged = false;
       })
     );
-  }
+  };
 
   /**
    * Event handler for device copy click
@@ -1067,12 +1119,12 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     const { accessToken, exhibitionId } = this.props;
     const { selectedDeviceGroup } = this.state;
 
-    if (!selectedDeviceGroup || !exhibitionId) {
+    if (!selectedDeviceGroup || !exhibitionId) {
       return;
     }
 
-    this.setState({ 
-      loading: true 
+    this.setState({
+      loading: true
     });
 
     const exhibitionDeviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
@@ -1090,7 +1142,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       selectedDevice: undefined,
       loading: false
     });
-  }
+  };
 
   /**
    * Event handler for device group delete click
@@ -1105,7 +1157,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
 
     const devicesApi = Api.getExhibitionDevicesApi(accessToken);
     const antennasApi = Api.getRfidAntennasApi(accessToken);
-    const [ devices, antennas ] = await Promise.all<ExhibitionDevice[], RfidAntenna[]>([
+    const [devices, antennas] = await Promise.all([
       devicesApi.listExhibitionDevices({
         exhibitionId: exhibitionId,
         exhibitionGroupId: selectedDeviceGroup.id
@@ -1136,7 +1188,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       deleteDialogOpen: true,
       confirmDialogData: tempDeleteData
     });
-  }
+  };
 
   /**
    * Event handler for confirm device group delete click
@@ -1154,7 +1206,9 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     this.setState(
       produce((draft: Draft<State>) => {
         const { deviceGroups } = draft;
-        const deviceGroupIndex = deviceGroups.findIndex(deviceGroup => deviceGroup.id === selectedDeviceGroup.id);
+        const deviceGroupIndex = deviceGroups.findIndex(
+          (deviceGroup) => deviceGroup.id === selectedDeviceGroup.id
+        );
         if (deviceGroupIndex > -1) {
           deviceGroups.splice(deviceGroupIndex, 1);
           draft.selectedDeviceGroup = undefined;
@@ -1163,7 +1217,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         }
       })
     );
-  }
+  };
 
   /**
    * Event handler for add device click
@@ -1183,7 +1237,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.selectedAntenna = undefined;
       })
     );
-  }
+  };
 
   /**
    * Event handler for room delete click
@@ -1221,7 +1275,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       deleteDialogOpen: true,
       confirmDialogData: tempDeleteData
     });
-  }
+  };
 
   /**
    * Event handler for confirm delete device click
@@ -1238,7 +1292,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     this.setState(
       produce((draft: Draft<State>) => {
         const { devices } = draft;
-        const deviceIndex = devices.findIndex(device => device.id === selectedDevice.id);
+        const deviceIndex = devices.findIndex((device) => device.id === selectedDevice.id);
         if (deviceIndex > -1) {
           devices.splice(deviceIndex, 1);
           draft.selectedDevice = undefined;
@@ -1248,7 +1302,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     );
 
     this.mapRef.current!.deleteDevice();
-  }
+  };
 
   /**
    * Event handler for on save device click
@@ -1259,11 +1313,16 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     if (!exhibitionId || !deviceToUpdate.id || !deviceToUpdate.exhibitionId) {
       return;
     }
-    const updatedDevice = await this.updateDevice(accessToken, exhibitionId, deviceToUpdate, deviceToUpdate.id);
+    const updatedDevice = await this.updateDevice(
+      accessToken,
+      exhibitionId,
+      deviceToUpdate,
+      deviceToUpdate.id
+    );
     this.setState(
       produce((draft: Draft<State>) => {
         const { devices } = draft;
-        const deviceIndex = devices.findIndex(device => device.id === deviceToUpdate.id);
+        const deviceIndex = devices.findIndex((device) => device.id === deviceToUpdate.id);
         if (deviceIndex > -1) {
           devices.splice(deviceIndex, 1, updatedDevice);
           draft.selectedDevice = updatedDevice;
@@ -1271,7 +1330,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.dataChanged = false;
       })
     );
-  }
+  };
 
   /**
    * Event handler for add antenna click
@@ -1292,7 +1351,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.selectedDevice = undefined;
       })
     );
-  }
+  };
 
   /**
    * Event handler for antenna delete click
@@ -1312,7 +1371,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       deleteDialogOpen: true,
       confirmDialogData: tempDeleteData
     });
-  }
+  };
 
   /**
    * Event handler for confirm delete antenna click
@@ -1330,7 +1389,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     this.setState(
       produce((draft: Draft<State>) => {
         const { antennas } = draft;
-        const antennaIndex = antennas.findIndex(antenna => antenna.id === selectedAntenna.id);
+        const antennaIndex = antennas.findIndex((antenna) => antenna.id === selectedAntenna.id);
         if (antennaIndex > -1) {
           antennas.splice(antennaIndex, 1);
           draft.selectedAntenna = undefined;
@@ -1340,7 +1399,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     );
 
     this.mapRef.current!.deleteAntenna();
-  }
+  };
 
   /**
    * Event handler for on save antenna click
@@ -1354,15 +1413,20 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const updatedAntenna = await this.updateAntenna(accessToken, exhibitionId, antennaToUpdate, antennaToUpdate.id);
+    const updatedAntenna = await this.updateAntenna(
+      accessToken,
+      exhibitionId,
+      antennaToUpdate,
+      antennaToUpdate.id
+    );
 
     this.setState(
       produce((draft: Draft<State>) => {
         const { antennas } = draft;
-        const antennaIndex = antennas.findIndex(antenna => antenna.id === antennaToUpdate.id);
+        const antennaIndex = antennas.findIndex((antenna) => antenna.id === antennaToUpdate.id);
         if (antennaIndex > -1) {
           antennas.splice(antennaIndex, 1, updatedAntenna);
-          if (selectedDeviceGroup && selectedDeviceGroup.id !== antennaToUpdate.groupId ) {
+          if (selectedDeviceGroup && selectedDeviceGroup.id !== antennaToUpdate.groupId) {
             this.mapRef.current!.deleteAntenna();
             draft.selectedAntenna = undefined;
           } else {
@@ -1372,7 +1436,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         draft.dataChanged = false;
       })
     );
-  }
+  };
 
   /**
    * Event handler for floor click
@@ -1385,13 +1449,13 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     const itemPathInTree = `${floorId}`;
     this.updateOpenNodes(itemPathInTree);
     this.setState({
-      selectedFloor: floors.find(floor => floor.id === floorId),
+      selectedFloor: floors.find((floor) => floor.id === floorId),
       selectedRoom: undefined,
       selectedDeviceGroup: undefined,
       selectedDevice: undefined,
-      selectedAntenna: undefined,
+      selectedAntenna: undefined
     });
-  }
+  };
 
   /**
    * Event handler for room click
@@ -1405,13 +1469,13 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     const itemPathInTree = `${floorId}/${roomId}`;
     this.updateOpenNodes(itemPathInTree);
     this.setState({
-      selectedFloor: floors.find(floor => floor.id === floorId),
-      selectedRoom: rooms.find(room => room.id === roomId),
+      selectedFloor: floors.find((floor) => floor.id === floorId),
+      selectedRoom: rooms.find((room) => room.id === roomId),
       selectedDeviceGroup: undefined,
       selectedDevice: undefined,
-      selectedAntenna: undefined,
+      selectedAntenna: undefined
     });
-  }
+  };
 
   /**
    * Event handler for device group click
@@ -1426,13 +1490,13 @@ export class FloorPlanScreen extends React.Component<Props, State> {
     const itemPathInTree = `${floorId}/${roomId}/${deviceGroupId}`;
     this.updateOpenNodes(itemPathInTree);
     this.setState({
-      selectedFloor: floors.find(floor => floor.id === floorId),
-      selectedRoom: rooms.find(room => room.id === roomId),
-      selectedDeviceGroup: deviceGroups.find(group => group.id === deviceGroupId),
+      selectedFloor: floors.find((floor) => floor.id === floorId),
+      selectedRoom: rooms.find((room) => room.id === roomId),
+      selectedDeviceGroup: deviceGroups.find((group) => group.id === deviceGroupId),
       selectedDevice: undefined,
-      selectedAntenna: undefined,
+      selectedAntenna: undefined
     });
-  }
+  };
 
   /**
    * Event handler for device click
@@ -1442,19 +1506,24 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param deviceGroupId selected device group id
    * @param deviceId selected device id
    */
-  private onDeviceClick = (floorId: string, roomId: string, deviceGroupId: string, deviceId: string) => {
+  private onDeviceClick = (
+    floorId: string,
+    roomId: string,
+    deviceGroupId: string,
+    deviceId: string
+  ) => {
     const { floors, rooms, deviceGroups, devices } = this.state;
 
     const itemPathInTree = `${floorId}/${roomId}/${deviceGroupId}/${deviceId}`;
     this.updateOpenNodes(itemPathInTree);
     this.setState({
-      selectedFloor: floors.find(floor => floor.id === floorId),
-      selectedRoom: rooms.find(room => room.id === roomId),
-      selectedDeviceGroup: deviceGroups.find(group => group.id === deviceGroupId),
-      selectedDevice: devices.find(device => device.id === deviceId),
-      selectedAntenna: undefined,
+      selectedFloor: floors.find((floor) => floor.id === floorId),
+      selectedRoom: rooms.find((room) => room.id === roomId),
+      selectedDeviceGroup: deviceGroups.find((group) => group.id === deviceGroupId),
+      selectedDevice: devices.find((device) => device.id === deviceId),
+      selectedAntenna: undefined
     });
-  }
+  };
 
   /**
    * Event handler for antenna click
@@ -1464,19 +1533,24 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param deviceGroupId selected device group id
    * @param antennaId selected antenna id
    */
-  private onAntennaClick = (floorId: string, roomId: string, deviceGroupId: string, antennaId: string) => {
+  private onAntennaClick = (
+    floorId: string,
+    roomId: string,
+    deviceGroupId: string,
+    antennaId: string
+  ) => {
     const { floors, rooms, deviceGroups, antennas } = this.state;
 
     const itemPathInTree = `${floorId}/${roomId}/${deviceGroupId}/${antennaId}`;
     this.updateOpenNodes(itemPathInTree);
     this.setState({
-      selectedFloor: floors.find(floor => floor.id === floorId),
-      selectedRoom: rooms.find(room => room.id === roomId),
-      selectedDeviceGroup: deviceGroups.find(group => group.id === deviceGroupId),
+      selectedFloor: floors.find((floor) => floor.id === floorId),
+      selectedRoom: rooms.find((room) => room.id === roomId),
+      selectedDeviceGroup: deviceGroups.find((group) => group.id === deviceGroupId),
       selectedDevice: undefined,
-      selectedAntenna: antennas.find(antenna => antenna.id === antennaId),
+      selectedAntenna: antennas.find((antenna) => antenna.id === antennaId)
     });
-  }
+  };
 
   /**
    * Updates open nodes to tree menu
@@ -1486,15 +1560,13 @@ export class FloorPlanScreen extends React.Component<Props, State> {
   private updateOpenNodes = (itemPathInTree: string) => {
     const treeRef = this.treeRef.current;
     if (treeRef) {
-      const previousOpenNodes = (treeRef.state.openNodes ?? [])
-        .filter(node => !node.includes(itemPathInTree));
-      const newOpenNodes = this.constructOpenNodesList(itemPathInTree);
-      treeRef.resetOpenNodes(
-        [ ...previousOpenNodes, ...newOpenNodes ],
-        itemPathInTree
+      const previousOpenNodes = (treeRef.state.openNodes ?? []).filter(
+        (node) => !node.includes(itemPathInTree)
       );
+      const newOpenNodes = this.constructOpenNodesList(itemPathInTree);
+      treeRef.resetOpenNodes([...previousOpenNodes, ...newOpenNodes], itemPathInTree);
     }
-  }
+  };
 
   /**
    * Constructs a list of new open nodes for tree menu
@@ -1503,12 +1575,8 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @returns list of open node key strings
    */
   private constructOpenNodesList = (itemPathInTree: string) => {
-    return itemPathInTree
-      .split("/")
-      .map((_, index, array) =>
-        array.slice(0, index + 1).join("/")
-      );
-  }
+    return itemPathInTree.split("/").map((_, index, array) => array.slice(0, index + 1).join("/"));
+  };
 
   /**
    * Event handler for change floor properties
@@ -1522,12 +1590,15 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const updatedFloor: ExhibitionFloor = { ...selectedFloor, [name as keyof ExhibitionFloor]: value };
+    const updatedFloor: ExhibitionFloor = {
+      ...selectedFloor,
+      [name as keyof ExhibitionFloor]: value
+    };
     this.setState({
       selectedFloor: updatedFloor,
       dataChanged: true
     });
-  }
+  };
 
   /**
    * Event handler for change room properties
@@ -1546,7 +1617,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       selectedRoom: updatedRoom,
       dataChanged: true
     });
-  }
+  };
 
   /**
    * Event handler for room color change
@@ -1560,12 +1631,15 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const updatedRoom: ExhibitionRoom = { ...selectedRoom, ["color" as keyof ExhibitionRoom]: color.hex };
+    const updatedRoom: ExhibitionRoom = {
+      ...selectedRoom,
+      ["color" as keyof ExhibitionRoom]: color.hex
+    };
     this.setState({
       selectedRoom: updatedRoom,
       dataChanged: true
     });
-  }
+  };
 
   /**
    * Event handler for change device group properties
@@ -1579,41 +1653,50 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       return;
     }
 
-    const updatedDeviceGroup: ExhibitionDeviceGroup = { ...selectedDeviceGroup,
-      [name as keyof ExhibitionDeviceGroup]: name === "allowVisitorSessionCreation" ? checked : value
+    const updatedDeviceGroup: ExhibitionDeviceGroup = {
+      ...selectedDeviceGroup,
+      [name as keyof ExhibitionDeviceGroup]:
+        name === "allowVisitorSessionCreation" ? checked : value
     };
     this.setState({
       selectedDeviceGroup: updatedDeviceGroup,
       dataChanged: true
     });
-  }
+  };
 
   /**
    * Event handler for change device properties
    *
    * @param event event
    */
-  private onChangeDeviceProperties = (event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>) => {
+  private onChangeDeviceProperties = (
+    event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>
+  ) => {
     const { selectedDevice } = this.state;
     const { name, value } = event.target;
     if (!selectedDevice) {
       return;
     }
 
-    const updatedDevice: ExhibitionDevice = { ...selectedDevice, [name as keyof ExhibitionDevice]: value };
+    const updatedDevice: ExhibitionDevice = {
+      ...selectedDevice,
+      [name as keyof ExhibitionDevice]: value
+    };
 
     this.setState({
       selectedDevice: updatedDevice,
       dataChanged: true
     });
-  }
+  };
 
   /**
    * Event handler for change antenna properties
    *
    * @param event event
    */
-  private onChangeAntennaProperties = (event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>) => {
+  private onChangeAntennaProperties = (
+    event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>
+  ) => {
     const { selectedAntenna } = this.state;
     const { name } = event.target;
     let value = event.target.value;
@@ -1637,7 +1720,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
       selectedAntenna: updatedAntenna,
       dataChanged: true
     });
-  }
+  };
 
   /**
    * Create floor handler
@@ -1646,7 +1729,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param exhibitionId exhibition id exhibition id
    * @param exhibitionFloor
    */
-  private createFloor = async (accessToken: AccessToken, exhibitionId: string, exhibitionFloor: ExhibitionFloor): Promise<ExhibitionFloor> => {
+  private createFloor = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    exhibitionFloor: ExhibitionFloor
+  ): Promise<ExhibitionFloor> => {
     const floorsApi = Api.getExhibitionFloorsApi(accessToken);
     const createdFloor = await floorsApi.createExhibitionFloor({
       exhibitionId: exhibitionId,
@@ -1682,7 +1769,12 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param floorId floor id
    */
   // tslint:disable-next-line: max-line-length
-  private updateFloor = async (accessToken: AccessToken, exhibitionId: string, floorToUpdate: ExhibitionFloor, floorId: string): Promise<ExhibitionFloor> => {
+  private updateFloor = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    floorToUpdate: ExhibitionFloor,
+    floorId: string
+  ): Promise<ExhibitionFloor> => {
     const floorsApi = Api.getExhibitionFloorsApi(accessToken);
     const updatedFloor = floorsApi.updateExhibitionFloor({
       exhibitionId: exhibitionId,
@@ -1700,7 +1792,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param exhibitionId exhibition id
    * @param roomToCreate room to create
    */
-  private createRoom = async (accessToken: AccessToken, exhibitionId: string, roomToCreate: ExhibitionRoom): Promise<ExhibitionRoom> => {
+  private createRoom = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    roomToCreate: ExhibitionRoom
+  ): Promise<ExhibitionRoom> => {
     const roomsApi = Api.getExhibitionRoomsApi(accessToken);
     const newRoom = roomsApi.createExhibitionRoom({
       exhibitionId: exhibitionId,
@@ -1735,7 +1831,12 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param roomToUpdate room to update
    * @param roomId room id
    */
-  private updateRoom = async (accessToken: AccessToken, exhibitionId: string, roomToUpdate: ExhibitionRoom, roomId: string): Promise<ExhibitionRoom> => {
+  private updateRoom = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    roomToUpdate: ExhibitionRoom,
+    roomId: string
+  ): Promise<ExhibitionRoom> => {
     const roomsApi = Api.getExhibitionRoomsApi(accessToken);
     const updatedRoom = roomsApi.updateExhibitionRoom({
       exhibitionId: exhibitionId,
@@ -1754,7 +1855,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param deviceGroupToCreate device group to create
    */
   // tslint:disable-next-line: max-line-length
-  private createDeviceGroup = async (accessToken: AccessToken, exhibitionId: string, deviceGroupToCreate: ExhibitionDeviceGroup): Promise<ExhibitionDeviceGroup> => {
+  private createDeviceGroup = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    deviceGroupToCreate: ExhibitionDeviceGroup
+  ): Promise<ExhibitionDeviceGroup> => {
     const deviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
     const newGroup = deviceGroupsApi.createExhibitionDeviceGroup({
       exhibitionId: exhibitionId,
@@ -1773,7 +1878,12 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param deviceGroupId group id
    */
   // tslint:disable-next-line: max-line-length
-  private updateDeviceGroup = async (accessToken: AccessToken, exhibitionId: string, deviceGroupToUpdate: ExhibitionDeviceGroup, deviceGroupId: string): Promise<ExhibitionDeviceGroup> => {
+  private updateDeviceGroup = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    deviceGroupToUpdate: ExhibitionDeviceGroup,
+    deviceGroupId: string
+  ): Promise<ExhibitionDeviceGroup> => {
     const deviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
     const updatedGroup = deviceGroupsApi.updateExhibitionDeviceGroup({
       exhibitionId: exhibitionId,
@@ -1790,7 +1900,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param exhibitionId exhibition id
    * @param deviceGroupId device group id
    */
-  private deleteDeviceGroup = async (accessToken: AccessToken, exhibitionId: string, deviceGroupId: string) => {
+  private deleteDeviceGroup = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    deviceGroupId: string
+  ) => {
     const deviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
     deviceGroupsApi.deleteExhibitionDeviceGroup({
       exhibitionId: exhibitionId,
@@ -1808,7 +1922,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param deviceToCreate device to create
    */
   // tslint:disable-next-line: max-line-length
-  private createDevice = async (accessToken: AccessToken, exhibitionId: string, deviceToCreate: ExhibitionDevice): Promise<ExhibitionDevice> => {
+  private createDevice = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    deviceToCreate: ExhibitionDevice
+  ): Promise<ExhibitionDevice> => {
     const devicesApi = Api.getExhibitionDevicesApi(accessToken);
     const createdDevice = devicesApi.createExhibitionDevice({
       exhibitionId: exhibitionId,
@@ -1827,7 +1945,12 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param deviceId device id
    */
   // tslint:disable-next-line: max-line-length
-  private updateDevice = async (accessToken: AccessToken, exhibitionId: string, deviceToUpdate: ExhibitionDevice, deviceId: string): Promise<ExhibitionDevice> => {
+  private updateDevice = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    deviceToUpdate: ExhibitionDevice,
+    deviceId: string
+  ): Promise<ExhibitionDevice> => {
     const devicesApi = Api.getExhibitionDevicesApi(accessToken);
     const updatedDevice = devicesApi.updateExhibitionDevice({
       deviceId: deviceId,
@@ -1845,7 +1968,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param exhibitionId exhibition id
    * @param deviceId device id
    */
-  private deleteDevice = async (accessToken: AccessToken, exhibitionId: string, deviceId: string) => {
+  private deleteDevice = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    deviceId: string
+  ) => {
     const devicesApi = Api.getExhibitionDevicesApi(accessToken);
     devicesApi.deleteExhibitionDevice({
       exhibitionId: exhibitionId,
@@ -1862,7 +1989,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param exhibitionId exhibition id
    * @param antennaToCreate antenna to create
    */
-  private createAntenna = async (accessToken: AccessToken, exhibitionId: string, antennaToCreate: RfidAntenna): Promise<RfidAntenna> => {
+  private createAntenna = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    antennaToCreate: RfidAntenna
+  ): Promise<RfidAntenna> => {
     const rfidAntennasApi = Api.getRfidAntennasApi(accessToken);
     const createRfidAntenna = rfidAntennasApi.createRfidAntenna({
       exhibitionId: exhibitionId,
@@ -1879,7 +2010,11 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param exhibitionId exhibition id
    * @param antennaId antenna id
    */
-  private deleteAntenna = async (accessToken: AccessToken, exhibitionId: string, antennaId: string) => {
+  private deleteAntenna = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    antennaId: string
+  ) => {
     const rfidAntennasApi = Api.getRfidAntennasApi(accessToken);
     rfidAntennasApi.deleteRfidAntenna({
       exhibitionId: exhibitionId,
@@ -1897,7 +2032,12 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    * @param deviceToUpdate device to update
    * @param deviceId device id
    */
-  private updateAntenna = async (accessToken: AccessToken, exhibitionId: string, antennaToUpdate: RfidAntenna, antennaId: string): Promise<RfidAntenna> => {
+  private updateAntenna = async (
+    accessToken: AccessToken,
+    exhibitionId: string,
+    antennaToUpdate: RfidAntenna,
+    antennaId: string
+  ): Promise<RfidAntenna> => {
     const rfidAntennasApi = Api.getRfidAntennasApi(accessToken);
     const updatedRfidAntenna = rfidAntennasApi.updateRfidAntenna({
       rfidAntennaId: antennaId,
@@ -1907,7 +2047,6 @@ export class FloorPlanScreen extends React.Component<Props, State> {
 
     return updatedRfidAntenna;
   };
-
 }
 
 /**
@@ -1930,8 +2069,7 @@ function mapStateToProps(state: ReduxState) {
  * @param dispatch dispatch method
  */
 function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
-  return {
-  };
+  return {};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(FloorPlanScreen));

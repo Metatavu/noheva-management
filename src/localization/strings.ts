@@ -1,6 +1,6 @@
-import LocalizedStrings, { LocalizedStringsMethods } from "localized-strings";
 import * as en from "./en.json";
 import * as fi from "./fi.json";
+import LocalizedStrings, { LocalizedStringsMethods } from "localized-strings";
 
 /**
  * Interface describing localized strings
@@ -91,12 +91,14 @@ export interface IStrings extends LocalizedStringsMethods {
     errorMessage: string;
     close: string;
     reload: string;
+    layoutFetchNotFound: string;
   };
 
   exhibitionLayouts: {
     editView: {
       xml: string;
       json: string;
+      html: string;
       saveButton: string;
       switchToCodeButton: string;
       switchToVisualButton: string;
@@ -285,6 +287,26 @@ export interface IStrings extends LocalizedStringsMethods {
       delete: {
         deleteTitle: string;
         deleteText: string;
+      };
+    };
+    html: {
+      types: {
+        layout: string;
+        button: string;
+        text: string;
+        image: string;
+        tabs: string;
+        tab: string;
+        video: string;
+      };
+      textTypes: {
+        heading1: string;
+        heading2: string;
+        heading3: string;
+        heading4: string;
+        heading5: string;
+        heading6: string;
+        body: string;
       };
     };
   };
@@ -477,6 +499,72 @@ export interface IStrings extends LocalizedStringsMethods {
     };
   };
 
+  // Translations related to new presentation format layouts
+  layoutEditorV2: {
+    drawerTitle: string;
+    genericProperties: {
+      element: string;
+      elementName: string;
+      proportions: string;
+      width: string;
+      height: string;
+      elevation: string;
+      color: {
+        label: string;
+        button: string;
+      };
+      margin: string;
+      padding: string;
+      tooltips: {
+        top: string;
+        right: string;
+        bottom: string;
+        left: string;
+      };
+    };
+    layoutProperties: {
+      contentEmphasis: string;
+      contentDirection: {
+        label: string;
+        row: string;
+        column: string;
+      };
+      contentGap: string;
+      alignment: {
+        northwest: string;
+        north: string;
+        northeast: string;
+        west: string;
+        center: string;
+        east: string;
+        southwest: string;
+        south: string;
+        southeast: string;
+      };
+    };
+    textProperties: {
+      elementType: string;
+      fontColor: string;
+      defaultResource: string;
+    };
+    buttonProperties: {
+      fontColor: string;
+      defaultResource: string;
+    };
+    imageProperties: {
+      defaultResource: string;
+    };
+    videoProperties: {
+      loop: string;
+      autoPlay: string;
+      controls: string;
+      defaultResource: string;
+    };
+    preview: {
+      showElementBorders: string;
+    };
+  };
+
   layoutEditor: {
     commonComponents: {
       id: string;
@@ -591,6 +679,7 @@ export interface IStrings extends LocalizedStringsMethods {
   };
 
   contentVersion: {
+    title: string;
     add: string;
     addDialogTitle: string;
     addDialogDescription: string;
@@ -628,6 +717,7 @@ export interface IStrings extends LocalizedStringsMethods {
   contentEditor: {
     advanced: string;
     open: string;
+    changeLocale: string;
     preview: {
       resourceModePreview: {
         dynamic: string;
@@ -763,6 +853,7 @@ export interface IStrings extends LocalizedStringsMethods {
     unsaved: string;
     properties: string;
     noSelection: string;
+    notYetImplemented: string;
   };
 
   spaces: {
@@ -933,6 +1024,15 @@ export interface IStrings extends LocalizedStringsMethods {
       materialTabViewDescription: string;
       visitorsViewDescription: string;
       webViewDescription: string;
+    };
+    layoutEditorHtml: {
+      buttonDescription: string;
+      textViewDescription: string;
+      imageViewDescription: string;
+      layoutDescription: string;
+      tabViewDescription: string;
+      tabsViewDescription: string;
+      videoViewDescription: string;
     };
     contentManager: {
       animationInterpolations: {

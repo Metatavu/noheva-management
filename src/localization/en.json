@@ -1,5 +1,4 @@
 {
-
   "header": {
     "navigation": {
       "exhibitionsButton": "Exhibitions",
@@ -99,14 +98,15 @@
     "url": "URL: {0}",
     "errorMessage": "Error message: ",
     "close": "Close",
-    "reload": "Reload"
+    "reload": "Reload",
+    "layoutFetchNotFound": "Page layout not found."
   },
 
   "exhibitionLayouts": {
-
     "editView": {
       "xml": "XML",
       "json": "JSON",
+      "html": "HTML",
       "saveButton": "Save",
       "switchToCodeButton": "Switch to code",
       "switchToVisualButton": "Switch to visual",
@@ -117,7 +117,6 @@
       "deleteConfirmDelete": "Delete",
       "deleteConfirmCancel": "Cancel"
     }
-
   },
 
   "dashboard": {
@@ -137,15 +136,15 @@
     "overview": {
       "onProduction": "On production",
       "lastModified": "Last modified",
+      "visitors": "Visitors",
+      "longTour": "Long tour",
+      "shortTour": "Short tour",
       "statistics": {
         "title": "Statistics",
         "day": "Day",
         "week": "Week",
         "month": "Month",
-        "year": "Year",
-        "visitors": "Visitors",
-        "longTour": "Long tour",
-        "shortTour": "Short tour"
+        "year": "Year"
       }
     },
     "recent": {
@@ -171,7 +170,6 @@
     "floorPlans": {
       "title": "Floor Plans"
     }
-
   },
 
   "exhibition": {
@@ -186,6 +184,7 @@
     "navigation": {
       "search": "Find.."
     },
+    "addLanguageVersion": "New language version",
     "newPage": "New page",
     "addPage": "Add page",
     "addDevice": "Add device",
@@ -208,7 +207,7 @@
         "key": "User value name",
         "when": "When value is: ",
         "addNewWhen": "Add new value",
-        "equal": "Value",
+        "equals": "Value",
         "value": "Resource value",
         "default": "Default value"
       },
@@ -237,8 +236,7 @@
       "pageDeviceLabel": "Page device"
     },
 
-    "deviceSettingsEditor": {
-    },
+    "deviceSettingsEditor": {},
 
     "addDeviceEditor": {
       "title": "Add new device",
@@ -281,6 +279,26 @@
         "deleteTitle": "Delete selected page layout element",
         "deleteText": "Are you sure you want to delete selected element from page layout?"
       }
+    },
+    "html": {
+      "types": {
+        "layout": "FlexContainer",
+        "button": "Button",
+        "text": "Text",
+        "image": "Image",
+        "tabs": "Tabs",
+        "tab": "Tab",
+        "video": "Video"
+      },
+      "textTypes": {
+        "heading1": "Heading 1",
+        "heading2": "Heading 2",
+        "heading3": "Heading 3",
+        "heading4": "Heading 4",
+        "heading5": "Heading 5",
+        "heading6": "Heading 6",
+        "body": "Body"
+      }
     }
   },
 
@@ -308,6 +326,8 @@
   "floorPlan": {
     "title": "Floor plan",
     "listTitle": "Floor plans",
+    "exhibitions": "Exhibitions: ",
+    "exhibitionsDescription": "Select exhibition which areas and spaces you want to edit.",
     "delete": {
       "floor": {
         "deleteTitle": "Delete space",
@@ -327,8 +347,7 @@
       "device": {
         "deleteTitle": "Delete device",
         "deleteText": "Area you sure you want to delete selected device?",
-        "contentTitle": "Device cannot be deleted! Device is in use.",
-        "pages": "Pages: "
+        "contentTitle": "Device cannot be deleted! Device is in use."
       },
       "antenna": {
         "deleteTitle": "Delete antenna",
@@ -355,18 +374,17 @@
       "properties": "Device group properties",
       "copy": "Copy device group"
     },
-    "device" : {
+    "device": {
       "add": "Add new device",
       "new": "New device",
       "edit": "Edit device",
       "move": "Move device",
       "properties": "Device properties"
     },
-    "antenna" : {
+    "antenna": {
       "add": "Add new antenna",
       "new": "New antenna",
       "newReaderId": "123456",
-      "delete": "Delete antenna",
       "edit": "Edit antenna",
       "move": "Move antenna",
       "properties": "Antenna properties"
@@ -377,7 +395,6 @@
       "upload": "Upload image"
     },
     "properties": {
-
       "title": "Properties",
       "imageHeight": "Image Height",
       "imageWidth": "Image Width",
@@ -427,7 +444,7 @@
         "xdpi": "Pixels per inch in X-axis",
         "ydpi": "Pixels per inch in y-axis"
       },
-      "dimensions" : {
+      "dimensions": {
         "physicalSize": "Device physical size",
         "width": "Width",
         "height": "Height",
@@ -468,11 +485,74 @@
 
   "map": {
     "properties": {
-      "roomName" : "Room name",
-      "dialogTitle" : "Type room name"
+      "roomName": "Room name",
+      "dialogTitle": "Type room name"
     }
   },
-
+  "layoutEditorV2": {
+    "drawerTitle": "Element settings",
+    "genericProperties": {
+      "element": "Element",
+      "elementName": "Element name",
+      "proportions": "Proportions",
+      "width": "Width",
+      "height": "Height",
+      "elevation": "Elevation",
+      "color": {
+        "label": "Background color",
+        "button": "Choose color"
+      },
+      "margin": "Margin",
+      "padding": "Padding",
+      "tooltips": {
+        "top": "Top",
+        "right": "Right",
+        "bottom": "Bottom",
+        "left": "Left"
+      }
+    },
+    "layoutProperties": {
+      "contentEmphasis": "Content emphasis",
+      "contentDirection": {
+        "label": "Content direction",
+        "row": "Horizontal",
+        "column": "Vertical"
+      },
+      "contentGap": "Content gap (px)",
+      "alignment": {
+        "northwest": "Top left",
+        "north": "Top",
+        "northeast": "Top right",
+        "west": "Left",
+        "center": "Center",
+        "east": "Right",
+        "southwest": "Bottom left",
+        "south": "Bottom",
+        "southeast": "Bottom right"
+      }
+    },
+    "textProperties": {
+      "elementType": "Text element type",
+      "fontColor": "Font color",
+      "defaultResource": "Default text"
+    },
+    "buttonProperties": {
+      "fontColor": "Font color",
+      "defaultResource": "Default text"
+    },
+    "imageProperties": {
+      "defaultResource": "Default image"
+    },
+    "videoProperties": {
+      "loop": "Loop",
+      "autoPlay": "Automatic playback",
+      "controls": "Show controls",
+      "defaultResource": "Default video"
+    },
+    "preview": {
+      "showElementBorders": "Show element borders"
+    }
+  },
   "layoutEditor": {
     "commonComponents": {
       "id": "ID",
@@ -587,6 +667,7 @@
   },
 
   "contentVersion": {
+    "title": "Contents",
     "add": "Add new...",
     "addDialogTitle": "New set of materials",
     "addDialogDescription": "Give a name for the new set of exhibition content",
@@ -603,12 +684,15 @@
     "nameAlreadyTaken": "Name is already in use in existing set of content",
     "nameIsMandatory": "Name is mandatory",
     "contentIsActiveWhen": "Content is active when user variable:",
+    "userVariable": "User variable",
     "equals": "equals"
   },
 
   "groupContentVersion": {
+    "title": "Contents",
     "add": "New device group content version",
     "addDialogTitle": "Add device group content version",
+    "addDialogDescription": "Add device group content version",
     "name": "Name",
     "deviceGroup": "Device Group ID",
     "status": "Status",
@@ -621,6 +705,7 @@
   "contentEditor": {
     "advanced": "Advanced features",
     "open": "Manage content",
+    "changeLocale": "Change language",
     "preview": {
       "resourceModePreview": {
         "dynamic": "Dynamic resource",
@@ -647,7 +732,7 @@
       "resources": "Resources",
       "resource": "Resource",
       "resourceProperties": "Resource properties",
-      "transitions" :{
+      "transitions": {
         "title": "Page change effects",
         "enterTransitions": "Enter effect",
         "enterTransitionsDescription": "Transition effect when entering this page.",
@@ -657,8 +742,8 @@
         "editTransition": "Edit effect",
         "removeTransition": "Remove effect"
       },
-
       "eventTriggers": {
+        "eventName": "Event name",
         "noTriggers": "No events",
         "noWebViews": "No web views in page. In order to use this action, choose a layout that has a web view for the page.",
         "add": "Add action",
@@ -697,7 +782,7 @@
         "selectLanguage": "Select language"
       },
 
-      "tabs" : {
+      "tabs": {
         "title": "Tabs",
         "noTabs": "No tabs",
         "add": "Add tab",
@@ -706,7 +791,7 @@
         "resources": "Resources",
         "edit": "Edit content",
         "contentType": "Select tab content type",
-        "textContentHelp":  "Add a single text content"
+        "textContentHelp": "Add a single text content"
       },
 
       "dialog": {
@@ -718,7 +803,7 @@
         "viewPairs": "Element pairs",
         "addViewPair": "Add element pair",
         "startOfTransition": "From element",
-        "endOfTransition" : "To element"
+        "endOfTransition": "To element"
       }
     },
     "delete": {
@@ -750,7 +835,8 @@
     "unsaved": "You have unsaved changes, are you sure you want to leave?",
     "properties": "Properties",
     "noSelection": "No selection",
-    "clear": "Clear"
+    "clear": "Clear",
+    "notYetImplemented": "Not yet implemented"
   },
 
   "spaces": {
@@ -764,7 +850,7 @@
     "selectLanguageTitle": "Select exhibition language",
     "selectLanguage": "Select language",
     "checkEmail": "Give email address",
-    "registerTag" : "Register RFID-tag",
+    "registerTag": "Register RFID-tag",
     "visitor": {
       "visitorInfoFormTitle": "Visitor information",
       "tag": "RFID-tag",
@@ -821,6 +907,10 @@
     "confirmEmptyText": "Variable will be removed from session variables list.",
     "errorMessages": {
       "sessionNotFound": "Visitor session not found"
+    },
+    "delete": {
+      "deleteTitle": "Delete",
+      "deleteText": "Delete"
     }
   },
 
@@ -906,6 +996,15 @@
       "visitorsViewDescription": "Ryhmämuodostuspisteen kävijöitä esittävä lista.",
       "webViewDescription": "Internetsisältö. Tällä voidaan esittää esim. haluttu internet-sivu tai jokin muu internet-sisältö, mikä ei ole Noheva Alustan sisällönhallinnan kautta hallittavissa."
     },
+    "layoutEditorHtml": {
+      "buttonDescription": "Button element",
+      "textViewDescription": "Text element",
+      "imageViewDescription": "Image element",
+      "layoutDescription": "Layout element",
+      "tabViewDescription": "Tab element",
+      "tabsViewDescription": "Tabs element",
+      "videoViewDescription": "Video element"
+    },
     "contentManager": {
       "animationInterpolations": {
         "accelerateDecelerate": "Alkuun kiihtyvä ja loppuun hidastuva siirtymä",
@@ -923,10 +1022,17 @@
 
   "helpDialogs": {
     "contentEditor": {
+      "resources": {
+        "staticDescription": "Static image, video or text depending on the element type.",
+        "dynamicDescription": "Dynaamisessa resurssissa voidaan esittää kuvaa, tekstiä ja videota perustuen museokävijän aikaisempiin valintoihin. Nimen kohdalle asetetaan avain ja arvojen kohdalle vaihtoehdot. Esimerkiksi avain on 'kotielain' ja vaihtoehtoina 'kissa' tai 'koira'. Jos käyttäjä on valinnut aikaisemmin 'kissa' näytetään tässä kissan kuvaa, mikä on valittu avaimen kohdalle resurssin arvoksi.",
+        "programmedDescrption": "Huom! Edistynyt toiminto. Tarvitaan vain erityistilanteissa."
+      },
       "events": {
-        "staticDescription": "Kiinteä kuva, video, teksti riippuen elementin tyypistä.",
-        "dynamicDescription": "Resurssin, esimerkiksi kuvan voi määrittää käyttäjän aikaisemman valinnan mukaan. Esimerkiksi jos käyttäjälle on annettu aikaisemmin valinta 'Kissa vai koira'? ja käyttäjä valitsee 'Kissa' voidaan tähän liittää kissan kuva ja päinvastoin.",
-        "programmedDescrption": "Huom! Edistynyt toiminto."
+        "nameDescription": "Syötä tapahtumaa kuvaava nimi, esim. 'Sivunvaihto'",
+        "physicalButtonDownDescription": "Valitse tämä tapahtuma, jos tilassa on fyysinen painike, jolla halutaan aloittaa esitys. Fyysinen painike kytketään johonkin näppäimistön näppäimeen, esimerkiksi F1 -näppäimeen.",
+        "physicalButtonUpDescription": "Valitse tämä tapahtuma jos tilassa olevasta fyysisestä painikkeesta on tarkoitus tapahtua jotain, kun fyysinen painike vapautetaan. Esimerkiksi sivun vaihdon pysäyttäminen tms. toiminto.",
+        "deviceGroupEventDescription": "Syötä tähän kenttään laiteryhmässä seurattavan tapahtuman nimi",
+        "delayEventDescription": "Tapahtuma mikä tapahtuu viiveen jälkeen. Esimerkiksi automaattinen sivunvaihto voi tapahtua halutun viiveen jälkeen. Viive annetaan millisekunneissa. Esimerkiksi 10 sekunnin viive on 10000 millisekuntia."
       },
       "variables": {
         "nameDescription": "Syötä tähän muuttuja nimi, minkä haluat liittää tähän toimintoon.",
@@ -938,6 +1044,7 @@
       }
     },
     "floorPlanEditor": {
+      "groupAssemblyPointDescription": "Voit määrittää, onko tässä laiteryhmässä ryhmänmuodostuspiste. Erona ryhmänmuodostuspisteellä ja normaalipisteellä on, että ryhmänmuodostuspiste ei kirjaa vierailijoita sisälle, vaan odottaa vierailijoiden muodostavan ryhmänsä valmiiksi. Normaalisti piste kirjaa kävijän ja aloittaa esityksen.",
       "visitorSessionTimeoutDescription": "Viive millisekunneissa, jonka jälkeen laiteryhmästä poistunut käyttäjä kirjataan ulos laiteryhmästä.",
       "visitorSessionTimeoutAdditionalDescription": "Viive auttaa etenkin sellaisissa laiteryhmissä, missä antennien signaali häiriintyy usein ja aiheuttaa aiheettomia uloskirjautumisia. Sopiva viive löytyy testaamalla. Vertailukohtana yksi silmänräpäys kestää 100 - 150 millisekuntia.",
       "visitorSessionStartThresholdDescription": "Signaalin voimakkuus prosentteina, milloin vierailija kirjataan saapuneeksi laiteryhmään ja sisällön näyttäminen käynnistyy.",
@@ -945,7 +1052,7 @@
       "antennaReaderIdDescription": "Antenniyksikön tunnus (ID), mihin tämä antenni on kytketty.",
       "antennaPortNumberDescription": "Antenniyksikön portti, mihin antenni on kytketty. Antenniin kannattaa kirjata tämä portin numero helpottamaan vianetsintää.",
       "indexPageTimeoutDescription": "Passiivisen vierailijan etuvisulle palautuksen viive.",
-      "indexPageTimeoutAdditionalDescription": "Vierailija palautetaan takaisin etusivulle kun tähän kenttään määritelty millisekuntimäärä on kulunut. Mikäli kenttään ei ole syötety arvoa, toiminto ei ole päällä." 
+      "indexPageTimeoutAdditionalDescription": "Vierailija palautetaan takaisin etusivulle kun tähän kenttään määritelty millisekuntimäärä on kulunut. Mikäli kenttään ei ole syötety arvoa, toiminto ei ole päällä."
     },
     "layoutEditor": {
       "commonProperties": {

@@ -1,13 +1,28 @@
 import { Config } from "../constants/configuration";
-// eslint-disable-next-line max-len
-import { Configuration, ExhibitionsApi, ContentVersionsApi, ExhibitionRoomsApi, PageLayoutsApi, ExhibitionPagesApi, DeviceModelsApi, ExhibitionDevicesApi, ExhibitionDeviceGroupsApi, ExhibitionFloorsApi, GroupContentVersionsApi, RfidAntennasApi, StoredFilesApi, SubLayoutsApi, VisitorsApi, VisitorVariablesApi, VisitorSessionsApi } from "../generated/client";
+import {
+  Configuration,
+  ContentVersionsApi,
+  DeviceModelsApi,
+  ExhibitionDeviceGroupsApi,
+  ExhibitionDevicesApi,
+  ExhibitionFloorsApi,
+  ExhibitionPagesApi,
+  ExhibitionRoomsApi,
+  ExhibitionsApi,
+  PageLayoutsApi,
+  RfidAntennasApi,
+  StoredFilesApi,
+  SubLayoutsApi,
+  VisitorSessionsApi,
+  VisitorVariablesApi,
+  VisitorsApi
+} from "../generated/client";
 import { AccessToken } from "../types";
 
 /**
  * Utility class for loading api with predefined configuration
  */
 export default class Api {
-
   /**
    * Gets initialized exhibitions api
    *
@@ -24,15 +39,6 @@ export default class Api {
    */
   public static getContentVersionsApi(accessToken: AccessToken) {
     return new ContentVersionsApi(Api.getConfiguration(accessToken));
-  }
-
-  /**
-   * Gets initialized exhibition group content versions api
-   *
-   * @param token access token
-   */
-  public static getGroupContentVersionsApi(accessToken: AccessToken) {
-    return new GroupContentVersionsApi(Api.getConfiguration(accessToken));
   }
 
   /**
@@ -145,7 +151,7 @@ export default class Api {
 
   /**
    * Gets initialized visitor sessions api
-   * 
+   *
    * @param accessToken access token
    */
   public static getVisitorSessionsApi(accessToken: AccessToken) {
@@ -163,5 +169,4 @@ export default class Api {
       accessToken: accessToken.token
     });
   }
-
 }

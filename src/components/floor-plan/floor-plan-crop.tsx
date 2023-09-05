@@ -1,9 +1,8 @@
-import * as React from "react";
-
-import Cropper from 'react-cropper';
-import * as cropperjs from 'cropperjs';
-import 'cropperjs/dist/cropper.css';
 import PanZoom from "../generic/pan-zoom";
+import * as cropperjs from "cropperjs";
+import "cropperjs/dist/cropper.css";
+import * as React from "react";
+import Cropper, { ReactCropperElement } from "react-cropper";
 
 /**
  * Component props
@@ -28,8 +27,7 @@ interface State {
  * Component for floor plan crop
  */
 export default class FloorPlanCrop extends React.Component<Props, State> {
-
-  private cropperRef = React.createRef<Cropper>();
+  private cropperRef = React.createRef<ReactCropperElement>();
 
   /**
    * Constructor
@@ -52,14 +50,19 @@ export default class FloorPlanCrop extends React.Component<Props, State> {
 
     return (
       <div style={{ width: "100%" }}>
-        <PanZoom minScale={ 0.1 } fitContent={ true } contentWidth={ imageWidth } contentHeight={ imageHeight }>
+        <PanZoom
+          minScale={0.1}
+          fitContent={true}
+          contentWidth={imageWidth}
+          contentHeight={imageHeight}
+        >
           <Cropper
-            ref={ this.cropperRef }
-            src={ this.props.imageDataUrl }
+            ref={this.cropperRef}
+            src={this.props.imageDataUrl}
             style={{ height: imageHeight, width: imageWidth }}
-            crop={ this.onCrop }
-            cropend={ this.onCropEnd }
-            zoomable={ false }
+            crop={this.onCrop}
+            cropend={this.onCropEnd}
+            zoomable={false}
           />
         </PanZoom>
       </div>
@@ -73,20 +76,23 @@ export default class FloorPlanCrop extends React.Component<Props, State> {
    */
   private onCrop = (event: CustomEvent<any>) => {
     this.props.onDetailsUpdate(event.detail);
-  }
+  };
 
   /**
    * Event handler for crop component crop end
    */
   private onCropEnd = () => {
-    const cropper = this.cropperRef.current;
+    const cropper = this.cropperRef.current?.cropper;
     if (cropper) {
-      cropper.getCroppedCanvas().toBlob((data: Blob | null) => {
-        if (data) {
-          this.props.onDataUpdate(data);
-        }
-      }, "image/png", 1);
+      cropper.getCroppedCanvas().toBlob(
+        (data: Blob | null) => {
+          if (data) {
+            this.props.onDataUpdate(data);
+          }
+        },
+        "image/png",
+        1
+      );
     }
-  }
-
+  };
 }

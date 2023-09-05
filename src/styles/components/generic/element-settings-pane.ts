@@ -1,5 +1,4 @@
-import createStyles from '@mui/styles/createStyles';
-import theme from "../../theme";
+import createStyles from "@mui/styles/createStyles";
 
 export default createStyles({
   root: {
@@ -49,9 +48,8 @@ export default createStyles({
     }
   },
   content: {
-    padding: theme.spacing(2),
     overflowY: "auto",
     maxHeight: "100%",
-    height: "100%",
-  },
+    height: "100%"
+  }
 });

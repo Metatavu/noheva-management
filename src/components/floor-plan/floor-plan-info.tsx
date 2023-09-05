@@ -1,29 +1,26 @@
-import * as React from "react";
-
-import { connect } from "react-redux";
-import { ReduxState } from "../../store";
-
-import styles from "../../styles/exhibition-view";
 import {
-  TextField,
-  MenuItem,
-  Select,
-  FormControlLabel,
-  Switch,
-  InputLabel,
-  Box,
-  Typography,
-} from "@mui/material";
-import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
-import { KeycloakInstance } from "keycloak-js";
-// eslint-disable-next-line max-len
-import { ScreenOrientation, DeviceModel, ExhibitionFloor, ExhibitionRoom, ExhibitionDeviceGroup, ExhibitionDevice, RfidAntenna, DeviceImageLoadStrategy } from "../../generated/client";
-import { AccessToken } from '../../types';
+  DeviceImageLoadStrategy,
+  DeviceModel,
+  ExhibitionDevice,
+  ExhibitionDeviceGroup,
+  ExhibitionFloor,
+  ExhibitionRoom,
+  RfidAntenna,
+  ScreenOrientation
+} from "../../generated/client";
 import strings from "../../localization/strings";
+import { ReduxState } from "../../store";
+import styles from "../../styles/exhibition-view";
 import theme from "../../styles/theme";
-import { SketchPicker, ColorResult } from "react-color";
+import { AccessToken } from "../../types";
 import HelpDialog from "../generic/help-dialog";
+import { Box, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import withStyles from "@mui/styles/withStyles";
+import { KeycloakInstance } from "keycloak-js";
+import * as React from "react";
+import { ColorResult, SketchPicker } from "react-color";
+import { connect } from "react-redux";
 
 /**
  * Component props
@@ -42,8 +39,12 @@ interface Props extends WithStyles<typeof styles> {
   onChangeRoomProperties?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeRoomColor?: (color: ColorResult) => void;
   onChangeDeviceGroupProperties?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onChangeDeviceProperties?: (event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>) => void;
-  onChangeAntennaProperties?: (event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>) => void;
+  onChangeDeviceProperties?: (
+    event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>
+  ) => void;
+  onChangeAntennaProperties?: (
+    event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>
+  ) => void;
 }
 
 /**
@@ -58,7 +59,6 @@ interface State {
  * Component for group content version info view
  */
 class FloorPlanInfo extends React.Component<Props, State> {
-
   /**
    * Generic text filed properties
    */
@@ -91,19 +91,15 @@ class FloorPlanInfo extends React.Component<Props, State> {
    * Component render method
    */
   public render = () => {
-
-    return (
-      <>
-        { this.renderProperties() }
-      </>
-    );
-  }
+    return <div style={{ padding: theme.spacing(2) }}>{this.renderProperties()}</div>;
+  };
 
   /**
    * Renders properties
    */
   private renderProperties = () => {
-    const { selectedFloor, selectedRoom, selectedDeviceGroup, selectedDevice, selectedAntenna } = this.props;
+    const { selectedFloor, selectedRoom, selectedDeviceGroup, selectedDevice, selectedAntenna } =
+      this.props;
 
     if (selectedAntenna) {
       return this.renderAntenna(selectedAntenna);
@@ -126,7 +122,7 @@ class FloorPlanInfo extends React.Component<Props, State> {
     }
 
     return null;
-  }
+  };
 
   /**
    * Render antenna settings
@@ -140,102 +136,86 @@ class FloorPlanInfo extends React.Component<Props, State> {
     return (
       <>
         <TextField
-          { ...this.textFieldGenericProps }
-          label={ strings.generic.name }
+          {...this.textFieldGenericProps}
+          label={strings.generic.name}
           name="name"
-          value={ selectedAntenna.name }
-          onChange={ onChangeAntennaProperties }
+          value={selectedAntenna.name}
+          onChange={onChangeAntennaProperties}
         />
-        <Box
-          display="flex"
-          mt={ 2 }
-          alignItems="center"
-        >
+        <Box display="flex" mt={2} alignItems="center">
           <TextField
             type="text"
-            label={ strings.floorPlan.properties.readerId }
+            label={strings.floorPlan.properties.readerId}
             name="readerId"
-            value={ selectedAntenna.readerId }
-            onChange={ onChangeAntennaProperties }
+            value={selectedAntenna.readerId}
+            onChange={onChangeAntennaProperties}
           />
-          <HelpDialog title={ strings.floorPlan.properties.readerId }>
+          <HelpDialog title={strings.floorPlan.properties.readerId}>
             <Typography>
-              { strings.helpDialogs.floorPlanEditor.antennaReaderIdDescription }
+              {strings.helpDialogs.floorPlanEditor.antennaReaderIdDescription}
             </Typography>
           </HelpDialog>
         </Box>
-        <Box
-          display="flex"
-          mt={ 2 }
-          alignItems="center"
-        >
+        <Box display="flex" mt={2} alignItems="center">
           <TextField
             type="text"
-            label={ strings.floorPlan.properties.antennaNumber }
+            label={strings.floorPlan.properties.antennaNumber}
             name="antennaNumber"
-            value={ selectedAntenna.antennaNumber }
-            onChange={ onChangeAntennaProperties }
+            value={selectedAntenna.antennaNumber}
+            onChange={onChangeAntennaProperties}
           />
-          <HelpDialog title={ strings.floorPlan.properties.antennaNumber }>
+          <HelpDialog title={strings.floorPlan.properties.antennaNumber}>
             <Typography>
-              { strings.helpDialogs.floorPlanEditor.antennaPortNumberDescription }
+              {strings.helpDialogs.floorPlanEditor.antennaPortNumberDescription}
             </Typography>
           </HelpDialog>
         </Box>
 
         <InputLabel id="groupId-label" style={{ marginTop: theme.spacing(2) }}>
-          { strings.floorPlan.properties.deviceGroup }
+          {strings.floorPlan.properties.deviceGroup}
         </InputLabel>
         <Select
-          { ...this.selectFieldGenericProps }
+          {...this.selectFieldGenericProps}
           labelId="groupId-label"
           name="groupId"
-          value={ selectedAntenna.groupId || "" }
-          onChange={ onChangeAntennaProperties }
+          value={selectedAntenna.groupId || ""}
+          onChange={onChangeAntennaProperties}
         >
-          { deviceGroupMenuItems }
+          {deviceGroupMenuItems}
         </Select>
 
-        <Box
-          display="flex"
-          mt={ 2 }
-          alignItems="center"
-        >
+        <Box display="flex" mt={2} alignItems="center">
           <TextField
             type="number"
-            label={ strings.floorPlan.properties.visitorSessionStartThreshold }
+            label={strings.floorPlan.properties.visitorSessionStartThreshold}
             name="visitorSessionStartThreshold"
-            value={ selectedAntenna.visitorSessionStartThreshold }
-            onChange={ onChangeAntennaProperties }
+            value={selectedAntenna.visitorSessionStartThreshold}
+            onChange={onChangeAntennaProperties}
           />
-          <HelpDialog title={ strings.floorPlan.properties.visitorSessionStartThreshold }>
+          <HelpDialog title={strings.floorPlan.properties.visitorSessionStartThreshold}>
             <Typography>
-              { strings.helpDialogs.floorPlanEditor.visitorSessionStartThresholdDescription }
+              {strings.helpDialogs.floorPlanEditor.visitorSessionStartThresholdDescription}
             </Typography>
           </HelpDialog>
         </Box>
 
-        <Box
-          display="flex"
-          mt={ 2 }
-          alignItems="center"
-        >
+        <Box display="flex" mt={2} alignItems="center">
           <TextField
             type="number"
-            label={ strings.floorPlan.properties.visitorSessionEndThreshold }
+            label={strings.floorPlan.properties.visitorSessionEndThreshold}
             name="visitorSessionEndThreshold"
-            value={ selectedAntenna.visitorSessionEndThreshold }
-            onChange={ onChangeAntennaProperties }
+            value={selectedAntenna.visitorSessionEndThreshold}
+            onChange={onChangeAntennaProperties}
           />
-          <HelpDialog title={ strings.floorPlan.properties.visitorSessionEndThreshold }>
+          <HelpDialog title={strings.floorPlan.properties.visitorSessionEndThreshold}>
             <Typography>
-              { strings.helpDialogs.floorPlanEditor.visitorSessionEndThresholdDescription }
+              {strings.helpDialogs.floorPlanEditor.visitorSessionEndThresholdDescription}
             </Typography>
           </HelpDialog>
         </Box>
       </>
     );
-  }
+  };
 
   /**
    * Render device settings
@@ -248,60 +228,69 @@ class FloorPlanInfo extends React.Component<Props, State> {
     return (
       <>
         <TextField
-          { ...this.textFieldGenericProps }
-          label={ strings.generic.name }
+          {...this.textFieldGenericProps}
+          label={strings.generic.name}
           name="name"
-          value={ selectedDevice.name }
-          onChange={ onChangeDeviceProperties }
+          fullWidth
+          value={selectedDevice.name}
+          onChange={onChangeDeviceProperties}
         />
-        <InputLabel id="modelId-label" style={{ marginTop: theme.spacing(2) }}>
-          { strings.floorPlan.properties.model }
-        </InputLabel>
-        <Select
-          { ...this.selectFieldGenericProps }
-          label={ strings.device.dialog.model }
+        <TextField
+          {...this.selectFieldGenericProps}
+          select
+          fullWidth
+          label={strings.device.dialog.model}
           name="modelId"
-          value={ selectedDevice.modelId || "" }
-          onChange={ onChangeDeviceProperties }
+          value={selectedDevice.modelId || ""}
+          onChange={onChangeDeviceProperties}
         >
-          { deviceModels.map(model =>
-            <MenuItem key={ model.id } value={ model.id }>
-              { `${model.manufacturer} ${model.model}` }
+          {deviceModels.map((model) => (
+            <MenuItem key={model.id} value={model.id}>
+              {`${model.manufacturer} ${model.model}`}
             </MenuItem>
-          )}
-        </Select>
-        <InputLabel id="screenOrientation-label" style={{ marginTop: theme.spacing(2) }}>
-          { strings.floorPlan.properties.screenOrientation }
-        </InputLabel>
-        <Select
-          { ...this.selectFieldGenericProps }
-          labelId="screenOrientation-label"
+          ))}
+        </TextField>
+        <TextField
+          {...this.selectFieldGenericProps}
           name="screenOrientation"
-          value={ selectedDevice.screenOrientation || "" }
-          onChange={ onChangeDeviceProperties }
+          label={strings.floorPlan.properties.screenOrientation}
+          select
+          fullWidth
+          value={selectedDevice.screenOrientation || ""}
+          onChange={onChangeDeviceProperties}
         >
-          <MenuItem key={ "landscape" } value={ ScreenOrientation.Landscape }>{ strings.floorPlan.properties.landscape }</MenuItem>
-          <MenuItem key={ "portrait" } value={ ScreenOrientation.Portrait }>{ strings.floorPlan.properties.portrait }</MenuItem>
-          <MenuItem key={ "forcedPortrait" } value={ ScreenOrientation.ForcedPortrait }>{ strings.floorPlan.properties.forcedPortrait }</MenuItem>
-        </Select>
-
-        <InputLabel id="imageLoadStrategy-label" style={{ marginTop: theme.spacing(2) }}>
-          { strings.floorPlan.properties.imageLoadStrategy }
-        </InputLabel>
-        <Select
-          { ...this.selectFieldGenericProps }
-          labelId="imageLoadStrategy-label"
+          <MenuItem key={"landscape"} value={ScreenOrientation.Landscape}>
+            {strings.floorPlan.properties.landscape}
+          </MenuItem>
+          <MenuItem key={"portrait"} value={ScreenOrientation.Portrait}>
+            {strings.floorPlan.properties.portrait}
+          </MenuItem>
+          <MenuItem key={"forcedPortrait"} value={ScreenOrientation.ForcedPortrait}>
+            {strings.floorPlan.properties.forcedPortrait}
+          </MenuItem>
+        </TextField>
+        <TextField
+          {...this.selectFieldGenericProps}
+          label={strings.floorPlan.properties.imageLoadStrategy}
+          select
+          fullWidth
           name="imageLoadStrategy"
-          value={ selectedDevice.imageLoadStrategy || "" }
-          onChange={ onChangeDeviceProperties }
+          value={selectedDevice.imageLoadStrategy || ""}
+          onChange={onChangeDeviceProperties}
         >
-          <MenuItem key={ "memory" } value={ DeviceImageLoadStrategy.MEMORY }>{ strings.floorPlan.properties.imageLoadStrategyMemory }</MenuItem>
-          <MenuItem key={ "disk" } value={ DeviceImageLoadStrategy.DISK }>{ strings.floorPlan.properties.imageLoadStrategyDisk }</MenuItem>
-          <MenuItem key={ "diskraw" } value={ DeviceImageLoadStrategy.DISKRAW }>{ strings.floorPlan.properties.imageLoadStrategyDiskRaw }</MenuItem>
-        </Select>
+          <MenuItem key={"memory"} value={DeviceImageLoadStrategy.Memory}>
+            {strings.floorPlan.properties.imageLoadStrategyMemory}
+          </MenuItem>
+          <MenuItem key={"disk"} value={DeviceImageLoadStrategy.Disk}>
+            {strings.floorPlan.properties.imageLoadStrategyDisk}
+          </MenuItem>
+          <MenuItem key={"diskraw"} value={DeviceImageLoadStrategy.DiskRaw}>
+            {strings.floorPlan.properties.imageLoadStrategyDiskRaw}
+          </MenuItem>
+        </TextField>
       </>
     );
-  }
+  };
 
   /**
    * Render device group settings
@@ -314,79 +303,34 @@ class FloorPlanInfo extends React.Component<Props, State> {
     return (
       <>
         <TextField
-          { ...this.textFieldGenericProps }
-          label={ strings.generic.name }
+          {...this.textFieldGenericProps}
+          label={strings.generic.name}
           name="name"
-          value={ selectedDeviceGroup.name }
-          onChange={ onChangeDeviceGroupProperties }
+          fullWidth
+          value={selectedDeviceGroup.name}
+          onChange={onChangeDeviceGroupProperties}
         />
-        <Box
-          display="flex"
-          mt={ 2 }
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <FormControlLabel
-            label={ strings.floorPlan.properties.allowVisitorSessionCreation }
-            control={
-              <Switch
-                checked={ selectedDeviceGroup.allowVisitorSessionCreation }
-                onChange={ onChangeDeviceGroupProperties }
-                color="primary"
-                name="allowVisitorSessionCreation"
-                inputProps={{ 'aria-label': 'primary checkbox' }}
-              />
-            }
-          />
-          <HelpDialog title={ strings.floorPlan.properties.allowVisitorSessionCreation }>
-            <Typography>{ strings.helpDialogs.floorPlanEditor.groupAssemblyPointDescription }</Typography>
-          </HelpDialog>
-        </Box>
-        <Box
-          display="flex"
-          mt={ 2 }
-          alignItems="center"
-        >
+        <Box display="flex" mt={2} alignItems="center">
           <TextField
             type="text"
-            label={ strings.floorPlan.properties.visitorSessionEndTimeout }
-            name="visitorSessionEndTimeout"
-            value={ selectedDeviceGroup.visitorSessionEndTimeout }
-            onChange={ onChangeDeviceGroupProperties }
-          />
-          <HelpDialog title="">
-            <Typography>
-              { strings.helpDialogs.floorPlanEditor.visitorSessionTimeoutDescription }
-            </Typography>
-            <Typography variant="h6">
-              { strings.helpDialogs.floorPlanEditor.visitorSessionTimeoutAdditionalDescription }
-            </Typography>
-          </HelpDialog>
-        </Box>
-        <Box
-          display="flex"
-          mt={ 2 }
-          alignItems="center"
-        >
-          <TextField
-            type="text"
-            label={ strings.floorPlan.properties.indexPageTimeout }
+            fullWidth
+            label={strings.floorPlan.properties.indexPageTimeout}
             name="indexPageTimeout"
-            value={ selectedDeviceGroup.indexPageTimeout }
-            onChange={ onChangeDeviceGroupProperties }
+            value={selectedDeviceGroup.indexPageTimeout}
+            onChange={onChangeDeviceGroupProperties}
           />
           <HelpDialog title="">
             <Typography>
-              { strings.helpDialogs.floorPlanEditor.indexPageTimeoutDescription }
+              {strings.helpDialogs.floorPlanEditor.indexPageTimeoutDescription}
             </Typography>
             <Typography variant="h6">
-              { strings.helpDialogs.floorPlanEditor.indexPageTimeoutAdditionalDescription }
+              {strings.helpDialogs.floorPlanEditor.indexPageTimeoutAdditionalDescription}
             </Typography>
           </HelpDialog>
         </Box>
       </>
     );
-  }
+  };
 
   /**
    * Render room settings
@@ -400,31 +344,29 @@ class FloorPlanInfo extends React.Component<Props, State> {
     return (
       <>
         <TextField
-          { ...this.textFieldGenericProps }
-          label={ strings.generic.name }
+          {...this.textFieldGenericProps}
+          label={strings.generic.name}
           name="name"
-          value={ selectedRoom.name }
-          onChange={ onChangeRoomProperties }
+          fullWidth
+          value={selectedRoom.name}
+          onChange={onChangeRoomProperties}
         />
 
-        <InputLabel id="screenOrientation-label" style={{ marginTop: theme.spacing(2) }}>
-          { strings.floorPlan.room.color }
+        <InputLabel style={{ marginTop: theme.spacing(2) }}>
+          {strings.floorPlan.room.color}
         </InputLabel>
 
-        <div
-          className={ classes.color }
+        <Box
+          className={classes.color}
           style={{ backgroundColor: selectedRoom.color }}
-          onClick={ this.onColorBoxClick }
+          onClick={this.onColorBoxClick}
         />
-        { showColorPicker &&
-          <SketchPicker
-            color={ selectedRoom.color }
-            onChangeComplete={ onChangeRoomColor }
-          />
-        }
+        {showColorPicker && (
+          <SketchPicker color={selectedRoom.color} onChangeComplete={onChangeRoomColor} />
+        )}
       </>
     );
-  }
+  };
 
   /**
    * Render floor settings
@@ -436,14 +378,15 @@ class FloorPlanInfo extends React.Component<Props, State> {
 
     return (
       <TextField
-        { ...this.textFieldGenericProps }
+        {...this.textFieldGenericProps}
         name="name"
-        label={ strings.generic.name }
-        value={ selectedFloor.name }
-        onChange={ onChangeFloorProperties }
+        fullWidth
+        label={strings.generic.name}
+        value={selectedFloor.name}
+        onChange={onChangeFloorProperties}
       />
     );
-  }
+  };
 
   /**
    * Get device group select items
@@ -452,12 +395,16 @@ class FloorPlanInfo extends React.Component<Props, State> {
     const { deviceGroups } = this.props;
 
     if (!deviceGroups) {
-      return (null);
+      return null;
     }
-    return deviceGroups.map(group => {
-      return <MenuItem key={ group.id } value={ group.id }>{ group.name }</MenuItem>
+    return deviceGroups.map((group) => {
+      return (
+        <MenuItem key={group.id} value={group.id}>
+          {group.name}
+        </MenuItem>
+      );
     });
-  }
+  };
 
   /**
    * On color box click handler
@@ -466,7 +413,7 @@ class FloorPlanInfo extends React.Component<Props, State> {
     this.setState({
       showColorPicker: !this.state.showColorPicker
     });
-  }
+  };
 }
 
 /**
@@ -479,4 +426,4 @@ const mapStateToProps = (state: ReduxState) => ({
   accessToken: state.auth.accessToken as AccessToken
 });
 
-export default connect(mapStateToProps)(withStyles(styles)(FloorPlanInfo));
+export default withStyles(styles)(connect(mapStateToProps)(FloorPlanInfo));

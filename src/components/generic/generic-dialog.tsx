@@ -1,6 +1,5 @@
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import * as React from "react";
-
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 
 /**
  * Interface representing component properties
@@ -26,24 +25,17 @@ interface Props {
   onConfirm: () => void | Promise<void>;
   open: boolean;
   error: boolean;
-
   fullScreen?: boolean;
   fullWidth?: boolean;
   disableEnforceFocus?: boolean;
   children: React.ReactNode;
-}
-
-/**
- * Interface representing component state
- */
-interface State {
+  confirmDisabled?: boolean;
 }
 
 /**
  * React component displaying confirm dialogs
  */
-export default class GenericDialog extends React.Component<Props, State> {
-
+export default class GenericDialog extends React.Component<Props, {}> {
   /**
    * Constructor
    *
@@ -51,7 +43,7 @@ export default class GenericDialog extends React.Component<Props, State> {
    */
   constructor(props: Props) {
     super(props);
-    this.state = { };
+    this.state = {};
   }
 
   /**
@@ -70,41 +62,38 @@ export default class GenericDialog extends React.Component<Props, State> {
       fullScreen,
       fullWidth,
       disableEnforceFocus,
-      children
+      children,
+      confirmDisabled
     } = this.props;
 
     return (
       <Dialog
-        disableEnforceFocus={ disableEnforceFocus }
-        open={ open }
-        onClose={ onClose }
+        disableEnforceFocus={disableEnforceFocus}
+        open={open}
+        onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        fullScreen={ fullScreen }
-        fullWidth={ fullWidth }
+        fullScreen={fullScreen}
+        fullWidth={fullWidth}
       >
-        <DialogTitle id="alert-dialog-title">
-          { title }
-        </DialogTitle>
-        <DialogContent>
-          { this.props.children }
-        </DialogContent>
+        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+        <DialogContent>{children}</DialogContent>
         <DialogActions>
-          <Button onClick={ onCancel } color="primary">
-            { cancelButtonText }
+          <Button onClick={onCancel} color="primary">
+            {cancelButtonText}
           </Button>
           <Button
             disableElevation
             variant="contained"
-            disabled={ error }
-            onClick={ onConfirm }
+            disabled={error || confirmDisabled}
+            onClick={onConfirm}
             color="secondary"
             autoFocus
           >
-            { positiveButtonText }
+            {positiveButtonText}
           </Button>
         </DialogActions>
       </Dialog>
     );
-  }
+  };
 }

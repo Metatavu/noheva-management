@@ -1,12 +1,11 @@
-import * as React from "react";
-// eslint-disable-next-line max-len
-import { ExhibitionPage, PageLayout, ExhibitionDevice } from "../../generated/client";
+import { ExhibitionDevice, ExhibitionPage, LayoutType, PageLayout } from "../../generated/client";
 import strings from "../../localization/strings";
-import { TextField, MenuItem, InputLabel, Select, FormControl, SelectChangeEvent } from "@mui/material";
-import { WithStyles } from '@mui/styles';
-import withStyles from '@mui/styles/withStyles';
 import styles from "../../styles/page-settings-editor";
 import theme from "../../styles/theme";
+import { Android as AndroidIcon, Html as HtmlIcon } from "@mui/icons-material/";
+import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import withStyles from "@mui/styles/withStyles";
 
 /**
  * Interface representing component properties
@@ -15,120 +14,108 @@ interface Props extends WithStyles<typeof styles> {
   layouts: PageLayout[];
   devices: ExhibitionDevice[];
   pageData: ExhibitionPage;
-  onChange: (event: React.ChangeEvent<HTMLInputElement | { name?: string; value: any }>) => void;
-  onLayoutChange: (event: SelectChangeEvent<string>) => void;
-}
-
-/**
- * Interface representing component state
- */
-interface State {
+  onDeviceChange: (deviceId: string) => void;
+  onLayoutChange: (layoutId: string) => void;
+  onNameChange: (text: string) => void;
 }
 
 /**
  * Component for common exhibition page settings editor
  */
-class CommonSettingsEditor extends React.Component<Props, State> {
+const CommonSettingsEditor: React.FC<Props> = ({
+  layouts,
+  devices,
+  pageData,
+  classes,
+  onDeviceChange,
+  onLayoutChange,
+  onNameChange
+}) => {
+  const pageLayout = layouts.find((layout) => layout.id === pageData.layoutId);
 
   /**
-   * Constructor
-   * @param props component properties
+   * Renders layout select
    */
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      loading: false
-    };
-  }
-
-  /**
-   * Component render method
-   */
-  public render() {
-    const { classes, pageData, onChange } = this.props;
-
-    return (
-      <>
-        <TextField
-          label={ strings.contentEditor.editor.pageName }
-          name="name"
-          value={ pageData.name }
-          onChange={ onChange }
-        />
-        <div className={ classes.selectFields }>
-          { this.renderDeviceSelect(pageData) }
-          { this.renderLayoutSelect(pageData) }
-        </div>
-      </>
-    );
-  }
-
-  /**
-   * Render layout select
-   *
-   * @param page selected page
-   */
-  private renderLayoutSelect = (page: ExhibitionPage) => {
-    const { layouts, onLayoutChange } = this.props;
-    const layoutSelectItems = layouts
+  const renderLayoutSelect = () => {
+    const layoutSelectItems = [...layouts]
+      .filter((layout) => pageLayout?.layoutType == layout.layoutType)
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map(layout =>
-        <MenuItem key={ layout.id } value={ layout.id }>
-          { layout.name }
+      .map((layout) => (
+        <MenuItem key={layout.id} value={layout.id}>
+          {layout.name}
+          {layout.layoutType === LayoutType.Android ? (
+            <AndroidIcon sx={{ color: "#3DDC84", marginLeft: 1 }} />
+          ) : (
+            <HtmlIcon sx={{ marginLeft: 1 }} />
+          )}
         </MenuItem>
-      );
+      ));
 
     return (
-      <div style={{ marginTop: theme.spacing(2) }}>
-        <FormControl>
-          <InputLabel id="pageLayoutId">
-            { strings.contentEditor.editor.layout }
-          </InputLabel>
+      <div
+        style={{
+          marginTop: theme.spacing(2)
+        }}
+      >
+        <FormControl fullWidth>
+          <InputLabel id="pageLayoutId">{strings.contentEditor.editor.layout}</InputLabel>
           <Select
-            label={ strings.contentEditor.editor.layout }
+            fullWidth
+            label={strings.contentEditor.editor.layout}
             labelId="pageLayoutId"
-            value={ page.layoutId }
-            onChange={ onLayoutChange }
+            value={pageData.layoutId}
+            onChange={(event) => onLayoutChange(event.target.value)}
           >
-            { layoutSelectItems }
+            {layoutSelectItems}
           </Select>
         </FormControl>
       </div>
     );
-  }
+  };
 
   /**
    * Renders device select
-   *
-   * @param page selected page
    */
-  private renderDeviceSelect = (page: ExhibitionPage) => {
-    const { devices, onChange } = this.props;
-    const selectItems = devices.map(device => {
+  const renderDeviceSelect = () => {
+    const selectItems = devices.map((device) => {
       return (
-        <MenuItem key={ device.id! } value={ device.id }>
-          { device.name }
+        <MenuItem key={device.id!} value={device.id}>
+          {device.name}
         </MenuItem>
       );
     });
-
     return (
-      <FormControl>
-        <InputLabel id="pageDeviceId">
-          { strings.contentEditor.editor.device }
-        </InputLabel>
+      <FormControl fullWidth>
+        <InputLabel id="pageDeviceId">{strings.contentEditor.editor.device}</InputLabel>
         <Select
-          label={ strings.contentEditor.editor.device }
+          fullWidth
+          label={strings.contentEditor.editor.device}
           labelId="pageDeviceId"
           name="deviceId"
-          value={ page.deviceId }
-          onChange={ onChange }
+          value={pageData.deviceId}
+          onChange={(event) => onDeviceChange(event.target.value)}
         >
-          { selectItems }
+          {selectItems}
         </Select>
       </FormControl>
     );
-  }
-}
+  };
 
-export default (withStyles(styles)(CommonSettingsEditor));
+  return (
+    <>
+      <TextField
+        fullWidth
+        label={strings.contentEditor.editor.pageName}
+        name="name"
+        value={pageData.name}
+        onChange={(event) => onNameChange(event.target.value)}
+      />
+      <div className={classes.selectFields}>
+        {renderDeviceSelect()}
+        {renderLayoutSelect()}
+      </div>
+    </>
+  );
+};
+
+export default withStyles(styles)(CommonSettingsEditor);

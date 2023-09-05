@@ -1,5 +1,4 @@
 {
-
   "header": {
     "navigation": {
       "exhibitionsButton": "Näyttelyt",
@@ -12,12 +11,6 @@
     "tabs": {
       "floorPlanTab": "Pohjapiirros",
       "exhibitionContentsTab": "Näyttelysisällöt"
-    },
-
-    "inProduction": "Tuotannossa",
-    "inDraft": "Luonnokset",
-    "status": {
-      "ready": "Valmis" 
     }
   },
 
@@ -68,6 +61,11 @@
       "cancelButton": "Peruuta",
       "createButton": "Luo"
     },
+    "inProduction": "Tuotannossa",
+    "inDraft": "Luonnoksissa",
+    "status": {
+      "ready": "Valmis"
+    },
     "cardMenu": {
       "addExhibition": "Lisää näyttely",
       "moveToProduction": "Siirrä tuotantoon",
@@ -100,14 +98,15 @@
     "url": "Osoite: {0}",
     "errorMessage": "Virheilmoitus: ",
     "close": "Sulje",
-    "reload": "Lataa uudelleen"
+    "reload": "Lataa uudelleen",
+    "layoutFetchNotFound": "Sivun asettelua ei löydy."
   },
 
   "exhibitionLayouts": {
-
     "editView": {
       "xml": "XML",
       "json": "JSON",
+      "html": "HTML",
       "saveButton": "Tallenna",
       "switchToCodeButton": "Näytä koodi",
       "switchToVisualButton": "Näytä editori",
@@ -115,10 +114,9 @@
       "deleteButton": "Poista",
       "deleteConfirmTitle": "Oletko varma?",
       "deleteConfirmText": "Oletko varma, että haluat poistaa asettelun?",
-      "deleteConfirmDelte": "Poista",
+      "deleteConfirmDelete": "Poista",
       "deleteConfirmCancel": "Peruuta"
     }
-
   },
 
   "dashboard": {
@@ -138,15 +136,15 @@
     "overview": {
       "onProduction": "Tuotannossa",
       "lastModified": "Viimeksi muokattu",
+      "visitors": "Kävijöitä",
+      "longTour": "Pitkä kierto",
+      "shortTour": "Lyhyt kierto",
       "statistics": {
         "title": "Tilastot",
         "day": "Päivä",
         "week": "Viikko",
         "month": "Kuukausi",
-        "year": "Vuosi",
-        "visitors": "Kävijöitä",
-        "longTour": "Pitkä kierto",
-        "shortTour": "Lyhyt kierto"
+        "year": "Vuosi"
       }
     },
     "recent": {
@@ -172,7 +170,6 @@
     "floorPlans": {
       "title": "Pohjapiirrokset"
     }
-
   },
 
   "exhibition": {
@@ -239,8 +236,7 @@
       "pageDeviceLabel": "Sivun laite"
     },
 
-    "deviceSettingsEditor": {
-    },
+    "deviceSettingsEditor": {},
 
     "addDeviceEditor": {
       "title": "Lisää uusi laite",
@@ -273,7 +269,6 @@
     "properties": {
       "title": "Ominaisuudet"
     },
-
     "delete": {
       "deleteTitle": "Poista asettelu",
       "deleteText": "Haluatko varmasti poistaa asettelun?",
@@ -283,6 +278,26 @@
       "delete": {
         "deleteTitle": "Poista valittu asettelun elementti",
         "deleteText": "Poistetaanko valittu asettelun elementti?"
+      }
+    },
+    "html": {
+      "types": {
+        "layout": "FlexContainer",
+        "button": "Nappi",
+        "text": "Teksti",
+        "image": "Kuva",
+        "tabs": "Välilehdet",
+        "tab": "Välilehti",
+        "video": "Video"
+      },
+      "textTypes": {
+        "heading1": "Otsikko 1",
+        "heading2": "Otsikko 2",
+        "heading3": "Otsikko 3",
+        "heading4": "Otsikko 4",
+        "heading5": "Otsikko 5",
+        "heading6": "Otsikko 6",
+        "body": "Leipäteksti"
       }
     }
   },
@@ -359,14 +374,14 @@
       "properties": "Laiteryhmän ominaisuudet",
       "copy": "Kopioi laiteryhmä"
     },
-    "device" : {
+    "device": {
       "add": "Lisää uusi laite",
       "new": "Uusi laite",
       "edit": "Muokkaa laitetta",
       "move": "Siirrä laitetta",
       "properties": "Laitteen ominaisuudet"
     },
-    "antenna" : {
+    "antenna": {
       "add": "Lisää uusi antenni",
       "new": "Uusi antenni",
       "newReaderId": "123456",
@@ -402,15 +417,15 @@
       "readerId": "Antennin lukijan Id",
       "deviceGroup": "Laiteryhmä johon antenni kuuluu",
       "room": "Huone johon antenni kuuluu",
-      "antennaNumber": "Antennin numero"
+      "antennaNumber": "Antennin numero",
+      "name": "Nimi"
     },
-    
+
     "hasChildElements": "Valitulla elementillä on alaelementtejä. Poistoa ei voida tehdä!",
     "brokenData": "Kartan saamat tiedot ovat viallisia eikä karttaa voida luoda!"
   },
 
   "device": {
-
     "title": "Laitteet",
     "capabilities": "Ominaisuudet",
     "newDevice": "Uusi laite",
@@ -430,7 +445,7 @@
         "xdpi": "Pikseliä tuumalle X-akselilla",
         "ydpi": "Pikseliä tuumalle y-akselilla"
       },
-      "dimensions" : {
+      "dimensions": {
         "physicalSize": "Laitteen fyysinen koko",
         "width": "Leveys",
         "height": "Korkeus",
@@ -471,11 +486,74 @@
 
   "map": {
     "properties": {
-      "roomName" : "Huoneen nimi",
-      "dialogTitle" : "Anna huoneen nimi"
+      "roomName": "Huoneen nimi",
+      "dialogTitle": "Anna huoneen nimi"
     }
   },
-
+  "layoutEditorV2": {
+    "drawerTitle": "Elementin asetukset",
+    "genericProperties": {
+      "element": "Elementti",
+      "elementName": "Elementin nimi",
+      "proportions": "Mittasuhteet",
+      "width": "Leveys",
+      "height": "Korkeus",
+      "elevation": "Varjostus",
+      "color": {
+        "label": "Taustaväri",
+        "button": "Valitse väri"
+      },
+      "margin": "Marginaalit",
+      "padding": "Täyttö",
+      "tooltips": {
+        "top": "Ylä",
+        "right": "Oikea",
+        "bottom": "Ala",
+        "left": "Vasen"
+      }
+    },
+    "layoutProperties": {
+      "contentEmphasis": "Sisällön painotus",
+      "contentDirection": {
+        "label": "Sisällön suunta",
+        "row": "Vaaka",
+        "column": "Pysty"
+      },
+      "contentGap": "Sisällön välistys (px)",
+      "alignment": {
+        "northwest": "Vasen ylälaita",
+        "north": "Ylälaita",
+        "northeast": "Oikea ylälaita",
+        "west": "Vasen",
+        "center": "Keskellä",
+        "east": "Oikea",
+        "southwest": "Vasen alalaita",
+        "south": "Alalaita",
+        "southeast": "Oikea alalaita"
+      }
+    },
+    "textProperties": {
+      "elementType": "Tekstielementin tyyppi",
+      "fontColor": "Fontin väri",
+      "defaultResource": "Oletusteksti"
+    },
+    "buttonProperties": {
+      "fontColor": "Fontin väri",
+      "defaultResource": "Oletusteksti"
+    },
+    "imageProperties": {
+      "defaultResource": "Oletuskuva"
+    },
+    "videoProperties": {
+      "loop": "Jatkuva toisto",
+      "autoPlay": "Automaattinen toisto",
+      "controls": "Näytä allintapainikkeet",
+      "defaultResource": "Oletusvideo"
+    },
+    "preview": {
+      "showElementBorders": "Näytä elementtien reunat"
+    }
+  },
   "layoutEditor": {
     "commonComponents": {
       "id": "ID",
@@ -547,8 +625,7 @@
     },
 
     "linearLayout": {
-      "orientation": "Orientaatio",
-      "orientationTooltip": "Elementin sisältämät elementit jäsentyvät joko pysty tai vaakasuuntaan"
+      "orientation": "Orientaatio"
     },
 
     "tab": {
@@ -591,6 +668,7 @@
   },
 
   "contentVersion": {
+    "title": "Sisällöt",
     "add": "Uusi sisältökokonaisuus",
     "addDialogTitle": "Uusi sisältökokonaisuus",
     "addDialogDescription": "Anna nimi uudelle sisältökokonaisuudelle",
@@ -598,7 +676,6 @@
     "language": "Kieli",
     "rooms": "Näyttelykohteet",
     "room": "Näyttelykohde",
-
     "delete": {
       "deleteTitle": "Poista sisältökokonaisuus",
       "deleteText": "Oletko varma että haluat poistaa tämän sisältökokonaisuuden?",
@@ -608,6 +685,7 @@
     "nameAlreadyTaken": "Nimi on käytössä jo olemassa olevalla sisältökokonaisuudella",
     "nameIsMandatory": "Nimi on pakollinen tieto",
     "contentIsActiveWhen": "Aseta sisältö aktiiviseksi kun:",
+    "userVariable": "Käyttäjämuuttuja",
     "equals": "Arvo on:"
   },
 
@@ -615,6 +693,7 @@
     "title": "Sisällöt",
     "add": "Lisää uusi sisältö",
     "addDialogTitle": "Lisää sisältö",
+    "addDialogDescription": "Lisää sisältö",
     "name": "Nimi",
     "deviceGroup": "Laiteryhmä",
     "status": "Sisältöjen tila",
@@ -627,6 +706,7 @@
   "contentEditor": {
     "advanced": "Edistyneet tapahtumat",
     "open": "Hallitse sisältöä",
+    "changeLocale": "Kieliversio",
     "preview": {
       "resourceModePreview": {
         "dynamic": "Dynaaminen resurssi",
@@ -653,7 +733,7 @@
       "resources": "Resurssit",
       "resource": "Resurssi",
       "resourceProperties": "Resurssin ominaisuudet",
-      "transitions" : {
+      "transitions": {
         "title": "Sivunvaihtoefektit",
         "enterTransitions": "Efekti saapuessa",
         "enterTransitionsDescription": "Sivunvaihdon efekti kun tälle sivulle saavutaan.",
@@ -703,7 +783,7 @@
         "selectLanguage": "Valitse kieli"
       },
 
-      "tabs" : {
+      "tabs": {
         "title": "Välilehdet",
         "noTabs": "Ei välilehtiä",
         "add": "Lisää välilehti",
@@ -724,7 +804,7 @@
         "viewPairs": "Elementtiparit",
         "addViewPair": "Lisää elementtipari",
         "startOfTransition": "Elementistä",
-        "endOfTransition" : "Elementille",
+        "endOfTransition": "Elementille",
         "interpolations": {
           "accelerateDecelerate": "Kiihtyvä ja hidastuva",
           "accelerate": "Kiihtyvä",
@@ -763,7 +843,8 @@
     "unsaved": "Sivulla on tallentamattomia muutoksia. Haluatko varmasti siirtyä toiselle sivulle?",
     "properties": "Ominaisuudet",
     "noSelection": "Ei valintaa",
-    "clear": "Tyhjennä"
+    "clear": "Tyhjennä",
+    "notYetImplemented": "Ei vielä toteutettu"
   },
 
   "spaces": {
@@ -777,7 +858,7 @@
     "selectLanguageTitle": "Valitse kieli",
     "selectLanguage": "Valitse",
     "checkEmail": "Syötä sähköpostiosoite",
-    "registerTag" : "Rekisteröi RFID-tagi",
+    "registerTag": "Rekisteröi RFID-tagi",
     "visitor": {
       "visitorInfoFormTitle": "Vierailijan tiedot",
       "tag": "RFID-tagi",
@@ -834,6 +915,10 @@
     "confirmEmptyText": "Muuttuja poistuu session muuttujalistasta.",
     "errorMessages": {
       "sessionNotFound": "Vierailijan sessiota ei löytynyt"
+    },
+    "delete": {
+      "deleteTitle": "Poista",
+      "deleteText": "Poista"
     }
   },
 
@@ -919,6 +1004,15 @@
       "visitorsViewDescription": "Ryhmämuodostuspisteen kävijöitä esittävä lista.",
       "webViewDescription": "Internetsisältö. Tällä voidaan esittää esim. haluttu internet-sivu tai jokin muu internet-sisältö, mikä ei ole Noheva Alustan sisällönhallinnan kautta hallittavissa."
     },
+    "layoutEditorHtml": {
+      "buttonDescription": "Painike-elementti esimerkiksi valintojen ja navigoinnin luomiseen sivujen välillä.",
+      "textViewDescription": "Tekstielementti tekstin esittämistä varten.",
+      "imageViewDescription": "Elementti kuvien esittämistä varten",
+      "layoutDescription": "Elementti sisällön jäsentämistä varten. Voit määrittää asettuvatko tämän sisälle lisätyt elementit rinnakkain vai päällekkäin.",
+      "tabViewDescription": "Välilehtiasettelu.",
+      "tabsViewDescription": "Välilehtien asettelu.",
+      "videoViewDescription": "Elementti videoiden esittämistä varten"
+    },
     "contentManager": {
       "animationInterpolations": {
         "accelerateDecelerate": "Alkuun kiihtyvä ja loppuun hidastuva siirtymä",
@@ -965,7 +1059,7 @@
       "antennaReaderIdDescription": "Antenniyksikön tunnus (ID), mihin tämä antenni on kytketty.",
       "antennaPortNumberDescription": "Antenniyksikön portti, mihin antenni on kytketty. Antenniin kannattaa kirjata tämä portin numero helpottamaan vianetsintää.",
       "indexPageTimeoutDescription": "Passiivisen vierailijan etuvisulle palautuksen viive.",
-      "indexPageTimeoutAdditionalDescription": "Vierailija palautetaan takaisin etusivulle kun tähän kenttään määritelty millisekuntimäärä on kulunut. Mikäli kenttään ei ole syötety arvoa, toiminto ei ole päällä." 
+      "indexPageTimeoutAdditionalDescription": "Vierailija palautetaan takaisin etusivulle kun tähän kenttään määritelty millisekuntimäärä on kulunut. Mikäli kenttään ei ole syötety arvoa, toiminto ei ole päällä."
     },
     "layoutEditor": {
       "commonProperties": {

@@ -1,6 +1,24 @@
-// eslint-disable-next-line max-len
-import { ExhibitionPageResource, DeviceModelCapabilities, ExhibitionPage, Exhibition, ContentVersion, ExhibitionFloor, ExhibitionRoom, ExhibitionDevice, ExhibitionDeviceGroup, RfidAntenna, GroupContentVersion, PageLayout, VisitorVariable, Visitor, VisitorSession } from "../generated/client";
-import { DeviceModelDimensionsData, DeviceModelDisplayMetricsData } from "./device-model-string-data";
+import {
+  ContentVersion,
+  DeviceModelCapabilities,
+  Exhibition,
+  ExhibitionDevice,
+  ExhibitionDeviceGroup,
+  ExhibitionFloor,
+  ExhibitionPage,
+  ExhibitionPageResource,
+  ExhibitionRoom,
+  PageLayout,
+  RfidAntenna,
+  Visitor,
+  VisitorSession,
+  VisitorVariable
+} from "../generated/client";
+import {
+  DeviceModelDimensionsData,
+  DeviceModelDisplayMetricsData
+} from "./device-model-string-data";
+import { ChangeEventHandler } from "react";
 
 /**
  * Interface describing an access token
@@ -8,7 +26,7 @@ import { DeviceModelDimensionsData, DeviceModelDisplayMetricsData } from "./devi
 export interface AccessToken {
   token: string;
   userId: string;
-};
+}
 
 /**
  * Map of resources with id as a key
@@ -20,22 +38,28 @@ export type ResourceMap = { [key: string]: ExhibitionPageResource };
  */
 export interface JsonLintParseErrorHash {
   loc: {
-    "first_line": number;
-    "first_column": number;
-    "last_line": number;
-    "last_column": number;
+    first_line: number;
+    first_column: number;
+    last_line: number;
+    last_column: number;
   };
-};
+}
 
 /**
  * Union type for device model data sub properties
  */
-export type DeviceModelDataProperty = DeviceModelDimensionsData | DeviceModelDisplayMetricsData | DeviceModelCapabilities;
+export type DeviceModelDataProperty =
+  | DeviceModelDimensionsData
+  | DeviceModelDisplayMetricsData
+  | DeviceModelCapabilities;
 
 /**
  * Union type for keys of device model data sub properties
  */
-export type DeviceModelDataSubPropertyKey = keyof DeviceModelDimensionsData | keyof DeviceModelDisplayMetricsData | keyof DeviceModelCapabilities;
+export type DeviceModelDataSubPropertyKey =
+  | keyof DeviceModelDimensionsData
+  | keyof DeviceModelDisplayMetricsData
+  | keyof DeviceModelCapabilities;
 
 /**
  * Enum for physical event trigger button values
@@ -50,7 +74,7 @@ export enum PhysicalButton {
   BUTTON_7 = "F7",
   BUTTON_8 = "F8",
   BUTTON_9 = "F9"
-};
+}
 
 /**
  * Interface for a single physical event trigger button
@@ -58,13 +82,19 @@ export enum PhysicalButton {
 export interface PhysicalButtonData {
   name: string;
   value: PhysicalButton;
-};
+}
 
 /**
  * Interface describing exhibition element in exhibition editor
  */
 export interface ExhibitionElement {
-  data: Exhibition | ContentVersion | ExhibitionFloor | ExhibitionRoom | ExhibitionDevice | ExhibitionPage;
+  data:
+    | Exhibition
+    | ContentVersion
+    | ExhibitionFloor
+    | ExhibitionRoom
+    | ExhibitionDevice
+    | ExhibitionPage;
   type: ExhibitionElementType;
 }
 
@@ -87,6 +117,17 @@ export interface ActionButton {
   name: string;
   disabled?: boolean;
   action: () => void;
+  selectAction?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  options?: LocalOptions[];
+  value?: LanguageOptions;
+}
+
+/**
+ * Interface describing locale options for select
+ */
+export interface LocalOptions {
+  value: string;
+  label: string;
 }
 
 /**
@@ -114,6 +155,14 @@ export enum MediaType {
   IMAGE = "image",
   VIDEO = "video",
   MEDIA = "media"
+}
+
+/**
+ * Enum for layout editor view
+ */
+export enum LayoutEditorView {
+  VISUAL = "VISUAL",
+  CODE = "CODE"
 }
 
 /**
@@ -169,19 +218,18 @@ export interface ContentSpecificDeleteMessage {
  */
 export interface DeleteDataHolder {
   objects: (
-    Exhibition |
-    ContentVersion |
-    ExhibitionFloor |
-    GroupContentVersion |
-    ExhibitionRoom |
-    ExhibitionDeviceGroup |
-    ExhibitionDevice |
-    RfidAntenna |
-    ExhibitionPage |
-    PageLayout |
-    Visitor |
-    VisitorSession |
-    VisitorVariable
+    | Exhibition
+    | ContentVersion
+    | ExhibitionFloor
+    | ExhibitionRoom
+    | ExhibitionDeviceGroup
+    | ExhibitionDevice
+    | RfidAntenna
+    | ExhibitionPage
+    | PageLayout
+    | Visitor
+    | VisitorSession
+    | VisitorVariable
   )[];
   localizedMessage: string;
 }
@@ -230,4 +278,67 @@ export interface MQTTConfig {
 export interface DiagnosticsConfig {
   tagZeroDelay: number;
   tagRemoveDelay: number;
+}
+
+/**
+ * Tree Object type
+ */
+export type TreeObject = {
+  type: HtmlComponentType;
+  path: string;
+  name?: string;
+  id: string;
+  resourceId?: string;
+  children: TreeObject[];
+  element: HTMLElement;
+};
+
+/**
+ * Component Type enum
+ */
+export enum HtmlComponentType {
+  LAYOUT = "layout",
+  BUTTON = "button",
+  IMAGE = "image",
+  TEXT = "text",
+  TABS = "tabs",
+  TAB = "tab",
+  VIDEO = "video"
+}
+
+/**
+ * Layout alignment enum
+ */
+export enum LayoutAlignment {
+  NORTH_WEST = "nw",
+  NORTH = "n",
+  NORTH_EAST = "ne",
+  WEST = "w",
+  CENTER = "c",
+  EAST = "e",
+  SOUTH_WEST = "sw",
+  SOUTH = "s",
+  SOUTH_EAST = "se"
+}
+
+/**
+ * Text component HTML element types enum
+ */
+export enum HtmlTextComponentType {
+  H1 = "H1",
+  H2 = "H2",
+  H3 = "H3",
+  H4 = "H4",
+  H5 = "H5",
+  H6 = "H6",
+  P = "P"
+}
+
+// Required for Leaflet to work.
+// Older version of Leaflet declares it as global variable but newer version no longer does
+// https://github.com/Leaflet/Leaflet.draw/issues/1026#issuecomment-986702652
+declare global {
+  interface Window {
+    type: boolean;
+  }
 }
