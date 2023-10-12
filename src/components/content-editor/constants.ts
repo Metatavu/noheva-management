@@ -75,3 +75,23 @@ export interface ExhibitionPageTabHolder {
   tabComponent: TabStructure;
   activeTabIndex: number;
 }
+
+/**
+ *  Text node type constant
+ */
+export const TEXT_NODE_TYPE = Node.TEXT_NODE;
+
+/**
+ * Source node name constant
+ */
+export const SOURCE_NODE_NAME = "SOURCE";
+
+/**
+ * Img node name constant
+ */
+export const IMG_NODE_NAME = "IMG";
+
+/**
+ * Allowed child node names for source node
+ */
+export const ALLOWED_CHILD_NODE_NAMES = [SOURCE_NODE_NAME, IMG_NODE_NAME];

@@ -3,7 +3,6 @@ import Api from "../../api/api";
 import {
   DeviceModel,
   Exhibition,
-  ExhibitionPageResourceType,
   PageLayout,
   PageLayoutViewHtml,
   PageResourceMode,
@@ -13,7 +12,14 @@ import {
 import strings from "../../localization/strings";
 import { ReduxActions, ReduxState } from "../../store";
 import styles from "../../styles/components/layout-screen/layout-editor-view";
-import { AccessToken, ActionButton, LayoutEditorView, TreeObject } from "../../types";
+import {
+  AccessToken,
+  ActionButton,
+  HtmlComponentType,
+  LayoutEditorView,
+  TreeObject
+} from "../../types";
+import HtmlComponentsUtils from "../../utils/html-components-utils";
 import HtmlResourceUtils from "../../utils/html-resource-utils";
 import AddNewElementDialog from "../dialogs/add-new-element-dialog";
 import EditorView from "../editor/editor-view";
@@ -37,7 +43,7 @@ import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import { History } from "history";
 import { KeycloakInstance } from "keycloak-js";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
 
@@ -65,7 +71,6 @@ const LayoutScreenHTML: FC<Props> = ({
   history,
   keycloak,
   deviceModels,
-  layout,
   layouts,
   layoutId,
   accessToken,
@@ -82,6 +87,8 @@ const LayoutScreenHTML: FC<Props> = ({
   const [addComponentDialogOpen, setAddComponentDialogOpen] = useState(false);
   const [newComponentPath, setNewComponentPath] = useState<string>();
   const [isNewComponentSibling, setIsNewComponentSibling] = useState<boolean>();
+  const [onSaveCallback, setOnSaveCallback] = useState<() => { [key: string]: number }>(() => ({}));
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     fetchLayout();
@@ -90,6 +97,11 @@ const LayoutScreenHTML: FC<Props> = ({
   useEffect(() => {
     if (!foundLayout) return;
     setTreeObjects([...constructTree((foundLayout.data as PageLayoutViewHtml).html)]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setDataChanged(true);
   }, [foundLayout]);
 
   /**
@@ -175,10 +187,9 @@ const LayoutScreenHTML: FC<Props> = ({
         view === LayoutEditorView.CODE
           ? strings.exhibitionLayouts.editView.switchToVisualButton
           : strings.exhibitionLayouts.editView.switchToCodeButton,
-      action: () =>
-        view === LayoutEditorView.CODE
-          ? setView(LayoutEditorView.VISUAL)
-          : setView(LayoutEditorView.CODE)
+      action: () => {
+        setView(view === LayoutEditorView.CODE ? LayoutEditorView.VISUAL : LayoutEditorView.CODE);
+      }
     },
     {
       name: strings.exhibitionLayouts.editView.saveButton,
@@ -187,20 +198,51 @@ const LayoutScreenHTML: FC<Props> = ({
     }
   ];
 
+  const addMaxWidthToComponent = (treeObject: TreeObject): TreeObject => {
+    const result = { ...treeObject };
+    const { id, element, type } = result;
+
+    if (type === HtmlComponentType.TEXT) {
+      const width = HtmlComponentsUtils.parseStyles(element)["width"];
+      const realWidths = onSaveCallback();
+      const previewWidth = realWidths[id];
+      if (width?.endsWith("%") && previewWidth) {
+        result.element = HtmlComponentsUtils.handleStyleAttributeChange(
+          element,
+          "max-width",
+          `${previewWidth}px`
+        );
+      } else {
+        result.element = HtmlComponentsUtils.handleStyleAttributeChange(element, "max-width");
+      }
+    }
+    result.children = result.children.map(addMaxWidthToComponent);
+
+    return result;
+  };
+
   /**
    * Event handler for layout save
    */
   const onLayoutSave = async () => {
     try {
       const pageLayoutsApi = Api.getPageLayoutsApi(accessToken);
+      const tree = addMaxWidthToComponent(treeObjects[0]);
+      const htmlElements = treeObjectToHtmlElement(tree);
+
+      const layout: PageLayout = {
+        ...foundLayout,
+        data: { html: htmlElements.outerHTML.replace(/^\s*\n/gm, "") } as PageLayoutViewHtml
+      };
 
       const updatedLayout = await pageLayoutsApi.updatePageLayout({
         pageLayoutId: layoutId,
-        pageLayout: foundLayout
+        pageLayout: layout
       });
 
       const updatedLayouts = layouts.filter((item) => item.id !== updatedLayout.id);
       setLayouts([...updatedLayouts, layout]);
+      setFoundLayout(updatedLayout);
       setDataChanged(false);
     } catch (e) {
       console.error(e);
@@ -272,6 +314,7 @@ const LayoutScreenHTML: FC<Props> = ({
             screenOrientation={foundLayout.screenOrientation}
             resources={foundLayout.defaultResources || []}
             selectedComponentId={selectedComponent?.id}
+            setOnSaveCallback={setOnSaveCallback}
           />
         );
       }
@@ -324,8 +367,8 @@ const LayoutScreenHTML: FC<Props> = ({
 
     const newDefaultResources = (resourceIds ?? []).map((resourceId) => ({
       id: resourceId,
-      data: "",
-      type: ExhibitionPageResourceType.Text,
+      data: newComponent.type === HtmlComponentType.LAYOUT ? "none" : "",
+      type: HtmlResourceUtils.getResourceType(newComponent.type),
       mode: PageResourceMode.Static
     }));
 
@@ -357,13 +400,13 @@ const LayoutScreenHTML: FC<Props> = ({
    * @param id id of the component to be deleted
    */
   const deleteComponent = (componentToDelete: TreeObject) => {
-    const resourceIds = HtmlResourceUtils.extractResourceIds(componentToDelete.element.outerHTML);
-
-    const updatedDefaultResources = foundLayout.defaultResources?.filter(
-      (resource) => !resourceIds.includes(resource.id)
-    );
-
     const updatedTree = deleteHtmlComponent(treeObjects, componentToDelete.path);
+
+    const resourceIds = HtmlResourceUtils.extractResourceIds(updatedTree[0].element.outerHTML);
+
+    const updatedDefaultResources = foundLayout.defaultResources?.filter((resource) =>
+      resourceIds.includes(resource.id)
+    );
 
     const updatedHtmlElements = updatedTree.map((treeObject) =>
       treeObjectToHtmlElement(treeObject)

@@ -1,3 +1,4 @@
+import { DeviceApprovalStatus } from "../generated/client";
 import strings from "../localization/strings";
 import { HtmlComponentType, HtmlTextComponentType, LayoutAlignment } from "../types";
 
@@ -36,7 +37,8 @@ namespace LocalizationUtils {
       [HtmlComponentType.TEXT]: strings.layout.html.types.text,
       [HtmlComponentType.TABS]: strings.layout.html.types.tabs,
       [HtmlComponentType.TAB]: strings.layout.html.types.tab,
-      [HtmlComponentType.VIDEO]: strings.layout.html.types.video
+      [HtmlComponentType.VIDEO]: strings.layout.html.types.video,
+      [HtmlComponentType.IMAGE_BUTTON]: strings.layout.html.types.imageButton
     })[componentType];
 
   /**
@@ -52,7 +54,8 @@ namespace LocalizationUtils {
       [HtmlComponentType.TEXT]: strings.helpTexts.layoutEditorHtml.textViewDescription,
       [HtmlComponentType.TABS]: strings.helpTexts.layoutEditorHtml.tabsViewDescription,
       [HtmlComponentType.TAB]: strings.helpTexts.layoutEditorHtml.tabViewDescription,
-      [HtmlComponentType.VIDEO]: strings.helpTexts.layoutEditorHtml.videoViewDescription
+      [HtmlComponentType.VIDEO]: strings.helpTexts.layoutEditorHtml.videoViewDescription,
+      [HtmlComponentType.IMAGE_BUTTON]: strings.helpTexts.layoutEditorHtml.videoViewDescription
     })[componentType];
 
   /**
@@ -68,7 +71,8 @@ namespace LocalizationUtils {
       [HtmlTextComponentType.H4]: strings.layout.html.textTypes.heading4,
       [HtmlTextComponentType.H5]: strings.layout.html.textTypes.heading5,
       [HtmlTextComponentType.H6]: strings.layout.html.textTypes.heading6,
-      [HtmlTextComponentType.P]: strings.layout.html.textTypes.body
+      [HtmlTextComponentType.P]: strings.layout.html.textTypes.body,
+      [HtmlTextComponentType.BUTTON]: strings.layout.html.textTypes.body
     })[textComponentType];
 
   /**
@@ -83,6 +87,32 @@ namespace LocalizationUtils {
       "-bottom": strings.layoutEditorV2.genericProperties.tooltips.bottom,
       "-left": strings.layoutEditorV2.genericProperties.tooltips.left
     })[suffix];
+
+  /**
+   * Returns localized border radius tooltip
+   *
+   * @param suffix suffix
+   */
+  export const getLocalizedBorderRadiusTooltip = (suffix: string) =>
+    ({
+      "-top-left": strings.layoutEditorV2.genericProperties.tooltips.topLeft,
+      "-top-right": strings.layoutEditorV2.genericProperties.tooltips.topRight,
+      "-bottom-right": strings.layoutEditorV2.genericProperties.tooltips.bottomRight,
+      "-bottom-left": strings.layoutEditorV2.genericProperties.tooltips.bottomLeft
+    })[suffix];
+
+  /**
+   * Returns localized device approval status
+   *
+   * @param approvalStatus approvalStatus
+   */
+  export const getLocalizedDeviceApprovalStatus = (approvalStatus: DeviceApprovalStatus) =>
+    ({
+      [DeviceApprovalStatus.Pending]: strings.devicesV2.approvalStatus.pending,
+      [DeviceApprovalStatus.Approved]: strings.devicesV2.approvalStatus.approved,
+      [DeviceApprovalStatus.Ready]: strings.devicesV2.approvalStatus.ready,
+      [DeviceApprovalStatus.PendingReapproval]: strings.devicesV2.approvalStatus.pendingReApproval
+    })[approvalStatus];
 }
 
 export default LocalizationUtils;

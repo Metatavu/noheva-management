@@ -1,9 +1,12 @@
-import { TreeObject } from "../../../types";
+import strings from "../../../localization/strings";
+import { HtmlComponentType, TreeObject } from "../../../types";
+import HtmlComponentsUtils from "../../../utils/html-components-utils";
+import ConditionalTooltip from "../../generic/v2/conditional-tooltip";
 import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
 import { ExpandOutlined, HeightOutlined } from "@mui/icons-material";
 import { MenuItem, Stack, Typography } from "@mui/material";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 /**
  * Components properties
@@ -20,47 +23,40 @@ interface Props {
  * HTML Component proportions editor
  */
 const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Props) => {
-  const [settings, setSettings] = useState<{
-    width: "px" | "%";
-    height: "px" | "%";
-  }>({
-    width: "px",
-    height: "px"
-  });
-
-  useEffect(() => {
-    const widthType = getElementProportionType("width");
-    const heightType = getElementProportionType("height");
-
-    setSettings({
-      width: widthType || "px",
-      height: heightType || "px"
-    });
-  }, [component]);
-
-  /**
-   * Event handler for input change events
-   *
-   * @param event event
-   */
-  const onValueChange = ({ target: { name, value } }: ChangeEvent<HTMLInputElement>) => {
-    const type = settings[name as keyof typeof settings];
-    const val = type === "px" ? value : `${value}${type}`;
-
-    onChange(name, val);
-  };
-
   /**
    * Gets element proportion type
    *
    * @param proportion proportion
    */
   const getElementProportionType = (proportion: "width" | "height") => {
-    const elementDimension = component.element.style[proportion];
+    if (component.type === HtmlComponentType.VIDEO) return "px";
+    const styles = HtmlComponentsUtils.parseStyles(component.element);
+    const elementDimension = styles[proportion];
 
-    if (!elementDimension) return;
-    if (elementDimension.endsWith("%")) return "%";
-    if (elementDimension.endsWith("px")) return "px";
+    if (elementDimension?.endsWith("%")) return "%";
+    if (elementDimension?.endsWith("px")) return "px";
+    return "px";
+  };
+
+  const [proportionType, setProportionType] = useState<"%" | "px">(getElementProportionType(name));
+
+  const onSettingsChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    const styles = HtmlComponentsUtils.parseStyles(component.element);
+    const val = styles[name];
+    const numberVal = parseInt(val);
+    setProportionType(value as "px" | "%");
+
+    onChange(name, `${numberVal}${value}`);
+  };
+  /**
+   * Event handler for input change events
+   *
+   * @param event event
+   */
+  const onValueChange = ({ target: { name, value } }: ChangeEvent<HTMLInputElement>) => {
+    const val = `${value}${proportionType}`;
+
+    onChange(name, val);
   };
 
   /**
@@ -93,19 +89,23 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
         {label}
       </Typography>
       <TextField name={name} value={value} number onChange={onValueChange} />
-      <SelectBox
-        value={settings[name]}
-        onChange={({ target: { value } }) => {
-          setSettings({ ...settings, [name]: value as "px" | "%" });
-        }}
+      <ConditionalTooltip
+        enabled={component.type === HtmlComponentType.VIDEO}
+        title={strings.layoutEditorV2.genericProperties.videoProportionsTooltip}
       >
-        <MenuItem value="px" sx={{ color: "#2196F3" }}>
-          px
-        </MenuItem>
-        <MenuItem value="%" sx={{ color: "#2196F3" }}>
-          %
-        </MenuItem>
-      </SelectBox>
+        <SelectBox
+          value={getElementProportionType(name)}
+          disabled={component.type === HtmlComponentType.VIDEO}
+          onChange={onSettingsChange}
+        >
+          <MenuItem value="px" sx={{ color: "#2196F3" }}>
+            px
+          </MenuItem>
+          <MenuItem value="%" sx={{ color: "#2196F3" }}>
+            %
+          </MenuItem>
+        </SelectBox>
+      </ConditionalTooltip>
       {renderIcon()}
     </Stack>
   );

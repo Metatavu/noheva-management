@@ -4,9 +4,11 @@ import {
   PageResourceMode
 } from "../../../generated/client";
 import strings from "../../../localization/strings";
-import { TreeObject } from "../../../types";
+import { GroupedInputsType, TreeObject } from "../../../types";
+import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import HtmlResourceUtils from "../../../utils/html-resource-utils";
 import TextField from "../../generic/v2/text-field";
+import GroupedInputsWithLock from "./grouped-inputs-with-lock";
 import PanelSubtitle from "./panel-subtitle";
 import PropertyBox from "./property-box";
 import { Divider, Stack } from "@mui/material";
@@ -23,9 +25,26 @@ interface Props {
 }
 
 /**
- * Image Component Properties component
+ * Image Button Component Properties component
  */
-const ImageComponentProperties = ({ component, pageLayout, setPageLayout }: Props) => {
+const ImageButtonComponentProperties = ({
+  component,
+  updateComponent,
+  pageLayout,
+  setPageLayout
+}: Props) => {
+  /**
+   * Event handler for border radius change events
+   *
+   * @param name name
+   * @param value value
+   */
+  const onBorderRadiusChange = (name: string, value: string) => {
+    const element = HtmlComponentsUtils.handleStyleAttributeChange(component.element, name, value);
+
+    updateComponent({ ...component, element: element });
+  };
+
   /**
    * Validates that given string is a valid URL
    *
@@ -41,13 +60,13 @@ const ImageComponentProperties = ({ component, pageLayout, setPageLayout }: Prop
   };
 
   /**
-   * Returns image resource path
+   * Returns buttons child image resource path
    *
    * @returns image resource path
    */
   const getImageResourcePath = () => {
     const { element } = component;
-    return element.getAttribute("src");
+    return element.children[0].getAttribute("src");
   };
 
   /**
@@ -91,6 +110,15 @@ const ImageComponentProperties = ({ component, pageLayout, setPageLayout }: Prop
     <Stack>
       <Divider sx={{ color: "#F5F5F5" }} />
       <PropertyBox>
+        <PanelSubtitle subtitle={strings.layoutEditorV2.genericProperties.borderRadius} />
+        <GroupedInputsWithLock
+          styles={HtmlComponentsUtils.parseStyles(component.element)}
+          type={GroupedInputsType.BORDER_RADIUS}
+          onChange={onBorderRadiusChange}
+        />
+      </PropertyBox>
+      <Divider sx={{ color: "#F5F5F5" }} />
+      <PropertyBox>
         <PanelSubtitle subtitle={strings.layoutEditorV2.imageProperties.defaultResource} />
         <TextField
           value={getImageSrc()}
@@ -103,4 +131,4 @@ const ImageComponentProperties = ({ component, pageLayout, setPageLayout }: Prop
   );
 };
 
-export default ImageComponentProperties;
+export default ImageButtonComponentProperties;

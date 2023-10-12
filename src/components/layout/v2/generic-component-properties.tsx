@@ -1,10 +1,11 @@
 import strings from "../../../localization/strings";
-import { HtmlComponentType, TreeObject } from "../../../types";
-import ConditionalTooltip from "../../generic/v2/conditional-tooltip";
+import { GroupedInputsType, HtmlComponentType, TreeObject } from "../../../types";
+import HtmlComponentsUtils from "../../../utils/html-components-utils";
+import LocalizationUtils from "../../../utils/localization-utils";
 import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
 import ColorPicker from "./color-picker";
-import MarginPaddingEditorHtml from "./margin-padding-editor-html";
+import GroupedInputsWithLock from "./grouped-inputs-with-lock";
 import PanelSubtitle from "./panel-subtitle";
 import PropertyBox from "./property-box";
 import ProportionsEditorHtml from "./proportions-editor-html";
@@ -13,7 +14,7 @@ import {
   PaletteOutlined as PaletteOutlinedIcon
 } from "@mui/icons-material";
 import { Button, Divider, MenuItem, Stack } from "@mui/material";
-import React, { ChangeEvent, FC, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { ColorResult } from "react-color";
 
 /**
@@ -27,7 +28,7 @@ interface Props {
 /**
  * Generic Component Properties
  */
-const GenericComponentProperties: FC<Props> = ({ component, updateComponent }) => {
+const GenericComponentProperties = ({ component, updateComponent }: Props) => {
   const [popoverAnchorElement, setPopoverAnchorElement] = useState<HTMLButtonElement>();
 
   if (!component) return null;
@@ -39,14 +40,36 @@ const GenericComponentProperties: FC<Props> = ({ component, updateComponent }) =
    * @param value value
    */
   const onPropertyChange = (name: string, value: string) => {
-    if (!value) {
-      component.element.style.removeProperty(name);
+    let { element } = component;
+    const dimensionAttributes = ["width", "height"];
+    const { tagName } = component.element;
+    if (tagName.toLowerCase() === HtmlComponentType.VIDEO && dimensionAttributes.includes(name)) {
+      element = HtmlComponentsUtils.handleAttributeChange(element, name, value);
     } else {
-      component.element.style[name as any] = value;
+      element = HtmlComponentsUtils.handleStyleAttributeChange(element, name, value);
     }
-    updateComponent(component);
+    updateComponent({ ...component, element: element });
   };
 
+  const getElementWidth = () => {
+    const { element } = component;
+    const { tagName } = element;
+    const styles = HtmlComponentsUtils.parseStyles(element);
+    if (tagName.toLowerCase() === HtmlComponentType.VIDEO) {
+      return parseInt(component.element.attributes.getNamedItem("width")?.value || "0").toString();
+    }
+    return parseInt(styles["width"] || "0").toString();
+  };
+
+  const getElementHeight = () => {
+    const { element } = component;
+    const { tagName } = element;
+    const styles = HtmlComponentsUtils.parseStyles(element);
+    if (tagName.toLowerCase() === HtmlComponentType.VIDEO) {
+      return parseInt(component.element.attributes.getNamedItem("height")?.value || "0").toString();
+    }
+    return parseInt(styles["height"] || "0").toString();
+  };
   /**
    * Event handler for name change events
    *
@@ -61,28 +84,27 @@ const GenericComponentProperties: FC<Props> = ({ component, updateComponent }) =
    * Gets elements background icon colors
    */
   const getElementBackgroundIconColors = () => {
-    const elementsBackgroundColor = component.element.style.backgroundColor;
+    const { element } = component;
+    const styles = HtmlComponentsUtils.parseStyles(element);
+    const elementsBackgroundColor = styles["background-color"];
 
     return {
       border: elementsBackgroundColor ? undefined : "1px solid #2196F3",
       backgroundColor: elementsBackgroundColor || "#F5F5F5"
     };
   };
-
   return (
     <>
       <Stack spacing={2} paddingLeft={0} paddingRight={0}>
         <PropertyBox>
           <PanelSubtitle subtitle={strings.layoutEditorV2.genericProperties.element} />
-          <ConditionalTooltip enabled title={strings.generic.notYetImplemented}>
-            <SelectBox value={component.type} disabled>
-              {Object.values(HtmlComponentType).map((type) => (
-                <MenuItem key={type} value={type} sx={{ color: "#2196F3" }}>
-                  {type}
-                </MenuItem>
-              ))}
-            </SelectBox>
-          </ConditionalTooltip>
+          <SelectBox value={component.type} disabled>
+            {Object.values(HtmlComponentType).map((type) => (
+              <MenuItem key={type} value={type} sx={{ color: "#2196F3" }}>
+                {LocalizationUtils.getLocalizedComponentType(type)}
+              </MenuItem>
+            ))}
+          </SelectBox>
         </PropertyBox>
         <Divider sx={{ color: "#F5F5F5" }} />
         <PropertyBox>
@@ -98,14 +120,14 @@ const GenericComponentProperties: FC<Props> = ({ component, updateComponent }) =
           <PanelSubtitle subtitle={strings.layoutEditorV2.genericProperties.proportions} />
           <ProportionsEditorHtml
             component={component}
-            value={parseInt(component.element?.style?.width || "0").toString()}
+            value={getElementWidth()}
             name="width"
             label={strings.layoutEditorV2.genericProperties.width}
             onChange={onPropertyChange}
           />
           <ProportionsEditorHtml
             component={component}
-            value={parseInt(component.element?.style?.height || "0").toString()}
+            value={getElementHeight()}
             name="height"
             label={strings.layoutEditorV2.genericProperties.height}
             onChange={onPropertyChange}
@@ -114,18 +136,18 @@ const GenericComponentProperties: FC<Props> = ({ component, updateComponent }) =
         <Divider sx={{ color: "#F5F5F5" }} />
         <PropertyBox>
           <PanelSubtitle subtitle={strings.layoutEditorV2.genericProperties.margin} />
-          <MarginPaddingEditorHtml
-            styles={component.element.style}
-            type="margin"
+          <GroupedInputsWithLock
+            styles={HtmlComponentsUtils.parseStyles(component.element)}
+            type={GroupedInputsType.MARGIN}
             onChange={onPropertyChange}
           />
         </PropertyBox>
         <Divider sx={{ color: "#F5F5F5" }} />
         <PropertyBox>
           <PanelSubtitle subtitle={strings.layoutEditorV2.genericProperties.padding} />
-          <MarginPaddingEditorHtml
-            styles={component.element.style}
-            type="padding"
+          <GroupedInputsWithLock
+            styles={HtmlComponentsUtils.parseStyles(component.element)}
+            type={GroupedInputsType.PADDING}
             onChange={onPropertyChange}
           />
         </PropertyBox>

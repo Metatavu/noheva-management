@@ -5,7 +5,7 @@ import PagePreviewHtml from "../../preview/page-preview-html";
 import { FormControlLabel, Switch, Typography } from "@mui/material";
 import { styled } from "@mui/styles";
 import Fraction from "fraction.js";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 /**
  * Components properties
@@ -16,6 +16,7 @@ interface Props {
   deviceModel: DeviceModel;
   resources: ExhibitionPageResource[];
   selectedComponentId?: string;
+  setOnSaveCallback?: Dispatch<SetStateAction<() => { [key: string]: number }>>;
 }
 
 /**
@@ -39,14 +40,17 @@ const LayoutPreviewHtml = ({
   screenOrientation,
   layoutHtml,
   resources,
-  selectedComponentId
+  selectedComponentId,
+  setOnSaveCallback
 }: Props) => {
   const [showElementBorders, setShowElementBorders] = useState(false);
 
   if (!deviceModel) return null;
 
   const {
-    dimensions: { screenHeight, screenWidth }
+    dimensions: { screenHeight, screenWidth },
+    displayMetrics,
+    screenOrientation: deviceOrientation
   } = deviceModel;
 
   return (
@@ -71,11 +75,13 @@ const LayoutPreviewHtml = ({
           {new Fraction((screenHeight ?? 0) / (screenWidth ?? 0)).toFraction().replace("/", ":")}
         </Typography>
         <PagePreviewHtml
-          deviceModel={deviceModel}
+          displayMetrics={displayMetrics}
+          deviceOrientation={deviceOrientation}
           screenOrientation={screenOrientation}
           layoutHtml={layoutHtml}
           resources={resources}
           borderedElementId={showElementBorders ? selectedComponentId : undefined}
+          setOnsaveCallback={setOnSaveCallback}
         />
       </PanZoom>
       <FormControlLabel

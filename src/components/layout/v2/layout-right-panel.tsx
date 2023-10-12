@@ -4,6 +4,7 @@ import { ActionButton, HtmlComponentType, TreeObject } from "../../../types";
 import ElementSettingsPane from "../../layouts/element-settings-pane";
 import ButtonComponentProperties from "./button-component-properties";
 import GenericComponentProperties from "./generic-component-properties";
+import ImageButtonComponentProperties from "./image-button-component-properties";
 import ImageComponentProperties from "./image-component-properties";
 import LayoutComponentProperties from "./layout-component-properties";
 import TextComponentProperties from "./text-component-properties";
@@ -54,7 +55,12 @@ const LayoutRightPanel = ({
     switch (component.type) {
       case HtmlComponentType.LAYOUT:
         return (
-          <LayoutComponentProperties component={component} updateComponent={updateComponent} />
+          <LayoutComponentProperties
+            component={component}
+            updateComponent={updateComponent}
+            pageLayout={layout}
+            setPageLayout={setLayout}
+          />
         );
       case HtmlComponentType.TEXT:
         return (
@@ -86,6 +92,15 @@ const LayoutRightPanel = ({
       case HtmlComponentType.VIDEO:
         return (
           <VideoComponentProperties
+            component={component}
+            updateComponent={updateComponent}
+            pageLayout={layout}
+            setPageLayout={setLayout}
+          />
+        );
+      case HtmlComponentType.IMAGE_BUTTON:
+        return (
+          <ImageButtonComponentProperties
             component={component}
             updateComponent={updateComponent}
             pageLayout={layout}

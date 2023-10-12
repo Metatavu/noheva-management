@@ -1,3 +1,4 @@
+import { ALLOWED_CHILD_NODE_NAMES, TEXT_NODE_TYPE } from "../components/content-editor/constants";
 import {
   ExhibitionPageResource,
   ExhibitionPageResourceType,
@@ -6,7 +7,7 @@ import {
   PageLayoutViewHtml,
   PageResourceMode
 } from "../generated/client";
-import { TreeObject } from "../types";
+import { HtmlComponentType, TreeObject } from "../types";
 
 /**
  * Utility functions for handling html resources
@@ -108,13 +109,33 @@ namespace HtmlResourceUtils {
     const elementClone = treeObject.element.cloneNode(false) as HTMLElement;
 
     for (const childNode of treeObject.element.childNodes) {
-      if (childNode.nodeType === Node.TEXT_NODE) {
+      if (
+        childNode.nodeType === TEXT_NODE_TYPE ||
+        ALLOWED_CHILD_NODE_NAMES.includes(childNode.nodeName)
+      ) {
         elementClone.appendChild(childNode.cloneNode());
       }
     }
 
     return extractResourceIds(elementClone.outerHTML);
   };
+
+  /**
+   * Gets resource type for given component type
+   *
+   * @param type type
+   */
+  export const getResourceType = (type: HtmlComponentType) =>
+    ({
+      [HtmlComponentType.IMAGE]: ExhibitionPageResourceType.Image,
+      [HtmlComponentType.VIDEO]: ExhibitionPageResourceType.Video,
+      [HtmlComponentType.TEXT]: ExhibitionPageResourceType.Text,
+      [HtmlComponentType.BUTTON]: ExhibitionPageResourceType.Text,
+      [HtmlComponentType.TABS]: ExhibitionPageResourceType.Text,
+      [HtmlComponentType.TAB]: ExhibitionPageResourceType.Text,
+      [HtmlComponentType.LAYOUT]: ExhibitionPageResourceType.Text,
+      [HtmlComponentType.IMAGE_BUTTON]: ExhibitionPageResourceType.Image
+    })[type];
 }
 
 export default HtmlResourceUtils;

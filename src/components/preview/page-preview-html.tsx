@@ -1,16 +1,23 @@
-import { DeviceModel, ExhibitionPageResource, ScreenOrientation } from "../../generated/client";
+import {
+  DeviceModelDisplayMetrics,
+  ExhibitionPageResource,
+  ScreenOrientation
+} from "../../generated/client";
 import { replaceResources, wrapHtmlLayout } from "../layout/utils/tree-html-data-utils";
 import { styled } from "@mui/styles";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 
 /**
  * Components properties
  */
 interface Props {
+  displayMetrics: DeviceModelDisplayMetrics;
+  deviceOrientation: ScreenOrientation;
   screenOrientation: ScreenOrientation;
   layoutHtml: string;
-  deviceModel: DeviceModel;
   resources: ExhibitionPageResource[];
   borderedElementId?: string;
+  setOnsaveCallback?: Dispatch<SetStateAction<() => { [key: string]: number }>>;
 }
 
 /**
@@ -44,26 +51,45 @@ const Preview = styled("iframe")(({ width, height }: PreviewProps) => ({
  * HTML Layouts Page Preview Component
  */
 const PagePreviewHtml = ({
-  deviceModel,
+  displayMetrics,
+  deviceOrientation,
   screenOrientation,
   layoutHtml,
   resources,
-  borderedElementId
+  borderedElementId,
+  setOnsaveCallback
 }: Props) => {
-  if (!deviceModel) return null;
+  const previewRef = useRef<HTMLIFrameElement>(null);
 
-  const {
-    dimensions: { screenHeight, screenWidth }
-  } = deviceModel;
+  /**
+   * On save callback for layout screen
+   * Device application needs to know the max display width of text elements and it is calculated from the preview iframe.
+   *
+   * @returns new widths of elements
+   */
+  const onSaveCallback = () => {
+    const contentDocument = previewRef.current?.contentDocument;
+    const newWidths: { [id: string]: number } = {};
+
+    const elements = contentDocument?.querySelectorAll("[id]") ?? [];
+    elements.forEach((element) => {
+      newWidths[element.id] = element.clientWidth;
+    });
+
+    return newWidths;
+  };
+
+  useEffect(() => {
+    setOnsaveCallback?.(() => onSaveCallback);
+  }, []);
 
   /**
    * Gets preview dimensions
    */
   const getPreviewDimensions = () => {
     const scale = 1;
-    const deviceOrientation = deviceModel.screenOrientation;
-    const initialWidth = screenWidth ?? 1 * scale;
-    const initialHeight = screenHeight ?? 1 * scale;
+    const initialWidth = displayMetrics.widthPixels ?? 1 * scale;
+    const initialHeight = displayMetrics.heightPixels ?? 1 * scale;
 
     let height = initialHeight;
     let width = initialWidth;
@@ -106,6 +132,7 @@ const PagePreviewHtml = ({
     <>
       <div style={{ position: "absolute", width: "100%", height: "100%", zIndex: 1 }} />
       <Preview
+        ref={previewRef}
         srcDoc={wrapHtmlLayout(addBorders(replaceResources(layoutHtml, resources)))}
         {...getPreviewDimensions()}
       />
