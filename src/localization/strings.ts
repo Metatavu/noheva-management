@@ -867,6 +867,8 @@ export interface IStrings extends LocalizedStringsMethods {
     notYetImplemented: string;
     actions: string;
     edit: string;
+    doCopy: string;
+    copy: string;
   };
 
   spaces: {
