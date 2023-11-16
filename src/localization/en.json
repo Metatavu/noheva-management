@@ -849,7 +849,9 @@
     "clear": "Clear",
     "notYetImplemented": "Not yet implemented",
     "actions": "Actions",
-    "edit": "Modify"
+    "edit": "Modify",
+    "doCopy": "Copy",
+    "copy": "Copy"
   },
 
   "spaces": {

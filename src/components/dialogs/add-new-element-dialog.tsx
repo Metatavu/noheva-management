@@ -81,6 +81,15 @@ const AddNewElementDialog = ({ open, siblingPath, onConfirm, onClose }: Props) =
   );
 
   /**
+   * Filters disabled component types
+   *
+   * @param type type
+   * @returns true if component type is not disabled, false otherwise
+   */
+  const filterDisabledComponentTypes = (type: HtmlComponentType) =>
+    !DISABLED_COMPONENT_TYPES.includes(type);
+
+  /**
    * Render add layout component dialog
    */
   const renderDialogContent = () => (
@@ -91,7 +100,9 @@ const AddNewElementDialog = ({ open, siblingPath, onConfirm, onClose }: Props) =
         value={newComponentType ?? ""}
         onChange={onComponentTypeChange}
       >
-        {Object.values(HtmlComponentType).map(renderComponentTypesMenuItems)}
+        {Object.values(HtmlComponentType)
+          .filter(filterDisabledComponentTypes)
+          .map(renderComponentTypesMenuItems)}
       </TextField>
       <FormHelperText>
         {newComponentType && LocalizationUtils.getLocalizedNewComponentHelpText(newComponentType)}
