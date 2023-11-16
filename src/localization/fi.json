@@ -857,7 +857,9 @@
     "clear": "Tyhjennä",
     "notYetImplemented": "Ei vielä toteutettu",
     "actions": "Toiminnot",
-    "edit": "Muokkaa"
+    "edit": "Muokkaa",
+    "doCopy": "Kopioi",
+    "copy": "Kopio"
   },
 
   "spaces": {

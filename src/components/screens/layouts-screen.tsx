@@ -5,9 +5,11 @@ import {
   DeviceModel,
   Exhibition,
   ExhibitionPage,
+  ExhibitionPageResource,
   ExhibitionPageResourceType,
   LayoutType,
   PageLayout,
+  PageLayoutViewHtml,
   PageResourceMode,
   ScreenOrientation,
   SubLayout
@@ -20,7 +22,8 @@ import {
   ActionButton,
   ConfirmDialogData,
   DeleteDataHolder,
-  HtmlComponentType
+  HtmlComponentType,
+  TreeObject
 } from "../../types";
 import DeleteUtils from "../../utils/delete-utils";
 import HtmlComponentsUtils from "../../utils/html-components-utils";
@@ -29,9 +32,10 @@ import AddNewLayoutDialog from "../dialogs/add-new-layout-dialog";
 import CardItem from "../generic/card/card-item";
 import CardList from "../generic/card/card-list";
 import ConfirmDialog from "../generic/confirm-dialog";
+import { constructTree } from "../layout/utils/tree-html-data-utils";
 import LayoutCardBadge from "../layout/v2/layout-card-badge";
 import BasicLayout from "../layouts/basic-layout";
-import { CircularProgress, SelectChangeEvent } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import produce from "immer";
@@ -39,6 +43,7 @@ import { KeycloakInstance } from "keycloak-js";
 import { Component } from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { v4 as uuid } from "uuid";
 
 /**
  * Component props
@@ -48,7 +53,6 @@ interface Props extends WithStyles<typeof styles> {
   keycloak: KeycloakInstance;
   accessToken: AccessToken;
   layouts: PageLayout[];
-  subLayouts: SubLayout[];
   deviceModels: DeviceModel[];
   setLayouts: typeof setLayouts;
   setSelectedLayout: typeof setSelectedLayout;
@@ -152,7 +156,6 @@ class LayoutsScreen extends Component<Props, State> {
           deviceModels={this.props.deviceModels}
           onClose={this.toggleAddNewDialog}
           onCreateNewLayout={this.createNewLayout}
-          onCreateNewSubLayout={this.createNewSubLayout}
         />
         {this.renderConfirmDialog()}
       </BasicLayout>
@@ -163,8 +166,8 @@ class LayoutsScreen extends Component<Props, State> {
    * Renders layouts as card list
    */
   private renderLayoutCardsList = () => {
-    const { layouts, subLayouts } = this.props;
-    if (layouts.length < 1 && subLayouts.length < 1) {
+    const { layouts } = this.props;
+    if (!layouts.length) {
       return null;
     }
 
@@ -189,39 +192,9 @@ class LayoutsScreen extends Component<Props, State> {
         );
       });
 
-    const subLayoutCards = [...subLayouts]
-      .sort((a, _) => (a.layoutType === LayoutType.Html ? -1 : 1))
-      .map((subLayout) => {
-        const subLayoutId = subLayout.id;
-        if (!subLayoutId || !subLayout.layoutType) {
-          return null;
-        }
-
-        const cardMenuOptions = this.getSubLayoutCardMenuOptions(subLayout);
-
-        return (
-          <LayoutCardBadge key={subLayout.id} type={subLayout.layoutType}>
-            <CardItem
-              key={subLayout.id}
-              title={`${strings.subLayout.name} - ${subLayout.name}`}
-              onClick={() => this.onSubLayoutCardClick(subLayoutId)}
-              menuOptions={cardMenuOptions}
-            />
-          </LayoutCardBadge>
-        );
-      });
-
     return (
       <div style={{ width: "100%", overflowY: "auto" }}>
         <CardList autoHeight>{layoutCards}</CardList>
-
-        <CardList
-          autoHeight
-          title={strings.subLayout.title}
-          subtitle={strings.subLayout.description}
-        >
-          {subLayoutCards}
-        </CardList>
       </div>
     );
   };
@@ -246,21 +219,10 @@ class LayoutsScreen extends Component<Props, State> {
       {
         name: strings.exhibitions.cardMenu.delete,
         action: () => this.onDeletePageLayoutClick(pageLayout)
-      }
-    ];
-  };
-
-  /**
-   * Gets sub layout card menu options
-   *
-   * @param subLayout sub layout
-   * @returns sub layout card menu options as action button array
-   */
-  private getSubLayoutCardMenuOptions = (subLayout: SubLayout): ActionButton[] => {
-    return [
+      },
       {
-        name: strings.exhibitions.cardMenu.delete,
-        action: () => this.onDeleteSubLayoutClick(subLayout)
+        name: strings.generic.doCopy,
+        action: () => this.onCopyPageLayoutClick(pageLayout)
       }
     ];
   };
@@ -272,6 +234,55 @@ class LayoutsScreen extends Component<Props, State> {
    */
   private getActionButtons = () => {
     return [{ name: strings.layout.addNew, action: this.toggleAddNewDialog }] as ActionButton[];
+  };
+
+  private processTreeBranch = (branch: TreeObject, elementIdsMap: { [key: string]: string }) => {
+    elementIdsMap[branch.id] = uuid();
+    for (const child of branch.children) {
+      this.processTreeBranch(child, elementIdsMap);
+    }
+  };
+
+  /**
+   * Event handler for page layout copy click
+   *
+   * @param pageLayout page layout to copy
+   */
+  private onCopyPageLayoutClick = async (pageLayout: PageLayout) => {
+    const { accessToken } = this.props;
+
+    if (!pageLayout.id || pageLayout.layoutType !== LayoutType.Html) return;
+
+    let layoutCopy = { ...pageLayout };
+
+    const elementIdsMap: { [key: string]: string } = {};
+    const defaultResourcesMap: { [id: string]: ExhibitionPageResource } = {};
+    const defaultResources = layoutCopy.defaultResources || [];
+    for (const resource of defaultResources) {
+      defaultResourcesMap[resource.id] = { ...resource, id: uuid() };
+    }
+
+    const tree = constructTree((layoutCopy.data as PageLayoutViewHtml).html);
+    this.processTreeBranch(tree[0], elementIdsMap);
+    let layoutCopyHtml = (layoutCopy.data as PageLayoutViewHtml).html;
+    Object.keys(elementIdsMap).forEach((key) => {
+      layoutCopyHtml = layoutCopyHtml.replace(key, elementIdsMap[key]);
+    });
+    Object.keys(defaultResourcesMap).forEach((key) => {
+      layoutCopyHtml = layoutCopyHtml.replace(key, defaultResourcesMap[key].id);
+    });
+
+    layoutCopy = {
+      ...layoutCopy,
+      name: `${layoutCopy.name} - ${strings.generic.copy}`,
+      defaultResources: Object.values(defaultResourcesMap),
+      data: {
+        html: layoutCopyHtml
+      }
+    };
+    const layoutsApi = Api.getPageLayoutsApi(accessToken);
+    const createdLayout = await layoutsApi.createPageLayout({ pageLayout: layoutCopy });
+    this.props.setLayouts([...this.props.layouts, createdLayout]);
   };
 
   /**
@@ -329,28 +340,6 @@ class LayoutsScreen extends Component<Props, State> {
   };
 
   /**
-   * Event handler for sub layout delete click
-   *
-   * @param pageLayout sub layout to delete
-   */
-  private onDeleteSubLayoutClick = async (subLayout: SubLayout) => {
-    if (!subLayout.id) {
-      return;
-    }
-
-    const tempDeleteData = { ...this.state.confirmDialogData } as ConfirmDialogData;
-
-    tempDeleteData.title = strings.subLayout.delete.deleteTitle;
-    tempDeleteData.text = strings.subLayout.delete.deleteText;
-    tempDeleteData.onConfirm = () => this.deleteSubLayout(subLayout);
-
-    this.setState({
-      deleteDialogOpen: true,
-      confirmDialogData: tempDeleteData
-    });
-  };
-
-  /**
    * Creates new layout
    *
    * @param layout layout
@@ -391,34 +380,6 @@ class LayoutsScreen extends Component<Props, State> {
   };
 
   /**
-   * Creates new sub layout
-   */
-  private createNewSubLayout = async (name: string) => {
-    const { accessToken, setSubLayouts, subLayouts } = this.props;
-
-    if (!name) {
-      return;
-    }
-
-    const subLayout: SubLayout = {
-      name: name,
-      layoutType: LayoutType.Html,
-      data: {
-        html: HtmlComponentsUtils.getSerializedHtmlElement(HtmlComponentType.LAYOUT)
-      }
-    };
-
-    const subLayoutsApi = Api.getSubLayoutsApi(accessToken);
-    const createdSubLayout = await subLayoutsApi.createSubLayout({ subLayout });
-    subLayouts.push(createdSubLayout);
-    setSubLayouts(subLayouts);
-
-    this.setState({
-      addNewDialogOpen: false
-    });
-  };
-
-  /**
    * Event handler for layout card click
    *
    * @param layoutId layout id
@@ -437,53 +398,12 @@ class LayoutsScreen extends Component<Props, State> {
   };
 
   /**
-   * Event handler for sub layout card click
-   *
-   * @param subLayoutId sub layout id
-   */
-  private onSubLayoutCardClick = (subLayoutId: string) => {
-    const { subLayouts } = this.props;
-    const { pathname } = this.props.history.location;
-    const foundSubLayout = subLayouts.find((subLayout) => subLayout.id === subLayoutId);
-
-    if (!foundSubLayout) {
-      return;
-    }
-
-    this.props.setSelectedSubLayout(foundSubLayout);
-    this.props.history.push(`${pathname}/sub/${subLayoutId}`);
-  };
-
-  /**
    * Toggles add new layout dialog
    */
   private toggleAddNewDialog = () => {
     this.setState({
       addNewDialogOpen: !this.state.addNewDialogOpen
     });
-  };
-
-  /**
-   * Event handler for new layout change
-   *
-   * @param event event
-   */
-  private onNewLayoutChange = (event: SelectChangeEvent<string>) => {
-    const { newLayout, newSubLayout, createSubLayout } = this.state;
-    const { name, value } = event.target;
-
-    if (!name) {
-      return;
-    }
-    if (createSubLayout) {
-      this.setState({
-        newSubLayout: { ...newSubLayout, [name]: value }
-      });
-    } else {
-      this.setState({
-        newLayout: { ...newLayout, [name]: value }
-      });
-    }
   };
 
   /**
@@ -512,32 +432,6 @@ class LayoutsScreen extends Component<Props, State> {
     this.clearDialog();
     this.props.setLayouts(updatedLayouts);
   };
-
-  /**
-   * Deletes sub layout
-   *
-   * @param layout layout
-   */
-  private deleteSubLayout = async (subLayout: SubLayout) => {
-    const { accessToken, subLayouts } = this.props;
-    const subLayoutId = subLayout.id;
-    if (!subLayoutId) {
-      return;
-    }
-
-    const layoutsApi = Api.getSubLayoutsApi(accessToken);
-    await layoutsApi.deleteSubLayout({ subLayoutId });
-
-    const updatedSubLayouts = produce(subLayouts, (draft) => {
-      const subLayoutIndex = draft.findIndex((layout) => layout.id === subLayoutId);
-      if (subLayoutIndex > -1) {
-        draft.splice(subLayoutIndex, 1);
-      }
-    });
-
-    this.clearDialog();
-    this.props.setSubLayouts(updatedSubLayouts);
-  };
 }
 
 /**
@@ -550,7 +444,6 @@ function mapStateToProps(state: ReduxState) {
     keycloak: state.auth.keycloak as KeycloakInstance,
     accessToken: state.auth.accessToken as AccessToken,
     layouts: state.layouts.layouts,
-    subLayouts: state.subLayouts.subLayouts,
     deviceModels: state.devices.deviceModels
   };
 }
@@ -564,7 +457,6 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
   return {
     setLayouts: (layouts: PageLayout[]) => dispatch(setLayouts(layouts)),
     setSelectedLayout: (layout: PageLayout) => dispatch(setSelectedLayout(layout)),
-    setSubLayouts: (subLayouts: SubLayout[]) => dispatch(setSubLayouts(subLayouts)),
     setSelectedSubLayout: (subLayout: SubLayout) => dispatch(setSelectedSubLayout(subLayout))
   };
 }

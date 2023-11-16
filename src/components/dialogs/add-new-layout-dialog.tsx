@@ -8,15 +8,12 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Stack,
-  Switch,
-  TextField,
-  Tooltip
+  TextField
 } from "@mui/material";
 import { useState } from "react";
 
@@ -28,7 +25,6 @@ interface Props {
   deviceModels: DeviceModel[];
   onClose: () => void;
   onCreateNewLayout: (name: string, deviceModelId: string) => Promise<void>;
-  onCreateNewSubLayout: (name: string) => Promise<void>;
 }
 
 /**
@@ -40,26 +36,18 @@ const AddNewLayoutDialog: React.FC<Props> = ({
   open,
   deviceModels,
   onClose,
-  onCreateNewLayout,
-  onCreateNewSubLayout
+  onCreateNewLayout
 }) => {
   const [newLayoutName, setNewLayoutName] = useState<string>();
-  const [createSubLayout, setCreateSubLayout] = useState<boolean>(false);
   const [selectedDeviceModelId, setSelectedDeviceModelId] = useState<string>();
 
-  const isValid = createSubLayout ? !!newLayoutName : !!newLayoutName && !!selectedDeviceModelId;
+  const isValid = !!newLayoutName && !!selectedDeviceModelId;
 
   /**
    * Handler for New Layout Name TextField change event
    */
   const onNewLayoutNameChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) =>
     setNewLayoutName(value);
-
-  /**
-   * Handler for PageLayout/SubLayout Switch change event
-   */
-  const onLayoutTypeSwitchChange = ({ target: { checked } }: React.ChangeEvent<HTMLInputElement>) =>
-    setCreateSubLayout(checked);
 
   /**
    * Handler for New Layout Device Model Select change event
@@ -78,7 +66,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
       <Select
         fullWidth
         style={{ marginTop: theme.spacing(2) }}
-        label={strings.device.dialog.model}
+        label={strings.devicesV2.model}
         labelId="screenOrientation-label"
         name="modelId"
         value={selectedDeviceModelId ?? ""}
@@ -100,9 +88,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="add-new-layout-dialog-title">
-        {createSubLayout ? strings.subLayout.addNew : strings.layout.addNew}
-      </DialogTitle>
+      <DialogTitle id="add-new-layout-dialog-title">{strings.layout.addNew}</DialogTitle>
       <DialogContent>
         <Stack>
           <TextField
@@ -113,23 +99,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
             value={newLayoutName ?? ""}
             onChange={onNewLayoutNameChange}
           />
-          <Tooltip title={strings.generic.notYetImplemented}>
-            <FormControlLabel
-              style={{ marginTop: theme.spacing(2) }}
-              disabled
-              control={
-                <Switch
-                  checked={createSubLayout}
-                  onChange={onLayoutTypeSwitchChange}
-                  color="secondary"
-                  name="sublayout"
-                  inputProps={{ "aria-label": "primary checkbox" }}
-                />
-              }
-              label={strings.layout.makeAsSubLayout}
-            />
-          </Tooltip>
-          {!createSubLayout && renderDeviceModelSelect()}
+          {renderDeviceModelSelect()}
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -140,11 +110,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
           disableElevation
           variant="contained"
           disabled={!isValid}
-          onClick={() =>
-            createSubLayout
-              ? onCreateNewSubLayout(newLayoutName)
-              : onCreateNewLayout(newLayoutName, selectedDeviceModelId)
-          }
+          onClick={() => isValid && onCreateNewLayout(newLayoutName, selectedDeviceModelId)}
           color="secondary"
           autoFocus
         >
