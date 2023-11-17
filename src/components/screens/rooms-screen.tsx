@@ -46,6 +46,8 @@ interface State {
  * Component for rooms screen
  */
 class RoomsScreen extends React.Component<Props, State> {
+  private exhibitionManagementEnabled = false;
+
   /**
    * Constructor
    *
@@ -103,25 +105,27 @@ class RoomsScreen extends React.Component<Props, State> {
         breadcrumbs={breadcrumbs}
       >
         {this.renderRoomCardsList()}
-        <ElementSettingsPane
-          open={true}
-          title={strings.exhibition.exhibitionManagement}
-          width={320}
-        >
-          <List disablePadding>
-            {this.renderExhibitionManagementLink(strings.exhibition.visitors, "visitors", true)}
-            {this.renderExhibitionManagementLink(strings.exhibition.reception, "reception", true)}
-            {this.renderExhibitionManagementLink(
-              strings.exhibition.visitorVariables,
-              "visitorVariables"
-            )}
-            {this.renderExhibitionManagementLink(
-              strings.exhibition.resetVisitorVariables,
-              "resetVisitorVariables"
-            )}
-            {this.renderExhibitionManagementLink(strings.exhibition.diagnostics, "diagnostics")}
-          </List>
-        </ElementSettingsPane>
+        {this.exhibitionManagementEnabled && (
+          <ElementSettingsPane
+            open={true}
+            title={strings.exhibition.exhibitionManagement}
+            width={320}
+          >
+            <List disablePadding>
+              {this.renderExhibitionManagementLink(strings.exhibition.visitors, "visitors", true)}
+              {this.renderExhibitionManagementLink(strings.exhibition.reception, "reception", true)}
+              {this.renderExhibitionManagementLink(
+                strings.exhibition.visitorVariables,
+                "visitorVariables"
+              )}
+              {this.renderExhibitionManagementLink(
+                strings.exhibition.resetVisitorVariables,
+                "resetVisitorVariables"
+              )}
+              {this.renderExhibitionManagementLink(strings.exhibition.diagnostics, "diagnostics")}
+            </List>
+          </ElementSettingsPane>
+        )}
       </BasicLayout>
     );
   };

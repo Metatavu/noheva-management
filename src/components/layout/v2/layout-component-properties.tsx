@@ -139,22 +139,6 @@ const LayoutComponentProperties: FC<Props> = ({
           </SelectBox>
         </Stack>
       </PropertyBox>
-      <Divider sx={{ color: "#F5F5F5" }} />
-      <PropertyBox>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <PanelSubtitle
-            sx={{ flex: 1 }}
-            subtitle={strings.layoutEditorV2.layoutProperties.contentGap}
-          />
-          <TextField
-            name="gap"
-            number
-            sx={{ flex: 0.5 }}
-            value={parseInt(component.element?.style.gap || "0").toString()}
-            onChange={onPropertyChange}
-          />
-        </Stack>
-      </PropertyBox>
     </Stack>
   );
 };

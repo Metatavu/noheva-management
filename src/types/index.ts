@@ -259,10 +259,7 @@ export interface KeycloakConfig {
  * Interface describing mqtt configuration
  */
 export interface MQTTConfig {
-  secure: boolean;
-  host: string;
-  port: number;
-  path: string;
+  urls: string[];
   prefix: string;
   userName: string;
   password: string;
@@ -343,6 +340,14 @@ export enum GroupedInputsType {
   MARGIN = "margin",
   PADDING = "padding",
   BORDER_RADIUS = "border-radius"
+}
+
+/**
+ * Navigation button interface
+ */
+export interface NavigationButton {
+  postfix: string;
+  label: string;
 }
 
 // Required for Leaflet to work.
