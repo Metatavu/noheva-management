@@ -244,6 +244,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
         <FileUploader
           controlled
           open={addImageDialogOpen}
+          maxFileSize={10485760}
           onClose={this.toggleUploadNewImageDialog}
           uploadKey="new"
           buttonText={strings.floorPlan.toolbar.upload}
