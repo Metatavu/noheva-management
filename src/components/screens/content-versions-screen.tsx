@@ -1,3 +1,19 @@
+import {
+  Box,
+  CircularProgress,
+  MenuItem,
+  TextField,
+  TextFieldProps,
+  Typography
+} from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import withStyles from "@mui/styles/withStyles";
+import { History } from "history";
+import produce from "immer";
+import { KeycloakInstance } from "keycloak-js";
+import * as React from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
 import Api from "../../api/api";
 import {
   ContentVersionActiveCondition,
@@ -28,22 +44,6 @@ import ConfirmDialog from "../generic/confirm-dialog";
 import GenericDialog from "../generic/generic-dialog";
 import WithDebounce from "../generic/with-debounce";
 import BasicLayout from "../layouts/basic-layout";
-import {
-  Box,
-  CircularProgress,
-  MenuItem,
-  TextField,
-  TextFieldProps,
-  Typography
-} from "@mui/material";
-import { WithStyles } from "@mui/styles";
-import withStyles from "@mui/styles/withStyles";
-import { History } from "history";
-import produce from "immer";
-import { KeycloakInstance } from "keycloak-js";
-import * as React from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
 
 /**
  * Component props
@@ -404,25 +404,29 @@ class ContentVersionsScreen extends React.Component<Props, State> {
      * the user should be prohibited to make two content versions with the same name and language.
      */
     const multiLingualContentVersions: MultiLingualContentVersion[] = [];
-    contentVersions.forEach((contentVersion) => {
-      const existingIndex = multiLingualContentVersions.findIndex((multiLingualContentVersion) => {
-        const { languageVersions } = multiLingualContentVersion;
-        const sameName = languageVersions.some(
-          (languageVersion) => languageVersion.name === contentVersion.name
+    contentVersions
+      .sort((a, b) => a.name.localeCompare(b.name, "fi"))
+      .forEach((contentVersion) => {
+        const existingIndex = multiLingualContentVersions.findIndex(
+          (multiLingualContentVersion) => {
+            const { languageVersions } = multiLingualContentVersion;
+            const sameName = languageVersions.some(
+              (languageVersion) => languageVersion.name === contentVersion.name
+            );
+            const differentLanguage = languageVersions.every(
+              (languageVersion) => languageVersion.language !== contentVersion.language
+            );
+            return sameName && differentLanguage;
+          }
         );
-        const differentLanguage = languageVersions.every(
-          (languageVersion) => languageVersion.language !== contentVersion.language
-        );
-        return sameName && differentLanguage;
+
+        if (existingIndex > -1) {
+          multiLingualContentVersions[existingIndex].languageVersions.push(contentVersion);
+          return;
+        }
+
+        multiLingualContentVersions.push({ languageVersions: [contentVersion] });
       });
-
-      if (existingIndex > -1) {
-        multiLingualContentVersions[existingIndex].languageVersions.push(contentVersion);
-        return;
-      }
-
-      multiLingualContentVersions.push({ languageVersions: [contentVersion] });
-    });
 
     this.setState({
       exhibition,
