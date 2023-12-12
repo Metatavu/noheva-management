@@ -1077,6 +1077,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const exhibitionPagesApi = Api.getExhibitionPagesApi(accessToken);
     const visitorVariablesApi = Api.getVisitorVariablesApi(accessToken);
     const devicesApi = Api.getDevicesApi(accessToken);
+    const exhibitionDeviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
 
     const [
       initialContentVersion,
@@ -1084,14 +1085,19 @@ class ContentEditorScreen extends React.Component<Props, State> {
       contentVersion,
       layouts,
       visitorVariables,
-      devices
+      devices,
+      exhibitionDeviceGroups
     ] = await Promise.all([
       contentVersionsApi.findContentVersion({ exhibitionId, contentVersionId }),
       contentVersionsApi.listContentVersions({ exhibitionId, roomId }),
       contentVersionsApi.findContentVersion({ exhibitionId, contentVersionId }),
       layoutsApi.listPageLayouts({}),
       visitorVariablesApi.listVisitorVariables({ exhibitionId: exhibitionId }),
-      devicesApi.listDevices({})
+      devicesApi.listDevices({}),
+      exhibitionDeviceGroupsApi.listExhibitionDeviceGroups({
+        exhibitionId: exhibitionId,
+        roomId: roomId
+      })
     ]);
 
     /**
@@ -1118,9 +1124,14 @@ class ContentEditorScreen extends React.Component<Props, State> {
         contentVersions.push(contentVersionInRoom);
       }
     });
+    const exhibitionDevicesInRoom = exhibitionDevices.filter((exhibitionDevice) =>
+      exhibitionDeviceGroups.find(
+        (exhibitionDeviceGroup) => exhibitionDeviceGroup.id === exhibitionDevice.groupId
+      )
+    );
 
     const devicePages = await Promise.all(
-      exhibitionDevices.map((exhibitionDevice) =>
+      exhibitionDevicesInRoom.map((exhibitionDevice) =>
         exhibitionPagesApi.listExhibitionPages({
           exhibitionId,
           exhibitionDeviceId: exhibitionDevice.id,
@@ -1134,7 +1145,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const selectedDevice = exhibitionDevices[0];
     const previewDevicesData = this.getPreviewDevicesData(
       selectedContentVersion,
-      exhibitionDevices,
+      exhibitionDevicesInRoom,
       pages
     );
     const selectedPage = pages.find(
@@ -1150,7 +1161,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
     this.setState({
       contentVersions,
-      exhibitionDevices,
+      exhibitionDevices: exhibitionDevicesInRoom,
       previewDevicesData,
       pages,
       visitorVariables: visitorVariables,
