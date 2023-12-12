@@ -505,7 +505,7 @@
       "elementName": "Element name",
       "proportions": "Proportions",
       "backgroundImage": "Background image",
-      "videoProportionsTooltip": "Video element only supports pixel dimensions",
+      "noPercentageDimensionsTooltip": "{0} element only supports pixel dimensions",
       "width": "Width",
       "height": "Height",
       "elevation": "Elevation",

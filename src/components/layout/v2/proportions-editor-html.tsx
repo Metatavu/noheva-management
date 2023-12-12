@@ -1,6 +1,7 @@
 import strings from "../../../localization/strings";
-import { HtmlComponentType, TreeObject } from "../../../types";
+import { TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
+import LocalizationUtils from "../../../utils/localization-utils";
 import ConditionalTooltip from "../../generic/v2/conditional-tooltip";
 import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
@@ -23,13 +24,17 @@ interface Props {
  * HTML Component proportions editor
  */
 const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Props) => {
+  const componentCanUsePercentageProportions =
+    !HtmlComponentsUtils.COMPONENTS_WITHOUT_PERCENTAGE_PROPORTIONS.includes(component.type);
+  console.log(componentCanUsePercentageProportions);
   /**
    * Gets element proportion type
    *
    * @param proportion proportion
    */
   const getElementProportionType = (proportion: "width" | "height") => {
-    if (component.type === HtmlComponentType.VIDEO) return "px";
+    if (!componentCanUsePercentageProportions) return "px";
+
     const styles = HtmlComponentsUtils.parseStyles(component.element);
     const elementDimension = styles[proportion];
 
@@ -83,19 +88,27 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
     }
   };
 
+  /**
+   * Gets appropriate tooltip text based on component type
+   *
+   * @returns tooltip text
+   */
+  const getTooltipText = () =>
+    strings.formatString(
+      strings.layoutEditorV2.genericProperties.noPercentageDimensionsTooltip,
+      LocalizationUtils.getLocalizedComponentType(component.type)
+    );
+
   return (
     <Stack direction="row" spacing={1} alignItems="center">
       <Typography variant="caption" fontWeight={500} fontSize="12px">
         {label}
       </Typography>
       <TextField name={name} value={value} number onChange={onValueChange} />
-      <ConditionalTooltip
-        enabled={component.type === HtmlComponentType.VIDEO}
-        title={strings.layoutEditorV2.genericProperties.videoProportionsTooltip}
-      >
+      <ConditionalTooltip enabled={!componentCanUsePercentageProportions} title={getTooltipText()}>
         <SelectBox
           value={getElementProportionType(name)}
-          disabled={component.type === HtmlComponentType.VIDEO}
+          disabled={!componentCanUsePercentageProportions}
           onChange={onSettingsChange}
         >
           <MenuItem value="px" sx={{ color: "#2196F3" }}>

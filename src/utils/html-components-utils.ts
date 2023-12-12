@@ -264,6 +264,16 @@ namespace HtmlComponentsUtils {
    * Default line-height
    */
   export const DEFAULT_LINE_HEIGHT = 1.2;
+
+  /**
+   * Components that don't support proportions as percentages
+   */
+  export const COMPONENTS_WITHOUT_PERCENTAGE_PROPORTIONS = [
+    HtmlComponentType.IMAGE,
+    HtmlComponentType.VIDEO,
+    HtmlComponentType.IMAGE_BUTTON,
+    HtmlComponentType.BUTTON
+  ];
 }
 
 export default HtmlComponentsUtils;
