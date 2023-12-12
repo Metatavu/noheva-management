@@ -55,6 +55,12 @@
     "rename": {
       "title": "Anna näyttelylle uusi nimi"
     },
+    "setActiveExhibitionDalog": {
+      "title": "Aseta näyttely aktiiviseksi",
+      "currentlyActiveExhibition": "Tällä hetkellä aktiivinen näyttely on: {0}",
+      "newActiveExhibition": "Haluatko vaihtaa näyttelyn {0} aktiiviseksi?",
+      "setActiveButton": "Aseta aktiiviseksi"
+    },
     "createExhibitionDialog": {
       "title": "Luo uusi näyttely",
       "helpText": "Voit luoda uuden näyttelyn täyttämällä Nimi -kentän ja painamalla Luo -paniketta",
@@ -75,7 +81,8 @@
       "delete": "Poista",
       "rename": "Nimeä uudelleen",
       "edit": "Muokkaa",
-      "copyExhibition": "Kopioi näyttely"
+      "copyExhibition": "Kopioi näyttely",
+      "setActive": "Aseta aktiiviseksi"
     }
   },
 

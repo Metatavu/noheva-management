@@ -46,6 +46,12 @@ export interface IStrings extends LocalizedStringsMethods {
     rename: {
       title: string;
     };
+    setActiveExhibitionDalog: {
+      title: string;
+      currentlyActiveExhibition: string;
+      newActiveExhibition: string;
+      setActiveButton: string;
+    };
     createExhibitionDialog: {
       title: string;
       helpText: string;
@@ -67,6 +73,7 @@ export interface IStrings extends LocalizedStringsMethods {
       rename: string;
       edit: string;
       copyExhibition: string;
+      setActive: string;
     };
   };
 
