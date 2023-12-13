@@ -26,7 +26,7 @@ interface Props {
 const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Props) => {
   const componentCanUsePercentageProportions =
     !HtmlComponentsUtils.COMPONENTS_WITHOUT_PERCENTAGE_PROPORTIONS.includes(component.type);
-  console.log(componentCanUsePercentageProportions);
+
   /**
    * Gets element proportion type
    *
