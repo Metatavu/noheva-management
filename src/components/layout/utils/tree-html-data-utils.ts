@@ -36,29 +36,22 @@ const deleteInTree = (
   destinationPath: string,
   currentPath: string
 ): TreeObject[] => {
-  let found = false;
   const cleanNodes: TreeObject[] = [];
   for (const element of treeData) {
     const node = element;
     const fullPath = `${currentPath}/${node.id}`;
     if (fullPath !== destinationPath) {
       cleanNodes.push(node);
-    } else {
-      found = true;
     }
 
-    if (found) {
-      return cleanNodes;
-    } else {
-      for (const element of treeData) {
-        const child = element;
-        const updatedPath = `${currentPath}/${child.id}`;
-        child.children = deleteInTree(child.children ?? [], destinationPath, updatedPath);
-      }
+    for (const element of treeData) {
+      const child = element;
+      const updatedPath = `${currentPath}/${child.id}`;
+      child.children = deleteInTree(child.children ?? [], destinationPath, updatedPath);
     }
   }
 
-  return treeData;
+  return cleanNodes;
 };
 
 /**
@@ -262,6 +255,27 @@ export const constructTree = (html: string) => {
   const domArray = Array.from(dom.children);
 
   return domArray.map((element) => createTreeObject(element) as TreeObject);
+};
+
+/**
+ * Finds component recursively by id
+ *
+ * @param tree tree
+ * @param id id
+ * @returns TreeObject
+ */
+export const findTreeObjectById = (tree: TreeObject[], id: string): TreeObject | undefined => {
+  for (const item of tree) {
+    if (item.id === id) {
+      return item;
+    }
+    if (item.children) {
+      const result = findTreeObjectById(item.children, id);
+      if (result) {
+        return result;
+      }
+    }
+  }
 };
 
 /**

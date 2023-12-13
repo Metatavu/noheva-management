@@ -75,7 +75,7 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
       if (!width) return;
       return parseInt(width).toString();
     }
-    const width = styles["width"].replace(/(px)|%/g, "");
+    const width = styles["width"]?.replace(/(px)|%/g, "");
     if (!width) return;
     return parseInt(width).toString();
   };
@@ -91,7 +91,7 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
       if (!height) return;
       return parseInt(height).toString();
     }
-    const height = styles["height"].replace(/(px)|%/g, "");
+    const height = styles["height"]?.replace(/(px)|%/g, "");
     if (!height) return;
     return parseInt(height).toString();
   };
