@@ -69,9 +69,15 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
     const { tagName } = element;
     const styles = HtmlComponentsUtils.parseStyles(element);
     if (tagName.toLowerCase() === HtmlComponentType.VIDEO) {
-      return parseInt(component.element.attributes.getNamedItem("width")?.value || "0").toString();
+      const width = component.element.attributes
+        .getNamedItem("width")
+        ?.value.replace(/(px)|%/g, "");
+      if (!width) return;
+      return parseInt(width).toString();
     }
-    return parseInt(styles["width"] || "0").toString();
+    const width = styles["width"].replace(/(px)|%/g, "");
+    if (!width) return;
+    return parseInt(width).toString();
   };
 
   const getElementHeight = () => {
@@ -79,9 +85,15 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
     const { tagName } = element;
     const styles = HtmlComponentsUtils.parseStyles(element);
     if (tagName.toLowerCase() === HtmlComponentType.VIDEO) {
-      return parseInt(component.element.attributes.getNamedItem("height")?.value || "0").toString();
+      const height = component.element.attributes
+        .getNamedItem("height")
+        ?.value.replace(/(px)|%/g, "");
+      if (!height) return;
+      return parseInt(height).toString();
     }
-    return parseInt(styles["height"] || "0").toString();
+    const height = styles["height"].replace(/(px)|%/g, "");
+    if (!height) return;
+    return parseInt(height).toString();
   };
   /**
    * Event handler for name change events

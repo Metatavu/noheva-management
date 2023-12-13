@@ -14,7 +14,7 @@ import { ChangeEvent, useState } from "react";
  */
 interface Props {
   component: TreeObject;
-  value: string;
+  value?: string;
   name: "width" | "height";
   label: string;
   onChange: (name: string, value: string) => void;
@@ -59,7 +59,8 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
    * @param event event
    */
   const onValueChange = ({ target: { name, value } }: ChangeEvent<HTMLInputElement>) => {
-    const val = `${value}${proportionType}`;
+    // Strip all non-numeric characters as they are not allowed
+    const val = `${value.replace(/\D/g, "")}${proportionType}`;
 
     onChange(name, val);
   };
@@ -104,7 +105,7 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
       <Typography variant="caption" fontWeight={500} fontSize="12px">
         {label}
       </Typography>
-      <TextField name={name} value={value} number onChange={onValueChange} />
+      <TextField name={name} value={value} onChange={onValueChange} />
       <ConditionalTooltip enabled={!componentCanUsePercentageProportions} title={getTooltipText()}>
         <SelectBox
           value={getElementProportionType(name)}
