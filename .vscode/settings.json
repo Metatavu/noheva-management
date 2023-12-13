@@ -4,7 +4,7 @@
   "editor.formatOnSaveMode": "file",
   "editor.defaultFormatter": "rome.rome",
   "editor.codeActionsOnSave": {
-    "source.organizeImports.rome": true
+    "source.organizeImports.rome": "explicit"
   },
   "cSpell.words": [
     "Exhibition"

@@ -1,4 +1,4 @@
-import { HtmlComponentType, HtmlTextComponentType, TreeObject } from "../types";
+import { HtmlComponentType, HtmlTextComponentType, TextAlignment, TreeObject } from "../types";
 import { v4 as uuid } from "uuid";
 
 namespace HtmlComponentsUtils {
@@ -259,6 +259,15 @@ namespace HtmlComponentsUtils {
 
     return parseInt(fontSize);
   };
+
+  /**
+   * Default text align
+   */
+  export const DEFAULT_TEXT_ALIGNMENT = TextAlignment.LEFT;
+
+  /**
+   * Text alignment button
+   */
 
   /**
    * Default line-height

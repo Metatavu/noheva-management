@@ -305,6 +305,16 @@ export enum HtmlComponentType {
 }
 
 /**
+ * Text alignemnt enum
+ */
+export enum TextAlignment {
+  LEFT = "left",
+  CENTER = "center",
+  RIGHT = "right",
+  JUSTIFY = "justify"
+}
+
+/**
  * Layout alignment enum
  */
 export enum LayoutAlignment {
