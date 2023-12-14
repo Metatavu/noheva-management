@@ -1,13 +1,3 @@
-import { Android as AndroidIcon, Html as HtmlIcon } from "@mui/icons-material/";
-import { CircularProgress } from "@mui/material";
-import { WithStyles } from "@mui/styles";
-import withStyles from "@mui/styles/withStyles";
-import produce from "immer";
-import { KeycloakInstance } from "keycloak-js";
-import { Component } from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
-import { v4 as uuid } from "uuid";
 import { setLayouts, setSelectedLayout } from "../../actions/layouts";
 import { setSelectedSubLayout, setSubLayouts } from "../../actions/subLayouts";
 import Api from "../../api/api";
@@ -43,8 +33,18 @@ import CardItem from "../generic/card/card-item";
 import CardList from "../generic/card/card-list";
 import ConfirmDialog from "../generic/confirm-dialog";
 import { constructTree } from "../layout/utils/tree-html-data-utils";
-import CardBadge from "../layout/v2/layout-card-badge";
+import CardBadge from "../layout/v2/card-badge";
 import BasicLayout from "../layouts/basic-layout";
+import { Android as AndroidIcon, Html as HtmlIcon } from "@mui/icons-material/";
+import { CircularProgress } from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import withStyles from "@mui/styles/withStyles";
+import produce from "immer";
+import { KeycloakInstance } from "keycloak-js";
+import { Component } from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
+import { v4 as uuid } from "uuid";
 
 /**
  * Component props

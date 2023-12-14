@@ -1,3 +1,19 @@
+import { setExhibitions } from "../../actions/exhibitions";
+import Api from "../../api/api";
+import { Exhibition } from "../../generated/client";
+import strings from "../../localization/strings";
+import { ReduxActions, ReduxState } from "../../store";
+import styles from "../../styles/exhibition-view";
+import theme from "../../styles/theme";
+import { AccessToken, ActionButton, ConfirmDialogData, DeleteDataHolder } from "../../types";
+import DeleteUtils from "../../utils/delete-utils";
+import SetActiveExhibitionDialog from "../dialogs/set-active-exhibition-dialog";
+import CardItem from "../generic/card/card-item";
+import CardList from "../generic/card/card-list";
+import ConfirmDialog from "../generic/confirm-dialog";
+import GenericDialog from "../generic/generic-dialog";
+import CardBadge from "../layout/v2/card-badge";
+import BasicLayout from "../layouts/basic-layout";
 import { Check } from "@mui/icons-material";
 import {
   Box,
@@ -19,22 +35,6 @@ import { KeycloakInstance } from "keycloak-js";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { setExhibitions } from "../../actions/exhibitions";
-import Api from "../../api/api";
-import { Exhibition } from "../../generated/client";
-import strings from "../../localization/strings";
-import { ReduxActions, ReduxState } from "../../store";
-import styles from "../../styles/exhibition-view";
-import theme from "../../styles/theme";
-import { AccessToken, ActionButton, ConfirmDialogData, DeleteDataHolder } from "../../types";
-import DeleteUtils from "../../utils/delete-utils";
-import SetActiveExhibitionDialog from "../dialogs/set-active-exhibition-dialog";
-import CardItem from "../generic/card/card-item";
-import CardList from "../generic/card/card-list";
-import ConfirmDialog from "../generic/confirm-dialog";
-import GenericDialog from "../generic/generic-dialog";
-import CardBadge from "../layout/v2/layout-card-badge";
-import BasicLayout from "../layouts/basic-layout";
 
 /**
  * Component props
