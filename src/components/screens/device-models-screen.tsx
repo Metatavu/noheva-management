@@ -1,23 +1,3 @@
-import {
-  CircularProgress,
-  FormControlLabel,
-  Grid,
-  InputAdornment,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Switch,
-  TextField,
-  Typography
-} from "@mui/material";
-import { WithStyles } from "@mui/styles";
-import withStyles from "@mui/styles/withStyles";
-import { History } from "history";
-import produce, { Draft } from "immer";
-import { KeycloakInstance } from "keycloak-js";
-import * as React from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
 import { setDeviceModels } from "../../actions/devices";
 import Api from "../../api/api";
 import {
@@ -58,6 +38,26 @@ import CardList from "../generic/card/card-list";
 import ConfirmDialog from "../generic/confirm-dialog";
 import GenericDialog from "../generic/generic-dialog";
 import BasicLayout from "../layouts/basic-layout";
+import {
+  CircularProgress,
+  FormControlLabel,
+  Grid,
+  InputAdornment,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Switch,
+  TextField,
+  Typography
+} from "@mui/material";
+import { WithStyles } from "@mui/styles";
+import withStyles from "@mui/styles/withStyles";
+import { History } from "history";
+import produce, { Draft } from "immer";
+import { KeycloakInstance } from "keycloak-js";
+import * as React from "react";
+import { connect } from "react-redux";
+import { Dispatch } from "redux";
 
 /**
  * Component props
@@ -162,7 +162,6 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
             title={`${deviceModel.manufacturer} ${deviceModel.model}`}
             onClick={() => this.onCardClick(deviceModel)}
             menuOptions={this.getCardMenuOptions(deviceModel)}
-            status={""}
           />
         );
       });

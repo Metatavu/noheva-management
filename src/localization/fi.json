@@ -553,7 +553,8 @@
       "fontSize": "Fontin koko (px)",
       "lineHeight": "Rivin korkeus",
       "fontColor": "Fontin väri",
-      "defaultResource": "Oletusteksti"
+      "defaultResource": "Oletusteksti",
+      "textAlign": "Tekstin tasaus"
     },
     "buttonProperties": {
       "fontColor": "Fontin väri",

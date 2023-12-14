@@ -564,6 +564,7 @@ export interface IStrings extends LocalizedStringsMethods {
       lineHeight: string;
       fontColor: string;
       defaultResource: string;
+      textAlign: string;
     };
     buttonProperties: {
       fontColor: string;

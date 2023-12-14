@@ -552,7 +552,8 @@
       "fontSize": "Font size (px)",
       "lineHeight": "Line height",
       "fontColor": "Font color",
-      "defaultResource": "Default text"
+      "defaultResource": "Default text",
+      "textAlign": "Text alignment"
     },
     "buttonProperties": {
       "fontColor": "Font color",

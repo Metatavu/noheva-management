@@ -267,7 +267,7 @@ const TextComponentProperties = ({
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
       <PropertyBox>
-        <PanelSubtitle subtitle="Tekstin tasaus" />
+        <PanelSubtitle subtitle={strings.layoutEditorV2.textProperties.textAlign} />
         <ToggleButtonGroup
           value={getTextAlignment()}
           exclusive
