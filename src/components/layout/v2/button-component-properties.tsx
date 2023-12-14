@@ -4,15 +4,16 @@ import {
   PageResourceMode
 } from "../../../generated/client";
 import strings from "../../../localization/strings";
-import { GroupedInputsType, TreeObject } from "../../../types";
+import { AvailableFonts, GroupedInputsType, TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import HtmlResourceUtils from "../../../utils/html-resource-utils";
+import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
 import FontColorEditor from "./font-color-editor";
 import GroupedInputsWithLock from "./grouped-inputs-with-lock";
 import PanelSubtitle from "./panel-subtitle";
 import PropertyBox from "./property-box";
-import { Divider, Stack } from "@mui/material";
+import { Divider, MenuItem, Stack } from "@mui/material";
 import { ChangeEvent } from "react";
 
 /**
@@ -54,6 +55,20 @@ const ButtonComponentProperties = ({
   };
 
   /**
+   * Gets font
+   */
+  const getFont = () => {
+    const {
+      style: { fontFamily }
+    } = component.element;
+
+    if (!fontFamily) {
+      return HtmlComponentsUtils.DEFAULT_HEADER_FONT;
+    }
+    return fontFamily;
+  };
+
+  /**
    * Event handler for default resource change event
    *
    * @param event event
@@ -78,6 +93,17 @@ const ButtonComponentProperties = ({
       defaultResources: defaultResources
     });
   };
+
+  /**
+   * Event handler for font change events
+   *
+   * @param event event
+   */
+  const onFontChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    component.element.style.setProperty("font-family", value);
+    updateComponent(component);
+  };
+
   /**
    * Event handler for property change events
    *
@@ -105,10 +131,24 @@ const ButtonComponentProperties = ({
     updateComponent(component);
   };
 
+  /**
+   * Renders font menu items
+   *
+   * @param font font
+   */
+  const renderFontMenuItem = (font: any) => {
+    return (
+      <MenuItem key={font} value={font}>
+        {font}
+      </MenuItem>
+    );
+  };
+
   return (
     <Stack>
       <Divider sx={{ color: "#F5F5F5" }} />
       <FontColorEditor component={component} updateComponent={updateComponent} />
+      <Divider sx={{ color: "#F5F5F5" }} />
       <PropertyBox>
         <PanelSubtitle subtitle={strings.layoutEditorV2.textProperties.fontSize} />
         <TextField
@@ -135,6 +175,13 @@ const ButtonComponentProperties = ({
           onChange={handleDefaultResourceChange}
           placeholder={strings.layoutEditorV2.buttonProperties.defaultResource}
         />
+      </PropertyBox>
+      <Divider sx={{ color: "#F5F5F5" }} />
+      <PropertyBox>
+        <PanelSubtitle subtitle={strings.layoutEditorV2.buttonProperties.font} />
+        <SelectBox value={getFont()} onChange={onFontChange}>
+          {Object.values(AvailableFonts).map(renderFontMenuItem)}
+        </SelectBox>
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
     </Stack>

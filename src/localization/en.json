@@ -552,11 +552,13 @@
       "fontSize": "Font size (px)",
       "lineHeight": "Line height",
       "fontColor": "Font color",
-      "defaultResource": "Default text"
+      "defaultResource": "Default text",
+      "font": "Font"
     },
     "buttonProperties": {
       "fontColor": "Font color",
-      "defaultResource": "Default text"
+      "defaultResource": "Default text",
+      "font": "Font"
     },
     "imageProperties": {
       "defaultResource": "Default image"

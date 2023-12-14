@@ -1,3 +1,4 @@
+import { Config } from "../../../constants/configuration";
 import { ExhibitionPageResource } from "../../../generated/client";
 import { HtmlComponentType, TreeObject } from "../../../types";
 
@@ -336,6 +337,7 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Preview</title>
+      <link rel="stylesheet" href="${Config.getConfig().cdnBasePath}/fonts/stylesheet.css"/>
       <style>
         body {
           margin: 0;
@@ -343,6 +345,12 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
           pointer-events: none;
           height: 100vh;
           overflow: hidden;
+        }
+        h1, h2, h3, h4, h5, h6, button {
+          font-family: 'Larken-Medium';
+        }
+        p {
+          font-family: 'Source-Sans-Pro-Regular';
         }
       </style>
     </head>

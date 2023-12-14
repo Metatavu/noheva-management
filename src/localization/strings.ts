@@ -564,10 +564,12 @@ export interface IStrings extends LocalizedStringsMethods {
       lineHeight: string;
       fontColor: string;
       defaultResource: string;
+      font: string;
     };
     buttonProperties: {
       fontColor: string;
       defaultResource: string;
+      font: string;
     };
     imageProperties: {
       defaultResource: string;

@@ -4,7 +4,7 @@ import {
   PageResourceMode
 } from "../../../generated/client";
 import strings from "../../../localization/strings";
-import { HtmlTextComponentType, TextAlignment, TreeObject } from "../../../types";
+import { AvailableFonts, HtmlTextComponentType, TextAlignment, TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import HtmlResourceUtils from "../../../utils/html-resource-utils";
 import LocalizationUtils from "../../../utils/localization-utils";
@@ -190,6 +190,16 @@ const TextComponentProperties = ({
   };
 
   /**
+   * Event handler for font change events
+   *
+   * @param event event
+   */
+  const onFontChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    component.element.style.setProperty("font-family", value);
+    updateComponent(component);
+  };
+
+  /**
    * Gets line height
    */
   const getLineHeight = () => {
@@ -216,6 +226,26 @@ const TextComponentProperties = ({
   };
 
   /**
+   * Gets font
+   */
+  const getFont = () => {
+    const {
+      style: { fontFamily },
+      tagName
+    } = component.element;
+
+    if (!fontFamily) {
+      switch (tagName) {
+        case HtmlTextComponentType.P:
+          return HtmlComponentsUtils.DEFAULT_PARAGRAPH_FONT;
+        default:
+          return HtmlComponentsUtils.DEFAULT_HEADER_FONT;
+      }
+    }
+    return fontFamily;
+  };
+
+  /**
    * Renders text alignment toggle button
    *
    * @param option option
@@ -225,6 +255,19 @@ const TextComponentProperties = ({
       {option.icon}
     </ToggleButton>
   );
+
+  /**
+   * Renders font menu items
+   *
+   * @param font font
+   */
+  const renderFontMenuItem = (font: any) => {
+    return (
+      <MenuItem key={font} value={font}>
+        {font}
+      </MenuItem>
+    );
+  };
 
   return (
     <Stack>
@@ -277,6 +320,13 @@ const TextComponentProperties = ({
         >
           {textAlignmenOptions.map(renderTextAlignmentToggleButton)}
         </ToggleButtonGroup>
+      </PropertyBox>
+      <Divider sx={{ color: "#F5F5F5" }} />
+      <PropertyBox>
+        <PanelSubtitle subtitle={strings.layoutEditorV2.textProperties.font} />
+        <SelectBox value={getFont()} onChange={onFontChange}>
+          {Object.values(AvailableFonts).map(renderFontMenuItem)}
+        </SelectBox>
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
       <FontColorEditor component={component} updateComponent={updateComponent} />
