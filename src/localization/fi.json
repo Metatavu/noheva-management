@@ -554,7 +554,8 @@
       "lineHeight": "Rivin korkeus",
       "fontColor": "Fontin väri",
       "defaultResource": "Oletusteksti",
-      "font": "Fontti"
+      "font": "Fontti",
+      "textAlign": "Tekstin tasaus"
     },
     "buttonProperties": {
       "fontColor": "Fontin väri",
