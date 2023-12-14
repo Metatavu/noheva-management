@@ -1,13 +1,3 @@
-import Api from "../../api/api";
-import { Exhibition, ExhibitionRoom } from "../../generated/client";
-import strings from "../../localization/strings";
-import { ReduxState } from "../../store";
-import styles from "../../styles/exhibition-view";
-import { AccessToken, BreadcrumbData } from "../../types";
-import CardItem from "../generic/card/card-item";
-import CardList from "../generic/card/card-list";
-import BasicLayout from "../layouts/basic-layout";
-import ElementSettingsPane from "../layouts/element-settings-pane";
 import ArrowIcon from "@mui/icons-material/ChevronRight";
 import {
   CircularProgress,
@@ -22,6 +12,16 @@ import { History } from "history";
 import { KeycloakInstance } from "keycloak-js";
 import * as React from "react";
 import { connect } from "react-redux";
+import Api from "../../api/api";
+import { Exhibition, ExhibitionRoom } from "../../generated/client";
+import strings from "../../localization/strings";
+import { ReduxState } from "../../store";
+import styles from "../../styles/exhibition-view";
+import { AccessToken, BreadcrumbData } from "../../types";
+import CardItem from "../generic/card/card-item";
+import CardList from "../generic/card/card-list";
+import BasicLayout from "../layouts/basic-layout";
+import ElementSettingsPane from "../layouts/element-settings-pane";
 
 /**
  * Component properties
@@ -153,22 +153,24 @@ class RoomsScreen extends React.Component<Props, State> {
    */
   private renderRoomCardsList = () => {
     const { rooms, exhibition } = this.state;
-    const cards = rooms.map((room) => {
-      const roomId = room.id;
-      const floorId = room.floorId;
-      if (!roomId || !exhibition || !floorId) {
-        return null;
-      }
+    const cards = [...rooms]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((room) => {
+        const roomId = room.id;
+        const floorId = room.floorId;
+        if (!roomId || !exhibition || !floorId) {
+          return null;
+        }
 
-      return (
-        <CardItem
-          key={roomId}
-          title={room.name}
-          subtitle={exhibition.name}
-          onClick={() => this.onCardClick(roomId, floorId)}
-        />
-      );
-    });
+        return (
+          <CardItem
+            key={roomId}
+            title={room.name}
+            subtitle={exhibition.name}
+            onClick={() => this.onCardClick(roomId, floorId)}
+          />
+        );
+      });
 
     return <CardList title={strings.contentVersion.rooms}>{cards}</CardList>;
   };

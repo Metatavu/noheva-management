@@ -1,6 +1,3 @@
-import styles from "../../styles/components/generic/menu-button";
-import theme from "../../styles/theme";
-import { ActionButton } from "../../types";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
   ClickAwayListener,
@@ -14,6 +11,9 @@ import {
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
+import styles from "../../styles/components/generic/menu-button";
+import theme from "../../styles/theme";
+import { ActionButton } from "../../types";
 
 /**
  * Component props
@@ -69,7 +69,7 @@ const MenuButton: React.FC<Props> = (props) => {
     };
 
     return (
-      <MenuItem key={name} onClick={onClick}>
+      <MenuItem key={name} onClick={onClick} disabled={option.disabled}>
         {name}
       </MenuItem>
     );

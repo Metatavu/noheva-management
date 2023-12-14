@@ -4,7 +4,7 @@ import {
   PageResourceMode
 } from "../../../generated/client";
 import strings from "../../../localization/strings";
-import { HtmlTextComponentType, TreeObject } from "../../../types";
+import { HtmlTextComponentType, TextAlignment, TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import HtmlResourceUtils from "../../../utils/html-resource-utils";
 import LocalizationUtils from "../../../utils/localization-utils";
@@ -13,8 +13,22 @@ import TextField from "../../generic/v2/text-field";
 import FontColorEditor from "./font-color-editor";
 import PanelSubtitle from "./panel-subtitle";
 import PropertyBox from "./property-box";
-import { Divider, MenuItem, Slider, Stack, Typography } from "@mui/material";
-import { ChangeEvent } from "react";
+import {
+  FormatAlignCenter,
+  FormatAlignJustify,
+  FormatAlignLeft,
+  FormatAlignRight
+} from "@mui/icons-material";
+import {
+  Divider,
+  MenuItem,
+  Slider,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography
+} from "@mui/material";
+import { ChangeEvent, MouseEvent, ReactNode } from "react";
 
 /**
  * Component props
@@ -27,6 +41,14 @@ interface Props {
 }
 
 /**
+ * Interface representing text alignment options
+ */
+interface TextAlignmentOption {
+  value: TextAlignment;
+  icon: ReactNode;
+}
+
+/**
  * Text Component Properties component
  */
 const TextComponentProperties = ({
@@ -35,6 +57,25 @@ const TextComponentProperties = ({
   pageLayout,
   setPageLayout
 }: Props) => {
+  const textAlignmenOptions: TextAlignmentOption[] = [
+    {
+      value: TextAlignment.LEFT,
+      icon: <FormatAlignLeft />
+    },
+    {
+      value: TextAlignment.CENTER,
+      icon: <FormatAlignCenter />
+    },
+    {
+      value: TextAlignment.RIGHT,
+      icon: <FormatAlignRight />
+    },
+    {
+      value: TextAlignment.JUSTIFY,
+      icon: <FormatAlignJustify />
+    }
+  ];
+
   /**
    * Returns text resource path
    *
@@ -134,6 +175,21 @@ const TextComponentProperties = ({
   };
 
   /**
+   * Event handler for text alignment change events
+   *
+   * @param event event
+   * @param value value
+   */
+  const onTextAlignmentChange = (_: MouseEvent, value: string) => {
+    if (!value) {
+      component.element.style.removeProperty("text-align");
+    } else {
+      component.element.style.setProperty("text-align", value);
+    }
+    updateComponent(component);
+  };
+
+  /**
    * Gets line height
    */
   const getLineHeight = () => {
@@ -145,6 +201,30 @@ const TextComponentProperties = ({
 
     return parseFloat(lineHeight);
   };
+
+  /**
+   * Gets text alignment
+   */
+  const getTextAlignment = () => {
+    const textAlign = component.element?.style.textAlign;
+
+    if (!textAlign) {
+      return HtmlComponentsUtils.DEFAULT_TEXT_ALIGNMENT;
+    }
+
+    return textAlign;
+  };
+
+  /**
+   * Renders text alignment toggle button
+   *
+   * @param option option
+   */
+  const renderTextAlignmentToggleButton = (option: TextAlignmentOption) => (
+    <ToggleButton key={option.value} value={option.value}>
+      {option.icon}
+    </ToggleButton>
+  );
 
   return (
     <Stack>
@@ -184,6 +264,19 @@ const TextComponentProperties = ({
           />
           <Typography variant="caption">{getLineHeight()}</Typography>
         </Stack>
+      </PropertyBox>
+      <Divider sx={{ color: "#F5F5F5" }} />
+      <PropertyBox>
+        <PanelSubtitle subtitle={strings.layoutEditorV2.textProperties.textAlign} />
+        <ToggleButtonGroup
+          value={getTextAlignment()}
+          exclusive
+          onChange={onTextAlignmentChange}
+          size="small"
+          fullWidth
+        >
+          {textAlignmenOptions.map(renderTextAlignmentToggleButton)}
+        </ToggleButtonGroup>
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
       <FontColorEditor component={component} updateComponent={updateComponent} />

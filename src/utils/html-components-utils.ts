@@ -1,4 +1,4 @@
-import { HtmlComponentType, HtmlTextComponentType, TreeObject } from "../types";
+import { HtmlComponentType, HtmlTextComponentType, TextAlignment, TreeObject } from "../types";
 import { v4 as uuid } from "uuid";
 
 namespace HtmlComponentsUtils {
@@ -261,9 +261,28 @@ namespace HtmlComponentsUtils {
   };
 
   /**
+   * Default text align
+   */
+  export const DEFAULT_TEXT_ALIGNMENT = TextAlignment.LEFT;
+
+  /**
+   * Text alignment button
+   */
+
+  /**
    * Default line-height
    */
   export const DEFAULT_LINE_HEIGHT = 1.2;
+
+  /**
+   * Components that don't support proportions as percentages
+   */
+  export const COMPONENTS_WITHOUT_PERCENTAGE_PROPORTIONS = [
+    HtmlComponentType.IMAGE,
+    HtmlComponentType.VIDEO,
+    HtmlComponentType.IMAGE_BUTTON,
+    HtmlComponentType.BUTTON
+  ];
 }
 
 export default HtmlComponentsUtils;
