@@ -346,11 +346,12 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
           height: 100vh;
           overflow: hidden;
         }
-        h1, h2, h3, h4, h5, h6, button {
+        h1, h2, h3, h4, h5, h6 {
           font-family: 'Larken-Medium';
         }
-        p {
+        p, button {
           font-family: 'Source-Sans-Pro-Regular';
+          border: none;
         }
       </style>
     </head>

@@ -63,7 +63,7 @@ const ButtonComponentProperties = ({
     } = component.element;
 
     if (!fontFamily) {
-      return HtmlComponentsUtils.DEFAULT_HEADER_FONT;
+      return HtmlComponentsUtils.DEFAULT_PARAGRAPH_FONT;
     }
     return fontFamily;
   };
