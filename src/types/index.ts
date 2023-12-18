@@ -353,6 +353,19 @@ export enum GroupedInputsType {
 }
 
 /**
+ * Available fonts enum
+ */
+export enum AvailableFonts {
+  LARKEN_MEDIUM = "Larken-Medium",
+  SOURCE_SANS_PRO_REGULAR = "Source-Sans-Pro-Regular",
+  SOURCE_SANS_PRO_BOLD = "Source-Sans-Pro-Bold",
+  SOURCE_SANS_PRO_ITALIC = "Source-Sans-Pro-Italic",
+  SOURCE_SANS_PRO_BOLD_ITALIC = "Source-Sans-Pro-BoldItalic",
+  SOURCE_SANS_PRO_SEMI_BOLD = "Source-Sans-Pro-SemiBold",
+  SOURCE_SANS_PRO_SEMI_BOLD_ITALIC = "Source-Sans-Pro-SemiBoldItalic"
+}
+
+/**
  * Navigation button interface
  */
 export interface NavigationButton {

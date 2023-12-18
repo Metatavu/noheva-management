@@ -553,11 +553,13 @@
       "lineHeight": "Line height",
       "fontColor": "Font color",
       "defaultResource": "Default text",
+      "font": "Font",
       "textAlign": "Text alignment"
     },
     "buttonProperties": {
       "fontColor": "Font color",
-      "defaultResource": "Default text"
+      "defaultResource": "Default text",
+      "font": "Font"
     },
     "imageProperties": {
       "defaultResource": "Default image"

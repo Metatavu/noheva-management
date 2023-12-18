@@ -554,11 +554,13 @@
       "lineHeight": "Rivin korkeus",
       "fontColor": "Fontin väri",
       "defaultResource": "Oletusteksti",
+      "font": "Fontti",
       "textAlign": "Tekstin tasaus"
     },
     "buttonProperties": {
       "fontColor": "Fontin väri",
-      "defaultResource": "Oletusteksti"
+      "defaultResource": "Oletusteksti",
+      "font": "Fontti"
     },
     "imageProperties": {
       "defaultResource": "Oletuskuva"
