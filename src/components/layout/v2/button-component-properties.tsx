@@ -136,7 +136,7 @@ const ButtonComponentProperties = ({
    *
    * @param font font
    */
-  const renderFontMenuItem = (font: any) => {
+  const renderFontMenuItem = (font: AvailableFonts) => {
     return (
       <MenuItem key={font} value={font}>
         {font}
