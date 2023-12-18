@@ -5,8 +5,5 @@
   "editor.defaultFormatter": "rome.rome",
   "editor.codeActionsOnSave": {
     "source.organizeImports.rome": "explicit"
-  },
-  "cSpell.words": [
-    "Exhibition"
-  ]
+  }
 }
