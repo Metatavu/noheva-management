@@ -305,6 +305,16 @@ export enum HtmlComponentType {
 }
 
 /**
+ * Text alignemnt enum
+ */
+export enum TextAlignment {
+  LEFT = "left",
+  CENTER = "center",
+  RIGHT = "right",
+  JUSTIFY = "justify"
+}
+
+/**
  * Layout alignment enum
  */
 export enum LayoutAlignment {
@@ -340,6 +350,19 @@ export enum GroupedInputsType {
   MARGIN = "margin",
   PADDING = "padding",
   BORDER_RADIUS = "border-radius"
+}
+
+/**
+ * Available fonts enum
+ */
+export enum AvailableFonts {
+  LARKEN_MEDIUM = "Larken-Medium",
+  SOURCE_SANS_PRO_REGULAR = "Source-Sans-Pro-Regular",
+  SOURCE_SANS_PRO_BOLD = "Source-Sans-Pro-Bold",
+  SOURCE_SANS_PRO_ITALIC = "Source-Sans-Pro-Italic",
+  SOURCE_SANS_PRO_BOLD_ITALIC = "Source-Sans-Pro-BoldItalic",
+  SOURCE_SANS_PRO_SEMI_BOLD = "Source-Sans-Pro-SemiBold",
+  SOURCE_SANS_PRO_SEMI_BOLD_ITALIC = "Source-Sans-Pro-SemiBoldItalic"
 }
 
 /**

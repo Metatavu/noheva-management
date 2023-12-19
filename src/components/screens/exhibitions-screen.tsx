@@ -1,28 +1,20 @@
 import { setExhibitions } from "../../actions/exhibitions";
 import Api from "../../api/api";
-import {
-  ContentVersion,
-  Exhibition,
-  ExhibitionDevice,
-  ExhibitionDeviceGroup,
-  ExhibitionFloor,
-  ExhibitionPage,
-  ExhibitionRoom,
-  RfidAntenna,
-  Visitor,
-  VisitorSession
-} from "../../generated/client";
+import { Exhibition } from "../../generated/client";
 import strings from "../../localization/strings";
 import { ReduxActions, ReduxState } from "../../store";
 import styles from "../../styles/exhibition-view";
 import theme from "../../styles/theme";
 import { AccessToken, ActionButton, ConfirmDialogData, DeleteDataHolder } from "../../types";
 import DeleteUtils from "../../utils/delete-utils";
+import SetActiveExhibitionDialog from "../dialogs/set-active-exhibition-dialog";
 import CardItem from "../generic/card/card-item";
 import CardList from "../generic/card/card-list";
 import ConfirmDialog from "../generic/confirm-dialog";
 import GenericDialog from "../generic/generic-dialog";
+import CardBadge from "../layout/v2/card-badge";
 import BasicLayout from "../layouts/basic-layout";
+import { Check } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -68,6 +60,9 @@ interface State {
   copying: boolean;
   selectedExhibition?: Exhibition;
   confirmDialogData: ConfirmDialogData;
+  setActiveExhibitionDialogOpen: boolean;
+  currentlyActiveExhibition?: Exhibition;
+  newActiveExhibition?: Exhibition;
 }
 
 /**
@@ -88,6 +83,7 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
       deleteDialogOpen: false,
       copyDialogOpen: false,
       renameDialogOpen: false,
+      setActiveExhibitionDialogOpen: false,
       copying: false,
       confirmDialogData: {
         title: strings.exhibitions.delete.deleteTitle,
@@ -127,37 +123,113 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
         error={error}
         clearError={() => this.setState({ error: undefined })}
       >
-        {this.renderProductionCardsList()}
+        {this.renderExhibitionCardsList()}
         {this.renderAddDialog()}
         {this.renderConfirmDeleteDialog()}
         {this.renderConfirmCopyDialog()}
         {this.renderRenameDialog()}
+        <SetActiveExhibitionDialog
+          open={this.state.setActiveExhibitionDialogOpen}
+          currentlyActiveExhibition={this.state.currentlyActiveExhibition}
+          newActiveExhibition={this.state.newActiveExhibition}
+          onConfirm={this.onSetActiveExhibitionButtonClick}
+          onClose={this.onSetActiveExhibitionDialogClose}
+        />
       </BasicLayout>
     );
   };
 
   /**
+   * Event handler for set active exhibition card menu item click
+   *
+   * @param newActiveExhibition exhibition
+   */
+  private onSetActiveExhibition = (newActiveExhibition: Exhibition) => {
+    this.setState({
+      setActiveExhibitionDialogOpen: true,
+      currentlyActiveExhibition: this.props.exhibitions.find((exhibition) => exhibition.active),
+      newActiveExhibition
+    });
+  };
+
+  /**
+   * Event handler for set active exhibition dialog close
+   */
+  private onSetActiveExhibitionDialogClose = () => {
+    this.setState({
+      setActiveExhibitionDialogOpen: false,
+      currentlyActiveExhibition: undefined,
+      newActiveExhibition: undefined
+    });
+  };
+
+  /**
+   * Event handler for set active exhibition click
+   *
+   * @param selectedExhibition exhibition
+   */
+  private onSetActiveExhibitionButtonClick = async (selectedExhibition: Exhibition) => {
+    const { accessToken } = this.props;
+
+    if (!selectedExhibition.id) {
+      return;
+    }
+    this.setState({ loading: true });
+
+    const exhibitionsApi = Api.getExhibitionsApi(accessToken);
+    await exhibitionsApi.updateExhibition({
+      exhibition: { ...selectedExhibition, active: true },
+      exhibitionId: selectedExhibition.id
+    });
+    const exhibitions = await exhibitionsApi.listExhibitions();
+    this.props.setExhibitions(exhibitions);
+    this.setState({
+      loading: false,
+      setActiveExhibitionDialogOpen: false,
+      currentlyActiveExhibition: undefined,
+      newActiveExhibition: undefined
+    });
+  };
+
+  /**
+   * Gets appropriate badge content for exhibition
+   *
+   * @param exhibition exhibition
+   * @returns check icon if exhibition is active
+   */
+  private getExhibitionBadgeContent = (exhibition: Exhibition) => {
+    if (exhibition.active !== true) {
+      return undefined;
+    }
+
+    return <Check />;
+  };
+
+  /**
    * Renders exhibitions in production as card list
    */
-  private renderProductionCardsList = () => {
+  private renderExhibitionCardsList = () => {
     const { exhibitions } = this.props;
-    const cards = exhibitions.map((exhibition) => {
-      const cardMenuOptions = this.getCardMenuOptions(exhibition);
-      const exhibitionId = exhibition.id;
-      if (!exhibitionId) {
-        return null;
-      }
+    const cards = [...exhibitions]
+      .sort((a, _) => (a.active ? -1 : 1))
+      .map((exhibition) => {
+        const cardMenuOptions = this.getCardMenuOptions(exhibition);
+        const exhibitionId = exhibition.id;
+        if (!exhibitionId) {
+          return null;
+        }
 
-      return (
-        <CardItem
-          size="large"
-          key={exhibition.id}
-          title={exhibition.name}
-          onClick={() => this.onCardClick(exhibitionId)}
-          menuOptions={cardMenuOptions}
-        />
-      );
-    });
+        return (
+          <CardBadge key={exhibition.id} badgeContent={this.getExhibitionBadgeContent(exhibition)}>
+            <CardItem
+              size="large"
+              title={exhibition.name}
+              onClick={() => this.onCardClick(exhibitionId)}
+              menuOptions={cardMenuOptions}
+            />
+          </CardBadge>
+        );
+      });
 
     return <CardList>{cards}</CardList>;
   };
@@ -315,6 +387,11 @@ export class ExhibitionsScreen extends React.Component<Props, State> {
       {
         name: strings.exhibitions.cardMenu.copyExhibition,
         action: () => this.onCopyExhibitionClick(exhibition)
+      },
+      {
+        name: strings.exhibitions.cardMenu.setActive,
+        disabled: exhibition.active === true,
+        action: () => this.onSetActiveExhibition(exhibition)
       },
       {
         name: strings.exhibitions.cardMenu.delete,

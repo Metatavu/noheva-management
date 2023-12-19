@@ -132,7 +132,11 @@ const LayoutTreeMenuHtml = ({
     return parentIds;
   };
 
-  return <TreeView expanded={getParentIds()}>{treeObjects.map(renderTreeItem)}</TreeView>;
+  return (
+    <TreeView expanded={getParentIds()} selected={selectedComponent?.id ?? ""}>
+      {treeObjects.map(renderTreeItem)}
+    </TreeView>
+  );
 };
 
 export default LayoutTreeMenuHtml;

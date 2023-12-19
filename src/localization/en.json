@@ -55,6 +55,12 @@
     "rename": {
       "title": "Rename exhibition"
     },
+    "setActiveExhibitionDalog": {
+      "title": "Set active exhibition",
+      "currentlyActiveExhibition": "Currently active exhibition is: {0}",
+      "newActiveExhibition": "Would you like to set exhitibion {0} as active?",
+      "setActiveButton": "Set active"
+    },
     "createExhibitionDialog": {
       "title": "Create new exhibition",
       "helpText": "You can create new exhibition by adding a name and pressing create button",
@@ -75,7 +81,8 @@
       "delete": "Delete",
       "rename": "Rename",
       "edit": "Edit",
-      "copyExhibition": "Copy exhibition"
+      "copyExhibition": "Copy exhibition",
+      "setActive": "Set active"
     }
   },
 
@@ -498,7 +505,7 @@
       "elementName": "Element name",
       "proportions": "Proportions",
       "backgroundImage": "Background image",
-      "videoProportionsTooltip": "Video element only supports pixel dimensions",
+      "noPercentageDimensionsTooltip": "{0} element only supports pixel dimensions",
       "width": "Width",
       "height": "Height",
       "elevation": "Elevation",
@@ -545,11 +552,14 @@
       "fontSize": "Font size (px)",
       "lineHeight": "Line height",
       "fontColor": "Font color",
-      "defaultResource": "Default text"
+      "defaultResource": "Default text",
+      "font": "Font",
+      "textAlign": "Text alignment"
     },
     "buttonProperties": {
       "fontColor": "Font color",
-      "defaultResource": "Default text"
+      "defaultResource": "Default text",
+      "font": "Font"
     },
     "imageProperties": {
       "defaultResource": "Default image"

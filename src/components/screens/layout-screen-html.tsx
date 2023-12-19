@@ -30,6 +30,7 @@ import {
   createTreeObject,
   deleteHtmlComponent,
   deserializeElement,
+  findTreeObjectById,
   treeObjectToHtmlElement,
   updateHtmlComponent
 } from "../layout/utils/tree-html-data-utils";
@@ -403,7 +404,7 @@ const LayoutScreenHTML: FC<Props> = ({
    */
   const deleteComponent = (componentToDelete: TreeObject) => {
     const updatedTree = deleteHtmlComponent(treeObjects, componentToDelete.path);
-
+    const parentId = componentToDelete.path.split("/").toReversed()[1];
     const resourceIds = HtmlResourceUtils.extractResourceIds(updatedTree[0].element.outerHTML);
 
     const updatedDefaultResources = foundLayout.defaultResources?.filter((resource) =>
@@ -426,7 +427,7 @@ const LayoutScreenHTML: FC<Props> = ({
 
     setFoundLayout(updatedLayout);
     setTreeObjects([...constructTree(domArray[0].outerHTML.replace(/^\s*\n/gm, ""))]);
-    setSelectedComponent(undefined);
+    setSelectedComponent(findTreeObjectById(updatedTree, parentId));
     setDataChanged(true);
   };
 

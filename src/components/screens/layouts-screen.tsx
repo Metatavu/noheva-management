@@ -33,8 +33,9 @@ import CardItem from "../generic/card/card-item";
 import CardList from "../generic/card/card-list";
 import ConfirmDialog from "../generic/confirm-dialog";
 import { constructTree } from "../layout/utils/tree-html-data-utils";
-import LayoutCardBadge from "../layout/v2/layout-card-badge";
+import CardBadge from "../layout/v2/card-badge";
 import BasicLayout from "../layouts/basic-layout";
+import { Android as AndroidIcon, Html as HtmlIcon } from "@mui/icons-material/";
 import { CircularProgress } from "@mui/material";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
@@ -163,6 +164,21 @@ class LayoutsScreen extends Component<Props, State> {
   };
 
   /**
+   * Gets appropriate badge content for layout card
+   *
+   * @param layout layout
+   * @returns appropriate icon for layout card
+   */
+  private getLayoutBadgeContent = (layout: PageLayout) => {
+    switch (layout.layoutType) {
+      case LayoutType.Html:
+        return <HtmlIcon />;
+      case LayoutType.Android:
+        return <AndroidIcon />;
+    }
+  };
+
+  /**
    * Renders layouts as card list
    */
   private renderLayoutCardsList = () => {
@@ -173,6 +189,7 @@ class LayoutsScreen extends Component<Props, State> {
 
     const layoutCards = [...layouts]
       .sort((a, _) => (a.layoutType === LayoutType.Html ? -1 : 1))
+      .sort((a, b) => a.name.localeCompare(b.name))
       .map((layout) => {
         const layoutId = layout.id;
         if (!layoutId || !layout.layoutType) {
@@ -182,13 +199,13 @@ class LayoutsScreen extends Component<Props, State> {
         const cardMenuOptions = this.getLayoutCardMenuOptions(layout);
 
         return (
-          <LayoutCardBadge key={layout.id} type={layout.layoutType}>
+          <CardBadge key={layout.id} badgeContent={this.getLayoutBadgeContent(layout)}>
             <CardItem
               title={layout.name}
               onClick={() => this.onLayoutCardClick(layoutId, layout.layoutType)}
               menuOptions={cardMenuOptions}
             />
-          </LayoutCardBadge>
+          </CardBadge>
         );
       });
 

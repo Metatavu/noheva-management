@@ -1,3 +1,4 @@
+import { Config } from "../../../constants/configuration";
 import { ExhibitionPageResource } from "../../../generated/client";
 import { HtmlComponentType, TreeObject } from "../../../types";
 
@@ -36,29 +37,22 @@ const deleteInTree = (
   destinationPath: string,
   currentPath: string
 ): TreeObject[] => {
-  let found = false;
   const cleanNodes: TreeObject[] = [];
   for (const element of treeData) {
     const node = element;
     const fullPath = `${currentPath}/${node.id}`;
     if (fullPath !== destinationPath) {
       cleanNodes.push(node);
-    } else {
-      found = true;
     }
 
-    if (found) {
-      return cleanNodes;
-    } else {
-      for (const element of treeData) {
-        const child = element;
-        const updatedPath = `${currentPath}/${child.id}`;
-        child.children = deleteInTree(child.children ?? [], destinationPath, updatedPath);
-      }
+    for (const element of treeData) {
+      const child = element;
+      const updatedPath = `${currentPath}/${child.id}`;
+      child.children = deleteInTree(child.children ?? [], destinationPath, updatedPath);
     }
   }
 
-  return treeData;
+  return cleanNodes;
 };
 
 /**
@@ -265,6 +259,27 @@ export const constructTree = (html: string) => {
 };
 
 /**
+ * Finds component recursively by id
+ *
+ * @param tree tree
+ * @param id id
+ * @returns TreeObject
+ */
+export const findTreeObjectById = (tree: TreeObject[], id: string): TreeObject | undefined => {
+  for (const item of tree) {
+    if (item.id === id) {
+      return item;
+    }
+    if (item.children) {
+      const result = findTreeObjectById(item.children, id);
+      if (result) {
+        return result;
+      }
+    }
+  }
+};
+
+/**
  * Creates Tree Object from HTML Element
  *
  * @param element element
@@ -322,6 +337,7 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Preview</title>
+      <link rel="stylesheet" href="${Config.getConfig().cdnBasePath}/fonts/stylesheet.css"/>
       <style>
         body {
           margin: 0;
@@ -329,6 +345,13 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
           pointer-events: none;
           height: 100vh;
           overflow: hidden;
+        }
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Larken-Medium';
+        }
+        p, button {
+          font-family: 'Source-Sans-Pro-Regular';
+          border: none;
         }
       </style>
     </head>

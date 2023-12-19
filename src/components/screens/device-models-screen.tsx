@@ -7,7 +7,6 @@ import {
   DeviceModelDisplayMetrics,
   Exhibition,
   ExhibitionDevice,
-  PageLayout,
   ScreenOrientation
 } from "../../generated/client";
 import strings from "../../localization/strings";
@@ -127,7 +126,7 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
     if (this.state.loading) {
       return (
         <div className={classes.loader}>
-          <CircularProgress size={50} color="secondary"></CircularProgress>
+          <CircularProgress size={50} color="secondary" />
         </div>
       );
     }
@@ -154,17 +153,18 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
    */
   private renderDeviceModelsCardsList = () => {
     const { deviceModels } = this.props;
-    const cards = deviceModels.map((deviceModel) => {
-      return (
-        <CardItem
-          key={deviceModel.id}
-          title={`${deviceModel.manufacturer} ${deviceModel.model}`}
-          onClick={() => this.onCardClick(deviceModel)}
-          menuOptions={this.getCardMenuOptions(deviceModel)}
-          status={""}
-        />
-      );
-    });
+    const cards = [...deviceModels]
+      .sort((a, b) => a.manufacturer.localeCompare(b.manufacturer))
+      .map((deviceModel) => {
+        return (
+          <CardItem
+            key={deviceModel.id}
+            title={`${deviceModel.manufacturer} ${deviceModel.model}`}
+            onClick={() => this.onCardClick(deviceModel)}
+            menuOptions={this.getCardMenuOptions(deviceModel)}
+          />
+        );
+      });
 
     return <CardList>{cards}</CardList>;
   };

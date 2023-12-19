@@ -46,6 +46,12 @@ export interface IStrings extends LocalizedStringsMethods {
     rename: {
       title: string;
     };
+    setActiveExhibitionDalog: {
+      title: string;
+      currentlyActiveExhibition: string;
+      newActiveExhibition: string;
+      setActiveButton: string;
+    };
     createExhibitionDialog: {
       title: string;
       helpText: string;
@@ -67,6 +73,7 @@ export interface IStrings extends LocalizedStringsMethods {
       rename: string;
       edit: string;
       copyExhibition: string;
+      setActive: string;
     };
   };
 
@@ -509,7 +516,7 @@ export interface IStrings extends LocalizedStringsMethods {
       elementName: string;
       proportions: string;
       backgroundImage: string;
-      videoProportionsTooltip: string;
+      noPercentageDimensionsTooltip: string;
       width: string;
       height: string;
       elevation: string;
@@ -557,10 +564,13 @@ export interface IStrings extends LocalizedStringsMethods {
       lineHeight: string;
       fontColor: string;
       defaultResource: string;
+      font: string;
+      textAlign: string;
     };
     buttonProperties: {
       fontColor: string;
       defaultResource: string;
+      font: string;
     };
     imageProperties: {
       defaultResource: string;
