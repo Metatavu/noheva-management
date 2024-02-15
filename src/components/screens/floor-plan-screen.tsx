@@ -44,6 +44,7 @@ import { ColorResult } from "react-color";
 import { connect } from "react-redux";
 import TreeMenu, { TreeNodeInArray } from "react-simple-tree-menu";
 import { Dispatch } from "redux";
+import { v4 as uuid } from "uuid";
 
 /**
  * Component props
@@ -715,7 +716,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
 
     const exhibitionFloorsApi = Api.getExhibitionFloorsApi(this.props.accessToken);
     const uploadedFile = await FileUpload.uploadFile(
-      data,
+      new File([data], uuid(), { type: "image/png" }),
       `/floorplans/${selectedFloor.exhibitionId}`
     );
     const updatedFloor = await exhibitionFloorsApi.updateExhibitionFloor({

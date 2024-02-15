@@ -17,6 +17,7 @@ interface Props extends WithStyles<typeof styles> {
   mediaType: MediaType;
   currentUrl: string;
   onUpdate: (url: string) => void;
+  setError: (error: Error) => void;
 }
 
 /**
@@ -25,7 +26,7 @@ interface Props extends WithStyles<typeof styles> {
  * @param props component props
  */
 const MediaLibraryButton: React.FC<Props> = (props: Props) => {
-  const { classes, accessToken, currentUrl, mediaType, onUpdate } = props;
+  const { classes, accessToken, currentUrl, mediaType, onUpdate, setError } = props;
   const [open, setOpen] = React.useState(false);
   const openDialog = () => setOpen(true);
   const closeDialog = () => setOpen(false);
@@ -52,6 +53,7 @@ const MediaLibraryButton: React.FC<Props> = (props: Props) => {
               onUpdate(newUrl);
               closeDialog();
             }}
+            setError={ setError }
           />
         </Paper>
       </Dialog>

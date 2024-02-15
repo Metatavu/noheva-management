@@ -23,6 +23,14 @@
     "cancel": "Peruuta"
   },
 
+  "createMediaFolderDialog": {
+    "title": "Luo uusi kansio",
+    "description": "Luo uusi kansio valitsemalla kansiolle nimi ja painamalla Luo -painiketta. Huomioithan, että kansion nimi ei voi sisältää erikoismerkkejä.",
+    "folderName": "Kansion nimi",
+    "cancelButton": "Peruuta",
+    "createButton": "Luo kansio"
+  },
+
   "mediaLibrary": {
     "title": "Mediakirjasto",
     "selectMedia": "Valitse media",
