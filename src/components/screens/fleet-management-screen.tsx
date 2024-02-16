@@ -103,6 +103,20 @@ const FleetManagementScreen = ({ history, keycloak, accessToken, deviceModels }:
         noBackButton
       >
         <FleetManagementTable
+          visibleColumns={
+            [ 
+              "name", 
+              "serialNumber", 
+              "approvalStatus", 
+              "status", 
+              "version", 
+              "usageHours", 
+              "warrantyExpiry", 
+              "lastConnected", 
+              "lastSeen", 
+              "actions" 
+            ]
+          }
           devices={devices}
           loading={loading}
           loadDevices={loadDevices}

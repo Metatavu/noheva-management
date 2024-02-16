@@ -1189,8 +1189,8 @@
       },
       "version": "Ohjelmistoversio",
       "usageHours": "Käyttötunnit",
-      "warrantyExpiry": "Takuun umpeutuminen",
-      "lastConnected": "Viimeksi yhdistetty",
+      "warrantyExpiry": "Takuu päättyy",
+      "lastConnected": "Yhdistetty",
       "createdAt": "Luotu",
       "modifiedAt": "Muokattu",
       "approve": "Ota käyttöön",
@@ -1202,7 +1202,7 @@
         "pendingReApproval": "Odottaa uudelleenhyväksyntää"
       },
       "serialNumber": "Sarjanumero",
-      "lastSeen": "Viimeksi nähty",
+      "lastSeen": "Nähty",
       "model": "Laitemalli"
     },
     "deleteDialog": {
