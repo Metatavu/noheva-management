@@ -21,11 +21,17 @@ import {
 import { ReactNode, useMemo } from "react";
 
 /**
+ * Fleet management table column
+ */
+export type FleetManagementTableColumn = "name" | "description" | "serialNumber" | "approvalStatus" | "status" | "version" | "usageHours" | "warrantyExpiry" | "lastConnected" | "lastSeen" | "createdAt" | "modifiedAt" | "actions"; 
+
+/**
  * Components properties
  */
 interface Props {
   devices: Device[];
   loading: boolean;
+  visibleColumns: FleetManagementTableColumn[];
   loadDevices: () => Promise<void>;
   setSelectedDevice: (device?: Device) => void;
   setDeviceToDelete: (device?: Device) => void;
@@ -36,6 +42,7 @@ interface Props {
  */
 const FleetManagementTable = ({
   devices,
+  visibleColumns,
   loading,
   loadDevices,
   setSelectedDevice,
@@ -59,83 +66,72 @@ const FleetManagementTable = ({
     () => [
       {
         field: "name",
-        headerName: strings.fleetManagement.properties.name,
-        flex: 1,
-        minWidth: 100
+        flex: 2,
+        headerName: strings.fleetManagement.properties.name
       },
       {
         field: "description",
-        headerName: strings.fleetManagement.properties.description,
         flex: 1,
-        minWidth: 100
+        headerName: strings.fleetManagement.properties.description
       },
       {
         field: "serialNumber",
-        headerName: strings.fleetManagement.properties.serialNumber,
         flex: 1,
-        minWidth: 100
+        headerName: strings.fleetManagement.properties.serialNumber
       },
       {
         field: "approvalStatus",
         headerName: strings.fleetManagement.properties.approvalStatus.label,
         flex: 1,
-        minWidth: 100,
-        valueGetter: ({ value }) =>
-          LocalizationUtils.getLocalizedDeviceApprovalStatus(value as DeviceApprovalStatus)
+        valueGetter: ({ value }: { value: DeviceApprovalStatus }) =>
+          LocalizationUtils.getLocalizedDeviceApprovalStatus(value)
+      },
+      {
+        field: "version",
+        headerName: strings.fleetManagement.properties.version,
+        flex: 1
+      },
+      {
+        field: "usageHours",
+        headerName: strings.fleetManagement.properties.usageHours,
+        flex: 1,
+        valueGetter: ({ value }: { value: number }) => `${GenericUtils.roundNumber(value)} h`
+      },
+      {
+        field: "warrantyExpiry",
+        headerName: strings.fleetManagement.properties.warrantyExpiry,
+        flex: 1,
+        valueGetter: ({ value }: { value: string }) => GenericUtils.formatDate(value)
+      },
+      {
+        field: "lastConnected",
+        headerName: strings.fleetManagement.properties.lastConnected,
+        flex: 1,
+        valueGetter: ({ value }: { value: string }) => GenericUtils.formatDateTime(value)
+      },
+      {
+        field: "lastSeen",
+        headerName: strings.fleetManagement.properties.lastSeen,
+        flex: 1,
+        valueGetter: ({ value }: { value: string}) => GenericUtils.formatDateTime(value)
+      },
+      {
+        field: "createdAt",
+        headerName: strings.fleetManagement.properties.createdAt,
+        flex: 1,
+        valueGetter: ({ value }: { value: string}) => GenericUtils.formatDateTime(value)
+      },
+      {
+        field: "modifiedAt",
+        headerName: strings.fleetManagement.properties.modifiedAt,
+        flex: 1,
+        valueGetter: ({ value }: { value: string}) => GenericUtils.formatDateTime(value)
       },
       {
         field: "status",
         headerName: strings.fleetManagement.properties.status.label,
         flex: 0.1,
         renderCell: renderDeviceStatusIcon
-      },
-      {
-        field: "version",
-        headerName: strings.fleetManagement.properties.version,
-        flex: 1,
-        minWidth: 100
-      },
-      {
-        field: "usageHours",
-        headerName: strings.fleetManagement.properties.usageHours,
-        flex: 1,
-        minWidth: 100,
-        valueGetter: ({ value }) => `${GenericUtils.roundNumber(value)} h`
-      },
-      {
-        field: "warrantyExpiry",
-        headerName: strings.fleetManagement.properties.warrantyExpiry,
-        flex: 1,
-        minWidth: 100,
-        valueGetter: ({ value }) => GenericUtils.formatDate(value as string)
-      },
-      {
-        field: "lastConnected",
-        headerName: strings.fleetManagement.properties.lastConnected,
-        flex: 1,
-        minWidth: 100,
-        valueGetter: ({ value }) => GenericUtils.formatDateTime(value as string)
-      },
-      {
-        field: "lastSeen",
-        headerName: strings.fleetManagement.properties.lastSeen,
-        flex: 1,
-        minWidth: 100,
-        valueGetter: ({ value }) => GenericUtils.formatDateTime(value as string)
-      },
-      {
-        field: "createdAt",
-        headerName: strings.fleetManagement.properties.createdAt,
-        flex: 1,
-        minWidth: 100,
-        valueGetter: ({ value }) => GenericUtils.formatDateTime(value as string)
-      },
-      {
-        field: "modifiedAt",
-        headerName: strings.fleetManagement.properties.modifiedAt,
-        flex: 1,
-        minWidth: 100,
-        valueGetter: ({ value }) => GenericUtils.formatDateTime(value as string)
       },
       {
         field: "actions",
@@ -155,8 +151,9 @@ const FleetManagementTable = ({
           />
         ]
       }
-    ],
-    [devices, setSelectedDevice, setDeviceToDelete]
+    ]
+    .filter((column) => visibleColumns.includes(column.field as FleetManagementTableColumn)),
+    [devices, visibleColumns, setSelectedDevice, setDeviceToDelete]
   );
 
   const renderFooter = () => (
