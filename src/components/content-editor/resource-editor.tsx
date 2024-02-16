@@ -32,6 +32,7 @@ interface Props extends WithStyles<typeof styles> {
   visitorVariables: VisitorVariable[];
   component?: TreeObject;
   onUpdate: (resource: ExhibitionPageResource, component?: TreeObject) => void;
+  setError: (error: Error) => void;
 }
 
 /**
@@ -121,6 +122,7 @@ class ResourceEditor extends React.Component<Props, {}> {
         visitorVariables={visitorVariables}
         resourceType={resource.type}
         onUpdate={this.onUpdateDynamicResource}
+        setError={this.props.setError}
       />
     );
   };
@@ -150,10 +152,11 @@ class ResourceEditor extends React.Component<Props, {}> {
       case ExhibitionPageResourceType.Video:
         return (
           <MediaLibrary
-            accessToken={accessToken}
-            mediaType={ResourceUtils.getResourceMediaType(resource.type)!}
-            resource={resource}
-            onUrlChange={this.updateResourceData}
+            accessToken={ accessToken }
+            mediaType={ ResourceUtils.getResourceMediaType(resource.type)! }
+            currentUrl={ resource.data }
+            onUrlChange={ this.updateResourceData }
+            setError={(error: Error) => this.setState({ error }) }
           />
         );
       case ExhibitionPageResourceType.Text:

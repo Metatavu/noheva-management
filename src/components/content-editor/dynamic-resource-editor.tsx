@@ -28,6 +28,7 @@ interface Props extends WithStyles<typeof styles> {
   visitorVariables: VisitorVariable[];
   resourceType: ExhibitionPageResourceType;
   onUpdate: (dynamicResourceData: DynamicPageResource) => void;
+  setError: (error: Error) => void;
 }
 
 /**
@@ -83,6 +84,7 @@ const renderSwitchEditor = (dataParams: DynamicPageResourceSwitch, props: Props)
         onUpdate={(whenList: DynamicPageResourceSwitchWhen[]) => {
           onUpdate(getUpdatedData(data, getUpdatedSwitchParams(dataParams, "when", whenList)));
         }}
+        setError={props.setError}
       />
     </>
   );

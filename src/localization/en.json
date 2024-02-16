@@ -23,6 +23,14 @@
     "cancel": "Cancel"
   },
 
+  "createMediaFolderDialog": {
+    "title": "Create Folder",
+    "description": "Create a new folder by selecting a name for the folder and pressing the 'Create Folder' -button. Please note that the folder name cannot contain special characters.",
+    "folderName": "Folder name",
+    "cancelButton": "Cancel",
+    "createButton": "Create Folder"
+  },
+
   "mediaLibrary": {
     "title": "Media library",
     "selectMedia": "Select media",
@@ -824,7 +832,14 @@
         "viewPairs": "Element pairs",
         "addViewPair": "Add element pair",
         "startOfTransition": "From element",
-        "endOfTransition": "To element"
+        "endOfTransition": "To element",
+        "interpolations": {
+          "accelerateDecelerate": "Accelerate-decelerate",
+          "accelerate": "Accelerating",
+          "anticipate": "Anticipating",
+          "decelerate": "Decelerating",
+          "linear": "Linear"
+        }
       }
     },
     "delete": {

@@ -14,6 +14,14 @@ export interface IStrings extends LocalizedStringsMethods {
     cancel: string;
   };
 
+  createMediaFolderDialog: {
+    title: string;
+    description: string;
+    folderName: string;
+    cancelButton: string;
+    createButton: string;
+  },
+
   mediaLibrary: {
     title: string;
     selectMedia: string;
@@ -249,10 +257,6 @@ export interface IStrings extends LocalizedStringsMethods {
     pageSettingsEditor: {
       pageLayoutLabel: string;
       pageDeviceLabel: string;
-    };
-
-    deviceSettingsEditor: {
-      indexPageId: string;
     };
 
     addDeviceEditor: {

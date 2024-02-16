@@ -175,18 +175,17 @@ const renderPageContent = (
       {...draggableProps}
       {...dragHandleProps}
     >
-      {page.name}
-      {isDeviceIndexPage && pageType !== "idle" && (
-        <Typography
-          variant="body1"
-          style={{
+      <div className={ classes.pageItemName } title={ page.name }>
+        <span>{ page.name }</span>
+        {isDeviceIndexPage && pageType !== "idle" && (
+          <span style={{
             marginLeft: theme.spacing(1),
             fontSize: 12
-          }}
-        >
-          {`(${strings.contentEditor.editor.indexPageId})`}
-        </Typography>
-      )}
+          }}>
+            {`(${strings.contentEditor.editor.indexPageId})`}
+          </span>
+        )}
+      </div>
     </Paper>
   );
 };
