@@ -702,6 +702,7 @@
     "addDialogTitle": "Uusi sisältökokonaisuus",
     "addDialogDescription": "Anna nimi uudelle sisältökokonaisuudelle",
     "name": "Nimi",
+    "deviceGroup": "Laiteryhmä",
     "language": "Kieli",
     "rooms": "Näyttelykohteet",
     "room": "Näyttelykohde",
