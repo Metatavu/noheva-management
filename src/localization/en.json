@@ -701,6 +701,7 @@
     "addDialogTitle": "New set of materials",
     "addDialogDescription": "Give a name for the new set of exhibition content",
     "name": "Name",
+    "deviceGroup": "Device Group",
     "language": "Language",
     "rooms": "Rooms",
     "room": "Room",

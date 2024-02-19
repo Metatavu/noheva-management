@@ -709,6 +709,7 @@ export interface IStrings extends LocalizedStringsMethods {
     addDialogTitle: string;
     addDialogDescription: string;
     name: string;
+    deviceGroup: string;
     language: string;
     rooms: string;
     room: string;
