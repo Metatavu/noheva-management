@@ -64,7 +64,7 @@ const MediaLibrary: React.FC<Props> = ({
   const [ expanded, setExpanded ] = useState(startsOpen || false);
   const [ uploadDialogOpen, setUploadDialogOpen ] = useState(false);
   const [ newFolderDialogOpen, setNewFolderDialogOpen ] = useState(false);
-  const [ folder, setFolder ] = useState(currentUrl ? FileUtils.resolveFilePathFolder(FileUtils.resolveFileUriPath(currentUrl)) || "/" : "/");
+  const [ folder, setFolder ] = useState(currentUrl ? FileUtils.resolveFilePathFolder(FileUtils.resolveFileUriPath(FileUtils.stripUrlFunction(currentUrl))) || "/" : "/");
   const [ files, setFiles ] = useState<StoredFile[]>([]);
   const [ sortedFiles, setSortedFiles ] = useState<StoredFile[]>([]);
 
@@ -284,7 +284,7 @@ const MediaLibrary: React.FC<Props> = ({
     };
 
     const name = resolveFileName(file);
-    const action = file.uri == currentUrl;
+    const action = file.uri == FileUtils.stripUrlFunction(currentUrl);
 
     return (
       <ListItem disablePadding key={file.fileName} onClick={ onClick } className={ action ? classes.activeListItem : "" }>

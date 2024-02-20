@@ -7,6 +7,19 @@ import { StoredFile } from "../generated/client";
 namespace FileUtils {
 
   /**
+   * Strips CSS url function from given url 
+   * 
+   * @param url URL without url function
+   */
+  export const stripUrlFunction = (url: string | undefined | null) => {
+    if (!url) {
+      return null;
+    }
+
+    return url.replace(/url\(['"]?([^'"]*)['"]?\)/i, '$1');
+  }
+
+  /**
    * Resolves path from given file
    * 
    * @param file file
