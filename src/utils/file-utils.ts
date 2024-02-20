@@ -22,8 +22,12 @@ namespace FileUtils {
    * @param uri file uri
    * @returns folder
    */
-  export const resolveFileUriPath = (uri: string) => {
-    return uri.split(Config.getConfig().cdnBasePath)[1];
+  export const resolveFileUriPath = (uri: string | undefined | null) => {
+    if (uri && uri.startsWith(Config.getConfig().cdnBasePath)) {
+      return uri.split(Config.getConfig().cdnBasePath)[1];
+    }
+
+    return null;
   }
 
   /**
@@ -32,7 +36,11 @@ namespace FileUtils {
    * @param uri file uri
    * @returns folder of the file uri
    */
-  export const resolveFilePathFolder = (uri: string) => {
+  export const resolveFilePathFolder = (uri: string | undefined | null) => {
+    if (!uri) {
+      return null;
+    }
+
     if (uri.endsWith('/')) {
       return uri;
     }

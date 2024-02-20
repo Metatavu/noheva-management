@@ -272,7 +272,11 @@ const MediaLibrary: React.FC<Props> = ({
   const renderFile = (file: StoredFile) => {
     const onClick = () => {
       if (file.contentType === FOLDER_CONTENT_TYPE) {
-        setFolder(FileUtils.resolveFilePath(file));
+        const folder = FileUtils.resolveFilePath(file);
+        if (folder) {
+          setFolder(folder);
+        }
+        
         return;
       }
 
