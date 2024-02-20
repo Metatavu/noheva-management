@@ -36,10 +36,17 @@ export default createStyles({
     padding: "0 10px",
     marginRight: 5,
     height: "100%",
-    width: 350,
+    maxWidth: 400,
     borderRadius: 2,
     borderColor: theme.palette.primary.main,
     transition: "background-color 0.25s linear"
+  },
+
+  pageItemName: {
+    display: "block",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
 
   isDragged: {

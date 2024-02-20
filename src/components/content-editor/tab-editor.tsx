@@ -293,8 +293,9 @@ class TabEditor extends React.Component<Props, State> {
             <MediaLibrary
               accessToken={accessToken}
               mediaType={ResourceUtils.getResourceMediaType(resource.type)!}
-              resource={resource}
+              currentUrl={resource.data}
               onUrlChange={this.onMediaUrlChange}
+              setError={(error: Error) => this.setState({ error }) }
             />
           );
         case ExhibitionPageResourceType.Html:

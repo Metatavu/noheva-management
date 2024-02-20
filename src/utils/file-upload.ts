@@ -51,7 +51,7 @@ export default class FileUpload {
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.send(
         JSON.stringify({
-          path: `${folder}/${file.name}`,
+          path: folder ? `${folder}/${file.name}` : file.name,
           type: file.type
         })
       );
@@ -91,7 +91,7 @@ export default class FileUpload {
    * @param folder folder
    * @returns promise of created file
    */
-  public static async uploadFile(file: File | Blob, folder: string): Promise<OutputFile> {
+  public static async uploadFile(file: File, folder: string): Promise<OutputFile> {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("folder", folder);

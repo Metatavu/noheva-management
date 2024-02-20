@@ -23,6 +23,14 @@
     "cancel": "Peruuta"
   },
 
+  "createMediaFolderDialog": {
+    "title": "Luo uusi kansio",
+    "description": "Luo uusi kansio valitsemalla kansiolle nimi ja painamalla Luo -painiketta. Huomioithan, että kansion nimi ei voi sisältää erikoismerkkejä.",
+    "folderName": "Kansion nimi",
+    "cancelButton": "Peruuta",
+    "createButton": "Luo kansio"
+  },
+
   "mediaLibrary": {
     "title": "Mediakirjasto",
     "selectMedia": "Valitse media",
@@ -694,6 +702,7 @@
     "addDialogTitle": "Uusi sisältökokonaisuus",
     "addDialogDescription": "Anna nimi uudelle sisältökokonaisuudelle",
     "name": "Nimi",
+    "deviceGroup": "Laiteryhmä",
     "language": "Kieli",
     "rooms": "Näyttelykohteet",
     "room": "Näyttelykohde",
@@ -1181,8 +1190,8 @@
       },
       "version": "Ohjelmistoversio",
       "usageHours": "Käyttötunnit",
-      "warrantyExpiry": "Takuun umpeutuminen",
-      "lastConnected": "Viimeksi yhdistetty",
+      "warrantyExpiry": "Takuu päättyy",
+      "lastConnected": "Yhdistetty",
       "createdAt": "Luotu",
       "modifiedAt": "Muokattu",
       "approve": "Ota käyttöön",
@@ -1194,7 +1203,7 @@
         "pendingReApproval": "Odottaa uudelleenhyväksyntää"
       },
       "serialNumber": "Sarjanumero",
-      "lastSeen": "Viimeksi nähty",
+      "lastSeen": "Nähty",
       "model": "Laitemalli"
     },
     "deleteDialog": {

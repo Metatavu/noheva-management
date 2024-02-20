@@ -26,6 +26,7 @@ interface Props extends WithStyles<typeof styles> {
   whenList: DynamicPageResourceSwitchWhen[];
   visitorVariable?: VisitorVariable;
   onUpdate: (whenList: DynamicPageResourceSwitchWhen[]) => void;
+  setError: (error: Error) => void;
 }
 
 /**
@@ -79,6 +80,7 @@ const renderWhenRow = (index: number, when: DynamicPageResourceSwitchWhen, props
             const row = updateWhenRow(when, "value", url);
             onUpdate(getUpdatedWhenList(whenList, { updatedRow: { index, row } }));
           }}
+          setError={props.setError}
         />
       )}
       <IconButton

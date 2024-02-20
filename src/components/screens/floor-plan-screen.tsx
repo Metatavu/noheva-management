@@ -44,6 +44,7 @@ import { ColorResult } from "react-color";
 import { connect } from "react-redux";
 import TreeMenu, { TreeNodeInArray } from "react-simple-tree-menu";
 import { Dispatch } from "redux";
+import { v4 as uuid } from "uuid";
 
 /**
  * Component props
@@ -451,65 +452,72 @@ export class FloorPlanScreen extends React.Component<Props, State> {
   private constructTreeData = (): TreeNodeInArray[] => {
     const { floors, rooms, deviceGroups, exhibitionDevices, antennas } = this.state;
 
-    return floors.map((floor) => {
-      return {
-        key: floor.id!,
-        label: floor.name,
-        pathInTree: `${floor.id}`,
-        onClick: () => this.onFloorClick(floor.id!),
-        nodes: rooms
-          .filter((room) => room.floorId === floor.id)
-          .map((room) => {
-            return {
-              key: room.id!,
-              label: room.name,
-              pathInTree: `${floor.id}/${room.id}`,
-              onClick: () => this.onRoomClick(floor.id!, room.id!),
-              nodes: deviceGroups
-                .filter((group) => group.roomId === room.id)
-                .map((group) => {
-                  return {
-                    key: group.id!,
-                    label: group.name,
-                    pathInTree: `${floor.id}/${room.id}/${group.id}`,
-                    onClick: () => this.onDeviceGroupClick(floor.id!, room.id!, group.id!),
-                    nodes: [
-                      ...exhibitionDevices
-                        .filter((exhibitionDevice) => exhibitionDevice.groupId === group.id)
-                        .map((exhibitionDevice) => {
-                          return {
-                            key: exhibitionDevice.id!,
-                            label: exhibitionDevice.name,
-                            pathInTree: `${floor.id}/${room.id}/${group.id}/${exhibitionDevice.id}`,
-                            onClick: () =>
-                              this.onDeviceClick(
-                                floor.id!,
-                                room.id!,
-                                group.id!,
-                                exhibitionDevice.id!
-                              ),
-                            nodes: []
-                          };
-                        }),
-                      ...antennas
-                        .filter((antenna) => antenna.groupId === group.id)
-                        .map((antenna) => {
-                          return {
-                            key: antenna.id!,
-                            label: antenna.name,
-                            pathInTree: `${floor.id}/${room.id}/${group.id}/${antenna.id}`,
-                            onClick: () =>
-                              this.onAntennaClick(floor.id!, room.id!, group.id!, antenna.id!),
-                            nodes: []
-                          };
-                        })
-                    ]
-                  };
-                })
-            };
-          })
-      };
-    });
+    const sortedFloors = [ ...floors ].sort((a, b) => (a.name || "").localeCompare(b.name));
+    const sortedRooms = [ ...rooms ].sort((a, b) => (a.name || "").localeCompare(b.name));
+    const sortedDeviceGroups = [ ...deviceGroups ].sort((a, b) => (a.name || "").localeCompare(b.name));
+    const sortedExhibitionDevices = [ ...exhibitionDevices ].sort((a, b) => (a.name || "").localeCompare(b.name));
+    const sortedAntennas = [ ...antennas ].sort((a, b) => (a.name || "").localeCompare(b.name));
+
+    return sortedFloors
+      .map((floor) => {
+        return {
+          key: floor.id!,
+          label: floor.name,
+          pathInTree: `${floor.id}`,
+          onClick: () => this.onFloorClick(floor.id!),
+          nodes: sortedRooms
+            .filter((room) => room.floorId === floor.id)
+            .map((room) => {
+              return {
+                key: room.id!,
+                label: room.name,
+                pathInTree: `${floor.id}/${room.id}`,
+                onClick: () => this.onRoomClick(floor.id!, room.id!),
+                nodes: sortedDeviceGroups
+                  .filter((group) => group.roomId === room.id)
+                  .map((group) => {
+                    return {
+                      key: group.id!,
+                      label: group.name,
+                      pathInTree: `${floor.id}/${room.id}/${group.id}`,
+                      onClick: () => this.onDeviceGroupClick(floor.id!, room.id!, group.id!),
+                      nodes: [
+                        ...sortedExhibitionDevices
+                          .filter((exhibitionDevice) => exhibitionDevice.groupId === group.id)
+                          .map((exhibitionDevice) => {
+                            return {
+                              key: exhibitionDevice.id!,
+                              label: exhibitionDevice.name,
+                              pathInTree: `${floor.id}/${room.id}/${group.id}/${exhibitionDevice.id}`,
+                              onClick: () =>
+                                this.onDeviceClick(
+                                  floor.id!,
+                                  room.id!,
+                                  group.id!,
+                                  exhibitionDevice.id!
+                                ),
+                              nodes: []
+                            };
+                          }),
+                        ...sortedAntennas
+                          .filter((antenna) => antenna.groupId === group.id)
+                          .map((antenna) => {
+                            return {
+                              key: antenna.id!,
+                              label: antenna.name,
+                              pathInTree: `${floor.id}/${room.id}/${group.id}/${antenna.id}`,
+                              onClick: () =>
+                                this.onAntennaClick(floor.id!, room.id!, group.id!, antenna.id!),
+                              nodes: []
+                            };
+                          })
+                      ]
+                    };
+                  })
+              };
+            })
+        };
+      });
   };
 
   /**
@@ -715,7 +723,7 @@ export class FloorPlanScreen extends React.Component<Props, State> {
 
     const exhibitionFloorsApi = Api.getExhibitionFloorsApi(this.props.accessToken);
     const uploadedFile = await FileUpload.uploadFile(
-      data,
+      new File([data], uuid(), { type: "image/png" }),
       `/floorplans/${selectedFloor.exhibitionId}`
     );
     const updatedFloor = await exhibitionFloorsApi.updateExhibitionFloor({

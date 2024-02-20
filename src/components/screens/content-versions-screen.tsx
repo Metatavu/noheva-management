@@ -1,9 +1,5 @@
 import {
-  Box,
   CircularProgress,
-  MenuItem,
-  TextField,
-  TextFieldProps,
   Typography
 } from "@mui/material";
 import { WithStyles } from "@mui/styles";
@@ -16,13 +12,11 @@ import { connect } from "react-redux";
 import { Dispatch } from "redux";
 import Api from "../../api/api";
 import {
-  ContentVersionActiveCondition,
   Exhibition,
   ExhibitionDeviceGroup,
   ExhibitionPage,
   ExhibitionRoom,
-  VisitorVariable,
-  VisitorVariableType
+  VisitorVariable
 } from "../../generated/client";
 import { ContentVersion } from "../../generated/client/models/ContentVersion";
 import strings from "../../localization/strings";
@@ -41,9 +35,8 @@ import DeleteUtils from "../../utils/delete-utils";
 import CardItem from "../generic/card/card-item";
 import CardList from "../generic/card/card-list";
 import ConfirmDialog from "../generic/confirm-dialog";
-import GenericDialog from "../generic/generic-dialog";
-import WithDebounce from "../generic/with-debounce";
 import BasicLayout from "../layouts/basic-layout";
+import ContentVersionEditDialog from "../content-versions/content-version-edit-dialog";
 
 /**
  * Component props
@@ -67,11 +60,9 @@ interface State {
   contentVersions: ContentVersion[];
   deviceGroups: ExhibitionDeviceGroup[];
   multiLingualContentVersions: MultiLingualContentVersion[];
-  selectedMultiLingualContentVersion?: MultiLingualContentVersion;
   dialogOpen: boolean;
   deleteDialogOpen: boolean;
   addNewContentVersion: boolean;
-  formError?: string;
   visitorVariables?: VisitorVariable[];
   confirmDialogData: ConfirmDialogData;
   selectedContentVersion?: ContentVersion;
@@ -221,141 +212,47 @@ class ContentVersionsScreen extends React.Component<Props, State> {
   };
 
   /**
+   * Returns selected multilingual content version
+   * 
+   * @returns selected multilingual content version
+   */
+  private getSelectedMultiLingualContentVersion = () => {
+    const { selectedContentVersion, multiLingualContentVersions } = this.state;
+
+    if (!selectedContentVersion) {
+      return null;
+    }
+
+    return multiLingualContentVersions.find(multiLingualContentVersion => multiLingualContentVersion.languageVersions[0].id === selectedContentVersion.id);
+  };
+
+  /**
    * Render add dialog
    */
   private renderAddDialog = () => {
-    const { selectedContentVersion, formError } = this.state;
+    const { selectedContentVersion, deviceGroups, multiLingualContentVersions } = this.state;
 
-    return (
-      <GenericDialog
-        cancelButtonText={strings.genericDialog.cancel}
-        positiveButtonText={strings.genericDialog.save}
-        title={strings.contentVersion.addDialogTitle}
-        error={!!formError}
-        onConfirm={this.onDialogSaveClick}
-        onCancel={this.onCloseOrCancelClick}
-        open={this.state.dialogOpen}
-        onClose={this.onCloseOrCancelClick}
-      >
-        <Box width={320}>
-          <Box mb={2}>
-            <Typography variant="body1">{strings.contentVersion.addDialogDescription}</Typography>
-          </Box>
-          <WithDebounce
-            name="name"
-            label={strings.contentVersion.name}
-            value={selectedContentVersion?.name || ""}
-            onChange={this.onNameChange}
-            debounceTimeout={250}
-            component={(props) => <TextField {...props} />}
-          />
-          {this.renderActivityCondition()}
-          {formError && (
-            <Typography variant="body1" color="error">
-              {formError}
-            </Typography>
-          )}
-        </Box>
-      </GenericDialog>
-    );
-  };
-
-  /**
-   * Renders activity condition options
-   */
-  private renderActivityCondition = () => {
-    const { selectedMultiLingualContentVersion, visitorVariables } = this.state;
-    const activeCondition =
-      selectedMultiLingualContentVersion?.languageVersions[0]?.activeCondition;
-
-    const label = activeCondition?.userVariable
-      ? strings.exhibition.resources.dynamic.key
-      : strings.generic.noSelection;
-    return (
-      <>
-        <Box mt={2} mb={2}>
-          <Typography variant="body1">{strings.contentVersion.contentIsActiveWhen}</Typography>
-        </Box>
-        <TextField
-          fullWidth
-          name="userVariable"
-          label={label}
-          select
-          value={activeCondition?.userVariable || ""}
-          onChange={this.onActiveConditionSelectChange}
-        >
-          {visitorVariables?.map((variable) => (
-            <MenuItem key={variable.id} value={variable.name}>
-              {variable.name}
-            </MenuItem>
-          ))}
-          {
-            <MenuItem key={"no-value"} value={""}>
-              {strings.generic.noSelection}
-            </MenuItem>
-          }
-        </TextField>
-        {activeCondition?.userVariable && (
-          <>
-            <Box mt={2} mb={2}>
-              <Typography variant="body1">{strings.contentVersion.equals}</Typography>
-            </Box>
-            {visitorVariables
-              ?.filter((variable) => variable.name === activeCondition?.userVariable)
-              .map((variable) => {
-                this.renderVariables(variable, activeCondition?.equals);
-              })}
-          </>
-        )}
-      </>
-    );
-  };
-
-  /**
-   * Renders variables
-   *
-   * @param visitorVariable visitor variables
-   * @param value current value
-   */
-  private renderVariables = (visitorVariable: VisitorVariable, value?: string) => {
-    const { classes } = this.props;
-
-    const textFieldProps: TextFieldProps = {
-      className: classes.field,
-      fullWidth: true,
-      label: strings.exhibition.resources.dynamic.equals,
-      name: "equals",
-      value: value,
-      onChange: this.onActiveConditionValueChange
-    };
-
-    switch (visitorVariable.type) {
-      case VisitorVariableType.Enumerated:
-        return (
-          <TextField {...textFieldProps} select>
-            {visitorVariable._enum?.map((value, index) => (
-              <MenuItem key={index} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </TextField>
-        );
-      case VisitorVariableType.Boolean:
-        return (
-          <TextField {...textFieldProps} select>
-            <MenuItem key="true" value="true">
-              {strings.visitorVariables.booleanValues.true}
-            </MenuItem>
-            <MenuItem key="false" value="false">
-              {strings.visitorVariables.booleanValues.false}
-            </MenuItem>
-          </TextField>
-        );
-      case VisitorVariableType.Number:
-        return <TextField {...textFieldProps} type="number" />;
-      default:
-        return <TextField {...textFieldProps} />;
+    if (!selectedContentVersion) {
+      return null;
     }
+
+    const selectedMultiLingualContentVersion = this.getSelectedMultiLingualContentVersion();
+    if (!selectedMultiLingualContentVersion) {
+      return null;
+    }
+
+    return (
+      <ContentVersionEditDialog 
+        multiLingualContentVersion={ selectedMultiLingualContentVersion }
+        visitorVariables={ this.state.visitorVariables }
+        deviceGroups={ deviceGroups }
+        dialogOpen={ this.state.dialogOpen }
+        classes={ this.props.classes }
+        isExistingName={ (name) => this.isExistingName(name, multiLingualContentVersions) }
+        onSaveClick={ this.onDialogSaveClick }
+        onCloseClick={ this.onCloseOrCancelClick }
+      />
+    );
   };
 
   /**
@@ -390,11 +287,14 @@ class ContentVersionsScreen extends React.Component<Props, State> {
     const exhibitionRoomsApi = Api.getExhibitionRoomsApi(accessToken);
     const contentVersionsApi = Api.getContentVersionsApi(accessToken);
     const visitorVariablesApi = Api.getVisitorVariablesApi(accessToken);
-    const [exhibition, room, contentVersions, visitorVariables] = await Promise.all([
+    const deviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
+
+    const [ exhibition, room, contentVersions, visitorVariables, deviceGroups ] = await Promise.all([
       exhibitionsApi.findExhibition({ exhibitionId }),
       exhibitionRoomsApi.findExhibitionRoom({ exhibitionId: exhibitionId, roomId: roomId }),
       contentVersionsApi.listContentVersions({ exhibitionId, roomId }),
-      visitorVariablesApi.listVisitorVariables({ exhibitionId: exhibitionId })
+      visitorVariablesApi.listVisitorVariables({ exhibitionId: exhibitionId }),
+      deviceGroupsApi.listExhibitionDeviceGroups({ exhibitionId: exhibitionId, roomId: roomId })
     ]);
 
     /**
@@ -433,7 +333,8 @@ class ContentVersionsScreen extends React.Component<Props, State> {
       room,
       multiLingualContentVersions,
       visitorVariables,
-      contentVersions
+      contentVersions,
+      deviceGroups
     });
   };
 
@@ -483,7 +384,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
           })
         )
       );
-    } catch (error) {
+    } catch (error: any) {
       this.setState({ error: new Error(error) });
       return;
     }
@@ -500,7 +401,6 @@ class ContentVersionsScreen extends React.Component<Props, State> {
         }
 
         draft.deleteDialogOpen = false;
-        draft.selectedMultiLingualContentVersion = undefined;
       })
     );
   };
@@ -555,7 +455,6 @@ class ContentVersionsScreen extends React.Component<Props, State> {
 
     this.setState({
       deleteDialogOpen: true,
-      selectedMultiLingualContentVersion: multiLingualContentVersion,
       selectedContentVersion: multiLingualContentVersion.languageVersions[0],
       confirmDialogData: tempDeleteData
     });
@@ -571,7 +470,6 @@ class ContentVersionsScreen extends React.Component<Props, State> {
   ) => {
     this.setState({
       dialogOpen: true,
-      selectedMultiLingualContentVersion: multiLingualContentVersion,
       selectedContentVersion: multiLingualContentVersion.languageVersions[0],
       addNewContentVersion: false
     });
@@ -614,162 +512,29 @@ class ContentVersionsScreen extends React.Component<Props, State> {
   };
 
   /**
-   * Event handler for name change
-   *
-   * @param event react change event
-   */
-  private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { selectedMultiLingualContentVersion, multiLingualContentVersions } = this.state;
-
-    if (!selectedMultiLingualContentVersion) {
-      return;
-    }
-
-    const { value } = event.target;
-    const { languageVersions } = selectedMultiLingualContentVersion;
-    const updatedLanguageVersions: ContentVersion[] = languageVersions.map((languageVersion) => ({
-      ...languageVersion,
-      name: value
-    }));
-
-    const updatedMultiLingualContentVersion: MultiLingualContentVersion = {
-      languageVersions: updatedLanguageVersions
-    };
-
-    this.setState({
-      selectedMultiLingualContentVersion: updatedMultiLingualContentVersion
-    });
-
-    if (value === "") {
-      this.setState({ formError: strings.contentVersion.nameIsMandatory });
-      return;
-    }
-
-    const selectedVersionIndex = this.findMultiLingualContentVersionIndex(
-      updatedMultiLingualContentVersion,
-      multiLingualContentVersions
-    );
-    const otherVersions = multiLingualContentVersions.filter(
-      (version, index) => index !== selectedVersionIndex
-    );
-    const existingName = this.isExistingName(value, otherVersions);
-    if (existingName) {
-      this.setState({ formError: strings.contentVersion.nameAlreadyTaken });
-      return;
-    }
-
-    this.setState({ formError: undefined });
-  };
-
-  /**
-   * Event handler for active condition select change
-   *
-   * @param event react change event
-   */
-  private onActiveConditionSelectChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { selectedMultiLingualContentVersion } = this.state;
-    const { name, value } = event.target;
-
-    if (!selectedMultiLingualContentVersion || !name) {
-      return;
-    }
-
-    const { languageVersions } = selectedMultiLingualContentVersion;
-
-    const updatedLanguageVersions: ContentVersion[] = languageVersions.map((languageVersion) => {
-      const newActiveCondition: ContentVersionActiveCondition = {
-        userVariable: value,
-        equals: ""
-      };
-
-      return {
-        ...languageVersion,
-        activeCondition: newActiveCondition
-      };
-    });
-
-    const updatedMultiLingualContentVersion: MultiLingualContentVersion = {
-      languageVersions: updatedLanguageVersions
-    };
-
-    this.setState({
-      selectedMultiLingualContentVersion: updatedMultiLingualContentVersion
-    });
-  };
-
-  /**
-   * Event handler for active condition select change
-   *
-   * @param event react change event
-   */
-  private onActiveConditionValueChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { selectedMultiLingualContentVersion } = this.state;
-    const { name, value } = event.target;
-
-    if (!selectedMultiLingualContentVersion || !name) {
-      return;
-    }
-
-    const { languageVersions } = selectedMultiLingualContentVersion;
-
-    const updatedLanguageVersions: ContentVersion[] = languageVersions.map((languageVersion) => {
-      if (languageVersion.activeCondition) {
-        const updatedActiveCondition: ContentVersionActiveCondition = {
-          ...languageVersion.activeCondition,
-          [name]: value
-        };
-        return {
-          ...languageVersion,
-          activeCondition: updatedActiveCondition
-        };
-      }
-
-      return languageVersion;
-    });
-
-    const updatedMultiLingualContentVersion: MultiLingualContentVersion = {
-      languageVersions: updatedLanguageVersions
-    };
-
-    this.setState({
-      selectedMultiLingualContentVersion: updatedMultiLingualContentVersion
-    });
-  };
-
-  /**
    * On dialog save click handler
    */
-  private onDialogSaveClick = async () => {
+  private onDialogSaveClick = async (changedMultiLingualContentVersion: MultiLingualContentVersion) => {
     const { accessToken, exhibitionId } = this.props;
-    const { selectedMultiLingualContentVersion, addNewContentVersion, selectedContentVersion } =
-      this.state;
-
-    if (!selectedMultiLingualContentVersion || !selectedContentVersion) {
-      return;
-    }
-
+    const { addNewContentVersion } = this.state;
+    const contentVersionApi = Api.getContentVersionsApi(accessToken);
+    
     const newState = await produce(this.state, async (draft) => {
-      const contentVersionApi = Api.getContentVersionsApi(accessToken);
-
       if (addNewContentVersion) {
+
         const newContentVersion = await contentVersionApi.createContentVersion({
           exhibitionId: exhibitionId,
-          contentVersion: selectedMultiLingualContentVersion.languageVersions[0]
+          contentVersion: changedMultiLingualContentVersion.languageVersions[0]
         });
 
         const newMultiLingualContentVersion = {
           languageVersions: [newContentVersion]
         };
 
-        draft.selectedMultiLingualContentVersion = newMultiLingualContentVersion;
         draft.multiLingualContentVersions.push(newMultiLingualContentVersion);
         draft.contentVersions.push(newContentVersion);
       } else {
-        const { languageVersions } = selectedMultiLingualContentVersion;
+        const { languageVersions } = changedMultiLingualContentVersion;
         const updatedLanguageVersions = await Promise.all(
           languageVersions.map((languageVersion) =>
             contentVersionApi.updateContentVersion({
@@ -784,7 +549,6 @@ class ContentVersionsScreen extends React.Component<Props, State> {
           languageVersions: updatedLanguageVersions
         };
 
-        draft.selectedMultiLingualContentVersion = updatedMultiLingualContentVersion;
         const versionIndex = this.findMultiLingualContentVersionIndex(
           updatedMultiLingualContentVersion,
           draft.multiLingualContentVersions
@@ -823,7 +587,6 @@ class ContentVersionsScreen extends React.Component<Props, State> {
 
     this.setState({
       dialogOpen: true,
-      selectedMultiLingualContentVersion: selectedMultiLingualContentVersion,
       selectedContentVersion: selectedMultiLingualContentVersion.languageVersions[0],
       addNewContentVersion: true
     });
@@ -836,7 +599,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
     this.setState({
       dialogOpen: false,
       deleteDialogOpen: false,
-      selectedMultiLingualContentVersion: undefined
+      selectedContentVersion: undefined
     });
   };
 
@@ -919,4 +682,4 @@ function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withStyles(styles)(ContentVersionsScreen));
+)(withStyles(styles)(ContentVersionsScreen) as any) as any;

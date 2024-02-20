@@ -816,6 +816,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
           component={this.state.selectedTreeObject}
           onUpdate={this.onUpdateResource}
           visitorVariables={visitorVariables}
+          setError={ (err: Error) => this.setState({ error: err }) }
         />
       );
     }
