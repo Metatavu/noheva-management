@@ -230,17 +230,25 @@ class ContentVersionsScreen extends React.Component<Props, State> {
    * Render add dialog
    */
   private renderAddDialog = () => {
-    const { selectedContentVersion, deviceGroups, multiLingualContentVersions } = this.state;
+    const { deviceGroups, multiLingualContentVersions } = this.state;
 
-    if (!selectedContentVersion) {
-      return null;
+    let selectedMultiLingualContentVersion = this.getSelectedMultiLingualContentVersion();
+    if (this.state.addNewContentVersion) {
+      selectedMultiLingualContentVersion = {
+        languageVersions: [{
+          name: "",
+          language: LanguageOptions.FI,
+          rooms: [
+            this.props.roomId
+          ]
+        }]
+      }
     }
 
-    const selectedMultiLingualContentVersion = this.getSelectedMultiLingualContentVersion();
     if (!selectedMultiLingualContentVersion) {
       return null;
     }
-
+    
     return (
       <ContentVersionEditDialog 
         multiLingualContentVersion={ selectedMultiLingualContentVersion }
