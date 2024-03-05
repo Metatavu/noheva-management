@@ -40,7 +40,7 @@ interface Props extends WithStyles<typeof styles> {
   currentUrl: string | undefined;
   accessToken: AccessToken;
   mediaType: MediaType;
-  onUrlChange: (newUrl: string) => void;
+  onUrlChange: (newUrl: string | undefined) => void;
   setError: (error: Error) => void;
 }
 
@@ -280,7 +280,11 @@ const MediaLibrary: React.FC<Props> = ({
         return;
       }
 
-      onUrlChange(file.uri);
+      if (file.uri == currentUrl) {
+        onUrlChange(undefined);
+      } else {
+        onUrlChange(file.uri);
+      }
     };
 
     const name = resolveFileName(file);
