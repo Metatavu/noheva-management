@@ -774,7 +774,8 @@ export class FloorPlanScreen extends React.Component<Props, State> {
    */
   private onCropDataUpdate = (data: Blob) => {
     this.setState({
-      cropImageData: data
+      cropImageData: data,
+      dataChanged: true
     });
   };
 
