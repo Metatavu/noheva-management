@@ -10,9 +10,7 @@ export default createStyles({
   },
 
   fileName: {
-    whiteSpace: 'nowrap', 
-    overflow: 'hidden', 
-    textOverflow: 'ellipsis', 
+    wordBreak: "break-all",
     width: "100%",
     display: "block"
   },
