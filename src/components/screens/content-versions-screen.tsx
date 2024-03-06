@@ -422,44 +422,34 @@ class ContentVersionsScreen extends React.Component<Props, State> {
     const { accessToken, exhibitionId } = this.props;
     const { confirmDialogData } = this.state;
 
-    const contentVersionsApi = Api.getContentVersionsApi(accessToken);
     const pagesApi = Api.getExhibitionPagesApi(accessToken);
 
     const tempDeleteData = { ...confirmDialogData } as ConfirmDialogData;
-    const allContentVersions: ContentVersion[] = [];
     const allPages: ExhibitionPage[] = [];
 
     for (const contentVersion of multiLingualContentVersion.languageVersions) {
-      const [contentVersions, pages] = await Promise.all([
-        contentVersionsApi.listContentVersions({
-          exhibitionId: exhibitionId
-        }),
-        pagesApi.listExhibitionPages({
+      const pages = await pagesApi.listExhibitionPages({
           exhibitionId: exhibitionId,
           contentVersionId: contentVersion.id
-        })
-      ]);
-      allContentVersions.push(...contentVersions);
+      });
+
       allPages.push(...pages);
     }
 
-    if (allContentVersions.length > 0 || allPages.length > 0) {
+    if (allPages.length > 0) {
       // TODO: causing a read only error if try to delete straight after creating a new content version
-      confirmDialogData.deletePossible = false;
-      confirmDialogData.contentTitle = strings.contentVersion.delete.contentTitle;
+      tempDeleteData.deletePossible = false;
+      tempDeleteData.contentTitle = strings.contentVersion.delete.contentTitle;
 
       const holder: DeleteDataHolder[] = [];
-      holder.push({
-        objects: allContentVersions,
-        localizedMessage: strings.deleteContent.groupContentVersions
-      });
       holder.push({ objects: allPages, localizedMessage: strings.deleteContent.pages });
-      confirmDialogData.contentSpecificMessages =
-        DeleteUtils.constructContentDeleteMessages(holder);
+      tempDeleteData.contentSpecificMessages = DeleteUtils.constructContentDeleteMessages(holder);
+    } else {
+      tempDeleteData.deletePossible = true;
+      tempDeleteData.contentSpecificMessages = [];
     }
 
-    tempDeleteData.onConfirm = () =>
-      this.deleteMultiLingualContentVersion(multiLingualContentVersion);
+    tempDeleteData.onConfirm = () => this.deleteMultiLingualContentVersion(multiLingualContentVersion);
 
     this.setState({
       deleteDialogOpen: true,
