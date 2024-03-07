@@ -148,7 +148,13 @@ const MediaLibrary: React.FC<Props> = ({
    * @returns parent folder
    */
   const resolveParentFolder = (folder: string) => {
-    return folder.replace(/\/$/, "").split("/").slice(0, -1).join("/") || "/";
+    const result = folder.replace(/\/$/, "").split("/").slice(0, -1).join("/") || "/";
+
+    if (result.endsWith("/")) {
+      return result;
+    } else {
+      return `${result}/`;
+    }
   }
 
   /**
