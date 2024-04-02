@@ -280,7 +280,7 @@ const MediaLibrary: React.FC<Props> = ({
         return;
       }
 
-      if (file.uri === currentUrl) {
+      if (file.uri === FileUtils.stripUrlFunction(currentUrl)) {
         onUrlChange(undefined);
       } else {
         onUrlChange(file.uri);
