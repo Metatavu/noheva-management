@@ -34,7 +34,7 @@ const TimelineDevicesList: React.FC<Props> = ({
   const [ sortedDevices, setSortedDevices ] = useState<ExhibitionDevice[]>(devices);
 
   useEffect(() => {
-    setSortedDevices(devices.sort((a, b) => a.name.localeCompare(b.name)));
+    setSortedDevices([...devices].sort((a, b) => a.name.localeCompare(b.name)));
   }, [devices]);
 
   return (
