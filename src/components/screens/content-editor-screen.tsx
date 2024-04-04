@@ -12,6 +12,7 @@ import {
   ExhibitionPageResource,
   ExhibitionPageResourceFromJSON,
   ExhibitionPageTransition,
+  ExhibitionRoom,
   LayoutType,
   PageLayout,
   PageLayoutView,
@@ -26,6 +27,7 @@ import theme from "../../styles/theme";
 import {
   AccessToken,
   ActionButton,
+  BreadcrumbData,
   ConfirmDialogData,
   HtmlComponentType,
   LanguageOptions,
@@ -139,6 +141,7 @@ interface State {
   deleteDialogOpen: boolean;
   devices: Device[];
   selectedTreeObject?: TreeObject;
+  room?: ExhibitionRoom;
 }
 
 /**
@@ -261,7 +264,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         keycloak={keycloak}
         history={history}
         title={contentVersion?.name || ""}
-        breadcrumbs={[]}
+        breadcrumbs={this.getBreadcrumbsData()}
         actionBarButtons={this.getActionButtons()}
         noBackButton
         dataChanged={dataChanged}
@@ -1079,6 +1082,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const visitorVariablesApi = Api.getVisitorVariablesApi(accessToken);
     const devicesApi = Api.getDevicesApi(accessToken);
     const exhibitionDeviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
+    const exhibitionRoomsApi = Api.getExhibitionRoomsApi(accessToken);
 
     const [
       initialContentVersion,
@@ -1087,7 +1091,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
       layouts,
       visitorVariables,
       devices,
-      exhibitionDeviceGroups
+      exhibitionDeviceGroups,
+      room
     ] = await Promise.all([
       contentVersionsApi.findContentVersion({ exhibitionId, contentVersionId }),
       contentVersionsApi.listContentVersions({ exhibitionId, roomId }),
@@ -1098,7 +1103,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
       exhibitionDeviceGroupsApi.listExhibitionDeviceGroups({
         exhibitionId: exhibitionId,
         roomId: roomId
-      })
+      }),
+      exhibitionRoomsApi.findExhibitionRoom({ exhibitionId, roomId })
     ]);
 
     /**
@@ -1169,7 +1175,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
       layouts,
       selectedContentVersion,
       selectedDevice,
-      devices
+      devices,
+      room
     });
   };
 
@@ -1230,6 +1237,27 @@ class ContentEditorScreen extends React.Component<Props, State> {
       value: locale,
       label: locale
     }));
+  };
+
+  /**
+   * Get breadcrumbs data
+   *
+   * @returns breadcrumbs data as array
+   */
+  private getBreadcrumbsData = () => {
+    const { exhibition } = this.props;
+    const { room, selectedContentVersion } = this.state;
+    
+    if (!exhibition || !room || !selectedContentVersion) {
+      return [];
+    }
+    
+    return [
+      { name: strings.exhibitions.listTitle, url: "/exhibitions" },
+      { name: exhibition?.name, url: `/exhibitions/${exhibition.id}/content` },
+      { name: room.name, url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}` },
+      { name: selectedContentVersion.name, url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}?contentVersionId=${selectedContentVersion.id}` }
+    ] as BreadcrumbData[];
   };
 
   /**
