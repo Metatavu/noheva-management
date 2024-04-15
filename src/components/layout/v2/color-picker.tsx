@@ -1,15 +1,15 @@
 import GenericUtils from "../../../utils/generic-utils";
 import { Popover } from "@mui/material";
-import { ColorResult, SketchPicker } from "react-color";
+import { Color, ColorResult, SketchPicker } from "react-color";
 import { PresetColor } from "react-color/lib/components/sketch/Sketch";
 
 /**
  * Components properties
  */
 interface Props {
-  color: string;
+  color?: Color;
   anchorEl?: HTMLButtonElement;
-  onClose: () => void;
+  onClose?: () => void;
   onChangeComplete: (color: ColorResult) => void;
 }
 
@@ -49,26 +49,36 @@ const ColorPicker = ({ color, anchorEl, onClose, onChangeComplete }: Props) => {
     onChangeComplete(color);
   };
 
+  if (anchorEl) {
+    return (
+      <Popover
+        open={!!anchorEl}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "left"
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "right"
+        }}
+      >
+        <SketchPicker
+          color={color}
+          presetColors={getPresetColors()}
+          onChangeComplete={handleChangeComplete}
+        />
+      </Popover>
+    );
+  }
+
   return (
-    <Popover
-      open={!!anchorEl}
-      anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: "center",
-        horizontal: "left"
-      }}
-      transformOrigin={{
-        vertical: "center",
-        horizontal: "right"
-      }}
-    >
-      <SketchPicker
-        color={color}
-        presetColors={getPresetColors()}
-        onChangeComplete={handleChangeComplete}
-      />
-    </Popover>
+    <SketchPicker
+      color={color}
+      presetColors={getPresetColors()}
+      onChangeComplete={handleChangeComplete}
+    />
   );
 };
 

@@ -106,6 +106,8 @@ const LayoutScreenHTML: FC<Props> = ({
     setDataChanged(true);
   }, [foundLayout]);
 
+  const updateDefaultResources = (layout: PageLayout) => {};
+
   /**
    * Fetches PageLayout
    */
@@ -359,8 +361,6 @@ const LayoutScreenHTML: FC<Props> = ({
 
     if (!newComponent) return;
 
-    const resourceIds = HtmlResourceUtils.extractResourceIds(componentData);
-
     const updatedTree = addNewHtmlComponent(
       treeObjects,
       newComponent,
@@ -368,12 +368,7 @@ const LayoutScreenHTML: FC<Props> = ({
       !!isNewComponentSibling
     );
 
-    const newDefaultResources = (resourceIds ?? []).map((resourceId) => ({
-      id: resourceId,
-      data: newComponent.type === HtmlComponentType.LAYOUT ? "none" : "",
-      type: HtmlResourceUtils.getResourceType(newComponent.type),
-      mode: PageResourceMode.Static
-    }));
+    const newDefaultResources = HtmlResourceUtils.getDefaultResourcesForComponent(newComponent);
 
     const defaultResources = [...(foundLayout.defaultResources || []), ...newDefaultResources];
 

@@ -11,6 +11,7 @@ import {
   ExhibitionPageEventTriggerFromJSON,
   ExhibitionPageResource,
   ExhibitionPageResourceFromJSON,
+  ExhibitionPageResourceType,
   ExhibitionPageTransition,
   ExhibitionRoom,
   LayoutType,
@@ -741,7 +742,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         onPageDeviceChange={this.onPageDeviceChange}
         onPageLayoutChange={this.onPageLayoutChange}
         onPageNameChange={this.onPageNameChange}
-        setSelectResource={this.handleResourceSelect}
+        setSelectedResource={this.handleResourceSelect}
         setSelectedTriggerIndex={(selectedTriggerIndex) => this.setState({ selectedTriggerIndex })}
         setSelectedTabIndex={(selectedTabIndex) => this.setState({ selectedTabIndex })}
         setSelectedLayoutView={(selectedLayoutView) => this.setState({ selectedLayoutView })}
@@ -819,7 +820,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
           component={this.state.selectedTreeObject}
           onUpdate={this.onUpdateResource}
           visitorVariables={visitorVariables}
-          setError={ (err: Error) => this.setState({ error: err }) }
+          setError={(err: Error) => this.setState({ error: err })}
         />
       );
     }
@@ -998,7 +999,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         selectedPage: {
           ...selectedPage,
           layoutId: layoutId,
-          resources: HtmlResourceUtils.getDefaultResources(selectedLayout)
+          resources: HtmlResourceUtils.getLayoutDefaultResources(selectedLayout)
         },
         dataChanged: true
       });
@@ -1022,7 +1023,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
         );
         // At the moment layout components resource is background-image and in css format and it needs to be changed to url('') format
         const resource =
-          component?.type === HtmlComponentType.LAYOUT
+          component?.type === HtmlComponentType.LAYOUT &&
+          updatedResource.type === ExhibitionPageResourceType.Image
             ? {
                 ...updatedResource,
                 data: updatedResource.data ? `url('${updatedResource.data}')` : ""
@@ -1247,16 +1249,22 @@ class ContentEditorScreen extends React.Component<Props, State> {
   private getBreadcrumbsData = () => {
     const { exhibition } = this.props;
     const { room, selectedContentVersion } = this.state;
-    
+
     if (!exhibition || !room || !selectedContentVersion) {
       return [];
     }
-    
+
     return [
       { name: strings.exhibitions.listTitle, url: "/exhibitions" },
       { name: exhibition?.name, url: `/exhibitions/${exhibition.id}/content` },
-      { name: room.name, url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}` },
-      { name: selectedContentVersion.name, url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}?contentVersionId=${selectedContentVersion.id}` }
+      {
+        name: room.name,
+        url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}`
+      },
+      {
+        name: selectedContentVersion.name,
+        url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}?contentVersionId=${selectedContentVersion.id}`
+      }
     ] as BreadcrumbData[];
   };
 
@@ -1639,6 +1647,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       const movedPageId = result.draggableId;
       const oldIndex = result.source.index;
       const newIndex = result.destination.index;
+      console.log(newIndex);
 
       if (oldIndex === newIndex) {
         return;
@@ -1791,6 +1800,17 @@ class ContentEditorScreen extends React.Component<Props, State> {
     return layouts.find((layout) => layout.id === page.layoutId) || null;
   };
 
+  private validatePageResource = (
+    layoutDefaultResources: ExhibitionPageResource[],
+    resource: ExhibitionPageResource
+  ) => {
+    const foundDefaultResource = layoutDefaultResources.find(
+      (defaultResource) => defaultResource.id === resource.id
+    );
+
+    return foundDefaultResource && foundDefaultResource.type === resource.type;
+  };
+
   /**
    * Update page resources and id mappings
    *
@@ -1805,12 +1825,12 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
     if (pageLayout.layoutType === LayoutType.Html && pageLayout.defaultResources) {
       const updatedResources: ExhibitionPageResource[] = selectedPage.resources.filter((resource) =>
-        pageLayout.defaultResources?.some((defaultResource) => defaultResource.id === resource.id)
+        this.validatePageResource(pageLayout.defaultResources ?? [], resource)
       );
 
       for (const defaultResource of pageLayout.defaultResources) {
         const foundResource = selectedPage.resources.find((res) => res.id === defaultResource.id);
-        if (!foundResource) {
+        if (!foundResource || foundResource.type !== defaultResource.type) {
           updatedResources.push(defaultResource);
         }
       }
@@ -2005,7 +2025,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       contentVersionId: selectedContentVersion.id,
       name: strings.exhibition.newPage,
       eventTriggers: [],
-      resources: HtmlResourceUtils.getDefaultResources(defaultLayout),
+      resources: HtmlResourceUtils.getLayoutDefaultResources(defaultLayout),
       orderNumber: isIdlePage ? 0 : filteredPages.length,
       enterTransitions: [],
       exitTransitions: []

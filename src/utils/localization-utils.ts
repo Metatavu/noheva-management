@@ -1,4 +1,4 @@
-import { DeviceApprovalStatus } from "../generated/client";
+import { DeviceApprovalStatus, ExhibitionPageResourceType } from "../generated/client";
 import strings from "../localization/strings";
 import { HtmlComponentType, HtmlTextComponentType, LayoutAlignment } from "../types";
 
@@ -113,6 +113,21 @@ namespace LocalizationUtils {
       [DeviceApprovalStatus.Ready]: strings.devicesV2.approvalStatus.ready,
       [DeviceApprovalStatus.PendingReapproval]: strings.devicesV2.approvalStatus.pendingReApproval
     })[approvalStatus];
+
+  /**
+   * Returns localized resource type
+   *
+   * @param resourceType resource type
+   */
+  export const getLocalizedResourceType = (resourceType: ExhibitionPageResourceType) =>
+    ({
+      [ExhibitionPageResourceType.Color]: strings.contentEditor.editor.resourceType.color,
+      [ExhibitionPageResourceType.Image]: strings.contentEditor.editor.resourceType.image,
+      [ExhibitionPageResourceType.Video]: strings.contentEditor.editor.resourceType.video,
+      [ExhibitionPageResourceType.Text]: strings.contentEditor.editor.resourceType.text,
+      [ExhibitionPageResourceType.Svg]: strings.contentEditor.editor.resourceType.svg,
+      [ExhibitionPageResourceType.Html]: strings.contentEditor.editor.resourceType.html
+    })[resourceType];
 }
 
 export default LocalizationUtils;

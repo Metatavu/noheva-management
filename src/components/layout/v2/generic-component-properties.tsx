@@ -1,6 +1,12 @@
+import {
+  ExhibitionPageResourceType,
+  PageLayout,
+  PageResourceMode
+} from "../../../generated/client";
 import strings from "../../../localization/strings";
 import { GroupedInputsType, HtmlComponentType, TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
+import HtmlResourceUtils from "../../../utils/html-resource-utils";
 import LocalizationUtils from "../../../utils/localization-utils";
 import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
@@ -23,13 +29,20 @@ import { ColorResult } from "react-color";
  */
 interface Props {
   component: TreeObject;
+  pageLayout: PageLayout;
   updateComponent: (updatedComponent: TreeObject) => void;
+  setPageLayout: (foundLayout: PageLayout) => void;
 }
 
 /**
  * Generic Component Properties
  */
-const GenericComponentProperties = ({ component, updateComponent }: Props) => {
+const GenericComponentProperties = ({
+  component,
+  pageLayout,
+  updateComponent,
+  setPageLayout
+}: Props) => {
   const [popoverAnchorElement, setPopoverAnchorElement] = useState<HTMLButtonElement>();
 
   if (!component) return null;
@@ -50,6 +63,32 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
       element = HtmlComponentsUtils.handleStyleAttributeChange(element, name, value);
     }
     updateComponent({ ...component, element: element });
+  };
+
+  /**
+   * Returns text resource path
+   *
+   * @returns text resource path
+   */
+  const getBackgroundColorResourcePath = () => {
+    const { element } = component;
+    const styles = HtmlComponentsUtils.parseStyles(element);
+
+    return styles["background-color"];
+  };
+
+  /**
+   * Returns background color
+   *
+   * @returns background color
+   */
+  const getBackgroundColor = () => {
+    const backgroundColorString = HtmlResourceUtils.getResourceData(
+      pageLayout.defaultResources,
+      getBackgroundColorResourcePath()
+    );
+
+    return HtmlResourceUtils.getRGBColorFromCSS(backgroundColorString);
   };
 
   /**
@@ -157,6 +196,33 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
     />
   );
 
+  /**
+   * Event handler for background color change events
+   *
+   * @param color color
+   */
+  const handleBackgroundColorChange = ({ rgb }: ColorResult) => {
+    const { r, g, b, a } = rgb;
+    const resourcePath = getBackgroundColorResourcePath();
+    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
+    if (!resourceId) return;
+
+    const defaultResources = [
+      ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
+      {
+        id: resourceId,
+        data: `rgba(${r}, ${g}, ${b}, ${a})`,
+        type: ExhibitionPageResourceType.Color,
+        mode: PageResourceMode.Static
+      }
+    ];
+
+    setPageLayout({
+      ...pageLayout,
+      defaultResources: defaultResources
+    });
+  };
+
   return (
     <>
       <Stack spacing={2} paddingLeft={0} paddingRight={0}>
@@ -237,10 +303,10 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
         </PropertyBox>
       </Stack>
       <ColorPicker
-        color={component.element.style.backgroundColor}
+        color={getBackgroundColor()}
         anchorEl={popoverAnchorElement}
         onClose={() => setPopoverAnchorElement(undefined)}
-        onChangeComplete={({ hex }: ColorResult) => onPropertyChange("background-color", hex)}
+        onChangeComplete={handleBackgroundColorChange}
       />
     </>
   );

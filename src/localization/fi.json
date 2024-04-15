@@ -762,6 +762,15 @@
       "properties": "Ominaisuudet",
       "resources": "Resurssit",
       "resource": "Resurssi",
+      "resourceWithType": "Resurssi ({0})",
+      "resourceType": {
+        "color": "Väri",
+        "image": "Kuva",
+        "video": "Video",
+        "text": "Teksti",
+        "svg": "SVG",
+        "html": "HTML"
+      },
       "resourceProperties": "Resurssin ominaisuudet",
       "transitions": {
         "title": "Sivunvaihtoefektit",

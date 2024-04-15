@@ -11,7 +11,9 @@ import strings from "../../localization/strings";
 import { ReduxActions, ReduxState } from "../../store";
 import styles from "../../styles/components/content-editor/resource-editor";
 import { AccessToken, TreeObject } from "../../types";
+import HtmlResourceUtils from "../../utils/html-resource-utils";
 import ResourceUtils from "../../utils/resource-utils";
+import ColorPicker from "../layout/v2/color-picker";
 import MediaLibrary from "../right-panel-editors/media-library";
 import { resourceModes } from "./constants";
 import DynamicResourceEditor from "./dynamic-resource-editor";
@@ -152,11 +154,11 @@ class ResourceEditor extends React.Component<Props, {}> {
       case ExhibitionPageResourceType.Video:
         return (
           <MediaLibrary
-            accessToken={ accessToken }
-            mediaType={ ResourceUtils.getResourceMediaType(resource.type)! }
-            currentUrl={ resource.data }
-            onUrlChange={ this.updateResourceData }
-            setError={(error: Error) => this.setState({ error }) }
+            accessToken={accessToken}
+            mediaType={ResourceUtils.getResourceMediaType(resource.type)!}
+            currentUrl={resource.data}
+            onUrlChange={this.updateResourceData}
+            setError={(error: Error) => this.setState({ error })}
           />
         );
       case ExhibitionPageResourceType.Text:
@@ -170,6 +172,15 @@ class ResourceEditor extends React.Component<Props, {}> {
             name="data"
             value={resource.data}
             onChange={this.onResourceDataChange}
+          />
+        );
+      case ExhibitionPageResourceType.Color:
+        return (
+          <ColorPicker
+            color={HtmlResourceUtils.getRGBColorFromCSS(resource.data)}
+            onChangeComplete={({ rgb: { r, g, b, a } }) =>
+              this.updateResourceData(`rgba(${r}, ${g}, ${b}, ${a})`)
+            }
           />
         );
       default:

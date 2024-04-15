@@ -36,13 +36,13 @@ namespace HtmlComponentsUtils {
   };
 
   const getHtmlLayoutElement = (name?: string) =>
-    `<div id="${uuid()}" data-component-type="layout" name="${name}" style="display: flex; flex-direction: row; width: 100%; height: 100%; background-repeat: no-repeat; background-position: center;  background-image: @resources/${uuid()};"></div>`;
+    `<div id="${uuid()}" data-component-type="layout" name="${name}" style="display: flex; flex-direction: row; width: 100%; height: 100%; background-repeat: no-repeat; background-position: center; background-image: @resources/${uuid()}; background-color: @resources/${uuid()};"></div>`;
   const getHtmlButtonElement = (name?: string) =>
-    `<button id="${uuid()}" data-component-type="button" name="${name}">@resources/${uuid()}</button>`;
+    `<button id="${uuid()}" data-component-type="button" name="${name}" style="background-color: @resources/${uuid()};">@resources/${uuid()}</button>`;
   const getHtmlTextElement = (name?: string) =>
-    `<p id="${uuid()}" data-component-type="text" name="${name}">@resources/${uuid()}</p>`;
+    `<p id="${uuid()}" data-component-type="text" name="${name}" style="background-color: @resources/${uuid()};">@resources/${uuid()}</p>`;
   const getHtmlImageElement = (name?: string) =>
-    `<img id="${uuid()}" data-component-type="image" name="${name}" src="@resources/${uuid()}"/>`;
+    `<img id="${uuid()}" data-component-type="image" name="${name}" src="@resources/${uuid()}" style="background-color: @resources/${uuid()};"/>`;
   const getHtmlTabsElement = (name?: string) =>
     `div id="${uuid()}" data-component-type="tabs" name="${name}"></div>`;
   const getHtmlTabElement = (name?: string) =>
@@ -50,7 +50,7 @@ namespace HtmlComponentsUtils {
   const getHtmlVideoElement = (name?: string) =>
     `<video id="${uuid()}" data-component-type="video" name="${name}"><source src="@resources/${uuid()}"></video>`;
   const getHtmlImageButtonElement = (name?: string) =>
-    `<button id="${uuid()}" data-component-type="image-button" name="${name}" style="padding: 0;"><img src="@resources/${uuid()}" style="width: 100%; height: 100%;"/></button>`;
+    `<button id="${uuid()}" data-component-type="image-button" name="${name}" style="padding: 0; background-color: @resources/${uuid()};"><img src="@resources/${uuid()}" style="width: 100%; height: 100%;"/></button>`;
 
   export const handleAttributeChange = (
     element: HTMLElement,
