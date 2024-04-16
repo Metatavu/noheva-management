@@ -1647,7 +1647,6 @@ class ContentEditorScreen extends React.Component<Props, State> {
       const movedPageId = result.draggableId;
       const oldIndex = result.source.index;
       const newIndex = result.destination.index;
-      console.log(newIndex);
 
       if (oldIndex === newIndex) {
         return;
