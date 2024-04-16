@@ -37,18 +37,18 @@ namespace HtmlResourceUtils {
   };
 
   /**
-   * Updates default style resources of an element
+   * Updates default style resources of a tree branch of layout components
    *
    * @param element element
    * @param resources resources
    * @returns updated resources
    */
-  const updateDefaultStyleResourcesOfElement = (
-    element: HTMLElement,
+  const updateDefaultStyleResourcesOfTree = (
+    branch: TreeObject,
     resources: ExhibitionPageResource[]
   ): ExhibitionPageResource[] => {
     let updatedResources = [...resources];
-    const styleMap = HtmlComponentsUtils.parseStyles(element);
+    const styleMap = HtmlComponentsUtils.parseStyles(branch.element);
     let hasBackgroundColorResource = false;
     let backgroundColorResourceValue = "";
     let hasBackgroundImageResource = false;
@@ -58,7 +58,7 @@ namespace HtmlResourceUtils {
         backgroundColorResourceValue = value;
         hasBackgroundColorResource = checkStyleResource(value, resources);
       }
-      if (key === "background-image") {
+      if (key === "background-image" && branch.type === HtmlComponentType.LAYOUT) {
         backgroundImageResourceValue = value;
         hasBackgroundImageResource = checkStyleResource(value, resources);
       }
@@ -85,12 +85,10 @@ namespace HtmlResourceUtils {
       updatedResources = [...updatedResources, backgroundImageResource];
     }
 
-    HtmlComponentsUtils.updateStyles(element, styleMap);
+    HtmlComponentsUtils.updateStyles(branch.element, styleMap);
 
-    for (const child of element.children) {
-      updatedResources = [
-        ...updateDefaultStyleResourcesOfElement(child as HTMLElement, updatedResources)
-      ];
+    for (const child of branch.children) {
+      updatedResources = [...updateDefaultStyleResourcesOfTree(child, updatedResources)];
     }
 
     return updatedResources;
@@ -106,7 +104,7 @@ namespace HtmlResourceUtils {
   export const updateDefaultStyleResources = (tree: TreeObject[], layout: PageLayout) => {
     let resources = layout.defaultResources || [];
     for (const branch of tree) {
-      resources = [...updateDefaultStyleResourcesOfElement(branch.element, resources)];
+      resources = [...updateDefaultStyleResourcesOfTree(branch, resources)];
     }
 
     return resources;
