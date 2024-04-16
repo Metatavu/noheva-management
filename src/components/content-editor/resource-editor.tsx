@@ -177,7 +177,7 @@ class ResourceEditor extends React.Component<Props, {}> {
       case ExhibitionPageResourceType.Color:
         return (
           <ColorPicker
-            color={HtmlResourceUtils.getRGBColorFromCSS(resource.data)}
+            color={resource.data}
             onChangeComplete={({ rgb: { r, g, b, a } }) =>
               this.updateResourceData(`rgba(${r}, ${g}, ${b}, ${a})`)
             }

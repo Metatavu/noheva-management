@@ -8,8 +8,9 @@ import {
   PageResourceMode
 } from "../generated/client";
 import { HtmlComponentType, TreeObject } from "../types";
+import GenericUtils from "./generic-utils";
 import HtmlComponentsUtils from "./html-components-utils";
-import { RGBColor } from "react-color";
+import { v4 as uuid } from "uuid";
 
 type ResourceAttributeMap = Record<string, string>;
 
@@ -18,26 +19,97 @@ type ResourceAttributeMap = Record<string, string>;
  */
 namespace HtmlResourceUtils {
   /**
-   * Gets color as {RGBColor} object from CSS rgb or rgba function
+   * Checks whether style attribute value is a valid resource
    *
-   * @param color color string
-   * @returns RGBColor
+   * @param value style attribute value
+   * @param resources resources
+   * @returns true if value is a valid resource, false otherwise
    */
-  export const getRGBColorFromCSS = (cssColor?: string): RGBColor | undefined => {
-    const matches = cssColor?.match(
-      /rgba?\(\s*(\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*((1|0?\.\d+)))\s*\)/
-    );
-    if (!matches) return;
+  const checkStyleResource = (value: string, resources: ExhibitionPageResource[]): boolean => {
+    if (value.startsWith("@resources/")) {
+      const foundResource = resources.find(
+        (resource) => resource.id === value.replace("@resources/", "")
+      );
+      return !!foundResource;
+    }
 
-    const color = matches[1].split(",").map((value) => {
-      return parseFloat(value);
-    });
-    return {
-      r: color[0],
-      g: color[1],
-      b: color[2],
-      a: color[3]
-    };
+    return false;
+  };
+
+  /**
+   * Updates default style resources of an element
+   *
+   * @param element element
+   * @param resources resources
+   * @returns updated resources
+   */
+  const updateDefaultStyleResourcesOfElement = (
+    element: HTMLElement,
+    resources: ExhibitionPageResource[]
+  ): ExhibitionPageResource[] => {
+    let updatedResources = [...resources];
+    const styleMap = HtmlComponentsUtils.parseStyles(element);
+    let hasBackgroundColorResource = false;
+    let backgroundColorResourceValue = "";
+    let hasBackgroundImageResource = false;
+    let backgroundImageResourceValue = "";
+    for (const [key, value] of Object.entries(styleMap)) {
+      if (key === "background-color") {
+        backgroundColorResourceValue = value;
+        hasBackgroundColorResource = checkStyleResource(value, resources);
+      }
+      if (key === "background-image") {
+        backgroundImageResourceValue = value;
+        hasBackgroundImageResource = checkStyleResource(value, resources);
+      }
+    }
+    if (!hasBackgroundColorResource) {
+      const backgroundColorResource: ExhibitionPageResource = {
+        id: uuid(),
+        data: GenericUtils.hexToRGB(backgroundColorResourceValue) || "transparent",
+        mode: PageResourceMode.Static,
+        type: ExhibitionPageResourceType.Color
+      };
+      styleMap["background-color"] = `@resources/${backgroundColorResource.id}`;
+      updatedResources = [...updatedResources, backgroundColorResource];
+    }
+
+    if (!hasBackgroundImageResource) {
+      const backgroundImageResource: ExhibitionPageResource = {
+        id: uuid(),
+        data: backgroundImageResourceValue || "none",
+        mode: PageResourceMode.Static,
+        type: ExhibitionPageResourceType.Image
+      };
+      styleMap["background-image"] = `@resources/${backgroundImageResource.id}`;
+      updatedResources = [...updatedResources, backgroundImageResource];
+    }
+
+    HtmlComponentsUtils.updateStyles(element, styleMap);
+
+    for (const child of element.children) {
+      updatedResources = [
+        ...updateDefaultStyleResourcesOfElement(child as HTMLElement, updatedResources)
+      ];
+    }
+
+    return updatedResources;
+  };
+
+  /**
+   * Updates default style resources of a tree of layout components
+   *
+   * @param tree tree
+   * @param layout layout
+   * @returns updated resources
+   */
+  export const updateDefaultStyleResources = (tree: TreeObject[], layout: PageLayout) => {
+    let resources = layout.defaultResources || [];
+    for (const branch of tree) {
+      resources = [...updateDefaultStyleResourcesOfElement(branch.element, resources)];
+    }
+
+    return resources;
   };
 
   /**

@@ -82,25 +82,64 @@ const GenericComponentProperties = ({
    *
    * @returns background color
    */
-  const getBackgroundColor = () => {
+  const getElementBackgroundColor = () => {
     const backgroundColorString = HtmlResourceUtils.getResourceData(
       pageLayout.defaultResources,
       getBackgroundColorResourcePath()
     );
 
-    return HtmlResourceUtils.getRGBColorFromCSS(backgroundColorString);
+    return backgroundColorString;
+  };
+
+  /**
+   * Event handler for background color change events
+   *
+   * @param color color
+   */
+  const handleBackgroundColorChange = ({ rgb }: ColorResult) => {
+    const { r, g, b, a } = rgb;
+    const resourcePath = getBackgroundColorResourcePath();
+    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
+    if (!resourceId) return;
+
+    const defaultResources = [
+      ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
+      {
+        id: resourceId,
+        data: `rgba(${r}, ${g}, ${b}, ${a})`,
+        type: ExhibitionPageResourceType.Color,
+        mode: PageResourceMode.Static
+      }
+    ];
+
+    setPageLayout({
+      ...pageLayout,
+      defaultResources: defaultResources
+    });
   };
 
   /**
    * Event handler for background remove events
    */
   const handleBackgroundRemove = () => {
-    const element = HtmlComponentsUtils.handleStyleAttributeChange(
-      component.element,
-      "background-color",
-      ""
-    );
-    updateComponent({ ...component, element: element });
+    const resourcePath = getBackgroundColorResourcePath();
+    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
+    if (!resourceId) return;
+
+    const defaultResources = [
+      ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
+      {
+        id: resourceId,
+        data: "transparent",
+        type: ExhibitionPageResourceType.Color,
+        mode: PageResourceMode.Static
+      }
+    ];
+
+    setPageLayout({
+      ...pageLayout,
+      defaultResources: defaultResources
+    });
   };
 
   const getElementWidth = () => {
@@ -145,16 +184,6 @@ const GenericComponentProperties = ({
   };
 
   /**
-   * Gets elements background color
-   */
-  const getElementBackgroundColor = () => {
-    const { element } = component;
-    const styles = HtmlComponentsUtils.parseStyles(element);
-
-    return styles["background-color"];
-  };
-
-  /**
    * Gets elements background icon colors
    */
   const getElementsBackgroundIconColors = () => {
@@ -195,33 +224,6 @@ const GenericComponentProperties = ({
       }}
     />
   );
-
-  /**
-   * Event handler for background color change events
-   *
-   * @param color color
-   */
-  const handleBackgroundColorChange = ({ rgb }: ColorResult) => {
-    const { r, g, b, a } = rgb;
-    const resourcePath = getBackgroundColorResourcePath();
-    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
-    if (!resourceId) return;
-
-    const defaultResources = [
-      ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
-      {
-        id: resourceId,
-        data: `rgba(${r}, ${g}, ${b}, ${a})`,
-        type: ExhibitionPageResourceType.Color,
-        mode: PageResourceMode.Static
-      }
-    ];
-
-    setPageLayout({
-      ...pageLayout,
-      defaultResources: defaultResources
-    });
-  };
 
   return (
     <>
@@ -303,8 +305,9 @@ const GenericComponentProperties = ({
         </PropertyBox>
       </Stack>
       <ColorPicker
-        color={getBackgroundColor()}
+        color={getElementBackgroundColor()}
         anchorEl={popoverAnchorElement}
+        popover
         onClose={() => setPopoverAnchorElement(undefined)}
         onChangeComplete={handleBackgroundColorChange}
       />

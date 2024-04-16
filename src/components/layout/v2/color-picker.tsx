@@ -9,6 +9,7 @@ import { PresetColor } from "react-color/lib/components/sketch/Sketch";
 interface Props {
   color?: Color;
   anchorEl?: HTMLButtonElement;
+  popover?: boolean;
   onClose?: () => void;
   onChangeComplete: (color: ColorResult) => void;
 }
@@ -16,7 +17,7 @@ interface Props {
 /**
  * Color Picker component
  */
-const ColorPicker = ({ color, anchorEl, onClose, onChangeComplete }: Props) => {
+const ColorPicker = ({ color, anchorEl, popover, onClose, onChangeComplete }: Props) => {
   /**
    * Gets preset colors from local storage
    */
@@ -49,7 +50,7 @@ const ColorPicker = ({ color, anchorEl, onClose, onChangeComplete }: Props) => {
     onChangeComplete(color);
   };
 
-  if (anchorEl) {
+  if (anchorEl && popover) {
     return (
       <Popover
         open={!!anchorEl}
@@ -73,13 +74,17 @@ const ColorPicker = ({ color, anchorEl, onClose, onChangeComplete }: Props) => {
     );
   }
 
-  return (
-    <SketchPicker
-      color={color}
-      presetColors={getPresetColors()}
-      onChangeComplete={handleChangeComplete}
-    />
-  );
+  if (!popover) {
+    return (
+      <SketchPicker
+        color={color}
+        presetColors={getPresetColors()}
+        onChangeComplete={handleChangeComplete}
+      />
+    );
+  }
+
+  return null;
 };
 
 export default ColorPicker;
