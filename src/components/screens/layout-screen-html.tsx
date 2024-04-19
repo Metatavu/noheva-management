@@ -79,6 +79,7 @@ const LayoutScreenHTML: FC<Props> = ({
   subLayouts
 }) => {
   const [view, setView] = useState<LayoutEditorView>(LayoutEditorView.VISUAL);
+  const [dataChanged, setDataChanged] = useState(false);
   const [foundLayout, setFoundLayout] = useState<PageLayout>();
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState(false);
@@ -161,6 +162,7 @@ const LayoutScreenHTML: FC<Props> = ({
       ...foundLayout,
       name: value
     });
+    setDataChanged(true);
   };
 
   /**
@@ -175,6 +177,7 @@ const LayoutScreenHTML: FC<Props> = ({
       ...foundLayout,
       screenOrientation: value as ScreenOrientation
     });
+    setDataChanged(true);
   };
 
   /**
@@ -187,6 +190,7 @@ const LayoutScreenHTML: FC<Props> = ({
       ...foundLayout,
       modelId: value
     });
+    setDataChanged(true);
   };
 
   /**
@@ -207,7 +211,8 @@ const LayoutScreenHTML: FC<Props> = ({
     },
     {
       name: strings.exhibitionLayouts.editView.saveButton,
-      action: onLayoutSave
+      action: onLayoutSave,
+      disabled: !dataChanged
     }
   ];
 
@@ -256,6 +261,7 @@ const LayoutScreenHTML: FC<Props> = ({
       const updatedLayouts = layouts.filter((item) => item.id !== updatedLayout.id);
       setLayouts([...updatedLayouts, layout]);
       setFoundLayout(updatedLayout);
+      setDataChanged(false);
     } catch (e) {
       console.error(e);
       setError(e as Error);
@@ -277,6 +283,7 @@ const LayoutScreenHTML: FC<Props> = ({
       defaultResources: updatedDefaultResources,
       data: { html: value }
     });
+    setDataChanged(true);
   };
 
   /**
@@ -289,6 +296,7 @@ const LayoutScreenHTML: FC<Props> = ({
       ...foundLayout,
       defaultResources: JSON.parse(value)
     });
+    setDataChanged(true);
   };
 
   /**
@@ -394,6 +402,7 @@ const LayoutScreenHTML: FC<Props> = ({
     setFoundLayout(updatedLayout);
     setTreeObjects([...constructTree(domArray[0].outerHTML.replace(/^\s*\n/gm, ""))]);
     setSelectedComponent(newComponent);
+    setDataChanged(true);
   };
 
   /**
@@ -427,6 +436,7 @@ const LayoutScreenHTML: FC<Props> = ({
     setFoundLayout(updatedLayout);
     setTreeObjects([...constructTree(domArray[0].outerHTML.replace(/^\s*\n/gm, ""))]);
     setSelectedComponent(findTreeObjectById(updatedTree, parentId));
+    setDataChanged(true);
   };
 
   /**
@@ -458,6 +468,7 @@ const LayoutScreenHTML: FC<Props> = ({
 
     setTreeObjects([...constructTree(domArray[0].outerHTML.replace(/^\s*\n/gm, ""))]);
     setSelectedComponent(updatedComponent);
+    setDataChanged(true);
   };
 
   if (loading) {
