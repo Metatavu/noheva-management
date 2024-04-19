@@ -7,7 +7,7 @@ import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
 import { ExpandOutlined, HeightOutlined } from "@mui/icons-material";
 import { MenuItem, Stack, Typography } from "@mui/material";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 /**
  * Components properties
@@ -44,6 +44,10 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
   };
 
   const [proportionType, setProportionType] = useState<"%" | "px">(getElementProportionType(name));
+
+  useEffect(() => {
+    setProportionType(getElementProportionType(name));
+  }, [component.element]);
 
   const onSettingsChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     const styles = HtmlComponentsUtils.parseStyles(component.element);
@@ -108,7 +112,7 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
       <TextField name={name} value={value} onChange={onValueChange} />
       <ConditionalTooltip enabled={!componentCanUsePercentageProportions} title={getTooltipText()}>
         <SelectBox
-          value={getElementProportionType(name)}
+          value={proportionType}
           disabled={!componentCanUsePercentageProportions}
           onChange={onSettingsChange}
         >

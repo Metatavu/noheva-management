@@ -90,12 +90,17 @@ const LayoutTreeMenuHtml = ({
       >
         {(item.children ?? []).map(renderTreeItem)}
         {item.children?.length === 0 &&
-          item.type === HtmlComponentType.LAYOUT &&
+          HTML_COMPONENTS_WITH_CHILDREN.includes(item.type) &&
           renderAddNewElementButton(item, true)}
       </StyledTreeItem>
       {renderAddNewElementButton(item, false)}
     </Stack>
   );
+
+  const HTML_COMPONENTS_WITH_CHILDREN = [
+    HtmlComponentType.LAYOUT,
+    HtmlComponentType.VIDEO_CONTROLS
+  ];
 
   /**
    * Gets parent ids, based on selected path.

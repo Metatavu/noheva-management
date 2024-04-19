@@ -9,6 +9,7 @@ import ImageComponentProperties from "./image-component-properties";
 import LayoutComponentProperties from "./layout-component-properties";
 import TextComponentProperties from "./text-component-properties";
 import VideoComponentProperties from "./video-component-properties";
+import VideoControlsComponentProperties from "./video-controls-component-properties";
 import { Menu as MenuIcon } from "@mui/icons-material";
 
 /**
@@ -105,6 +106,13 @@ const LayoutRightPanel = ({
             updateComponent={updateComponent}
             pageLayout={layout}
             setPageLayout={setLayout}
+          />
+        );
+      case HtmlComponentType.VIDEO_CONTROLS:
+        return (
+          <VideoControlsComponentProperties
+            component={component}
+            updateComponent={updateComponent}
           />
         );
     }

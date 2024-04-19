@@ -1,7 +1,6 @@
-import { SubLayout } from "../../generated/client";
 import strings from "../../localization/strings";
 import theme from "../../styles/theme";
-import { HtmlComponentType } from "../../types";
+import { HtmlComponentType, TreeObject } from "../../types";
 import HtmlComponentsUtils from "../../utils/html-components-utils";
 import LocalizationUtils from "../../utils/localization-utils";
 import GenericDialog from "../generic/generic-dialog";
@@ -13,7 +12,7 @@ import { ChangeEvent, useState } from "react";
  */
 interface Props {
   open: boolean;
-  subLayouts: SubLayout[];
+  selectedComponent?: TreeObject;
   siblingPath?: string;
   onConfirm: (componentData: string, siblingPath: string) => void;
   onClose: () => void;
@@ -22,12 +21,35 @@ interface Props {
 // TODO: Implement disabled component types
 const DISABLED_COMPONENT_TYPES = [HtmlComponentType.TAB, HtmlComponentType.TABS];
 
+const checkIfComponentIsInsideVideoControls = (selectedComponent?: TreeObject) => {
+  if (!selectedComponent) return false;
+  let isInsideVideoControls = false;
+  let currentElement: HTMLElement | null = selectedComponent.element;
+  while (currentElement) {
+    const currentElementType =
+      currentElement.attributes.getNamedItem("data-component-type")?.nodeValue;
+    if (currentElementType === HtmlComponentType.VIDEO_CONTROLS) {
+      isInsideVideoControls = true;
+      break;
+    }
+    currentElement = currentElement.parentElement;
+  }
+  return isInsideVideoControls;
+};
+
 /**
  * Add New Element Dialog component
  *
  * TODO: Implement support for sub-layouts
  */
-const AddNewElementDialog = ({ open, siblingPath, onConfirm, onClose }: Props) => {
+const AddNewElementDialog = ({
+  open,
+  siblingPath,
+  selectedComponent,
+  onConfirm,
+  onClose
+}: Props) => {
+  console.log(checkIfComponentIsInsideVideoControls(selectedComponent));
   const [newComponentName, setNewComponentName] = useState<string>();
   const [newComponentType, setNewComponentType] = useState<HtmlComponentType>();
 

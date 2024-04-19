@@ -481,6 +481,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       <div className={classes.visualEditorContainer}>
         <PanZoom
           minScale={0.1}
+          defaultScale={0.25}
           fitContent={true}
           contentWidth={totalContentWidth}
           contentHeight={totalContentHeight}

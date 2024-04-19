@@ -38,7 +38,8 @@ namespace LocalizationUtils {
       [HtmlComponentType.TABS]: strings.layout.html.types.tabs,
       [HtmlComponentType.TAB]: strings.layout.html.types.tab,
       [HtmlComponentType.VIDEO]: strings.layout.html.types.video,
-      [HtmlComponentType.IMAGE_BUTTON]: strings.layout.html.types.imageButton
+      [HtmlComponentType.IMAGE_BUTTON]: strings.layout.html.types.imageButton,
+      [HtmlComponentType.VIDEO_CONTROLS]: "Video Controls"
     })[componentType];
 
   /**

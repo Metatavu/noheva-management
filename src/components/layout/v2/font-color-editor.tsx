@@ -54,6 +54,7 @@ const FontColorEditor = ({ component, updateComponent }: Props) => {
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
       <ColorPicker
+        popover
         color={component.element.style.color}
         anchorEl={popoverAnchorElement}
         onClose={() => setPopoverAnchorElement(undefined)}

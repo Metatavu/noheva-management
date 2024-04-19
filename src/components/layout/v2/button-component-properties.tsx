@@ -21,8 +21,8 @@ import { ChangeEvent } from "react";
  */
 interface Props {
   component: TreeObject;
-  updateComponent: (updatedComponent: TreeObject) => void;
   pageLayout: PageLayout;
+  updateComponent: (updatedComponent: TreeObject) => void;
   setPageLayout: (foundLayout: PageLayout) => void;
 }
 
@@ -74,8 +74,8 @@ const ButtonComponentProperties = ({
    * @param event event
    */
   const handleDefaultResourceChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
-    const ressourcePath = getButtonResourcePath();
-    const resourceId = HtmlResourceUtils.getResourceId(ressourcePath);
+    const resourcePath = getButtonResourcePath();
+    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
     if (!resourceId) return;
 
     const defaultResources = [
@@ -130,7 +130,6 @@ const ButtonComponentProperties = ({
     }
     updateComponent(component);
   };
-
   /**
    * Renders font menu items
    *

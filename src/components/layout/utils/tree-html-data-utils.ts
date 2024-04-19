@@ -140,8 +140,15 @@ export const treeObjectToHtmlElement = (treeObject: TreeObject): HTMLElement => 
 
   switch (treeObject.type) {
     case HtmlComponentType.LAYOUT:
+    case HtmlComponentType.VIDEO_CONTROLS:
       element.replaceChildren();
       break;
+    case HtmlComponentType.VIDEO: {
+      const videoElement = element.getElementsByTagName("video")[0];
+      element.replaceChildren();
+      element.appendChild(videoElement);
+      break;
+    }
   }
 
   if (treeObject.children) {
@@ -321,7 +328,8 @@ export const createTreeObject = (element: Element, basePath?: string): TreeObjec
 export const CONTAINER_ELEMENTS = [
   HtmlComponentType.LAYOUT,
   HtmlComponentType.TAB,
-  HtmlComponentType.TABS
+  HtmlComponentType.TABS,
+  HtmlComponentType.VIDEO_CONTROLS
 ];
 
 /**

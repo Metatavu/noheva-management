@@ -75,8 +75,7 @@ const LayoutScreenHTML: FC<Props> = ({
   layouts,
   layoutId,
   accessToken,
-  classes,
-  subLayouts
+  classes
 }) => {
   const [view, setView] = useState<LayoutEditorView>(LayoutEditorView.VISUAL);
   const [foundLayout, setFoundLayout] = useState<PageLayout>();
@@ -123,6 +122,7 @@ const LayoutScreenHTML: FC<Props> = ({
       const updatedHtmlElements = constructedTree.map((treeObject) =>
         treeObjectToHtmlElement(treeObject)
       );
+      console.log(constructedTree);
       const domArray = Array.from(updatedHtmlElements) as HTMLElement[];
 
       setTreeObjects(constructedTree);
@@ -505,8 +505,8 @@ const LayoutScreenHTML: FC<Props> = ({
       </div>
       <AddNewElementDialog
         open={addComponentDialogOpen}
-        subLayouts={subLayouts}
         siblingPath={newComponentPath}
+        selectedComponent={selectedComponent}
         onConfirm={createComponent}
         onClose={() => setAddComponentDialogOpen(false)}
       />

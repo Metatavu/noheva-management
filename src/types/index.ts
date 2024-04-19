@@ -301,7 +301,8 @@ export enum HtmlComponentType {
   TABS = "tabs",
   TAB = "tab",
   VIDEO = "video",
-  IMAGE_BUTTON = "image-button"
+  IMAGE_BUTTON = "image-button",
+  VIDEO_CONTROLS = "video-controls"
 }
 
 /**
