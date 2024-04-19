@@ -63,6 +63,7 @@ namespace HtmlResourceUtils {
         hasBackgroundImageResource = checkStyleResource(value, resources);
       }
     }
+
     if (!hasBackgroundColorResource) {
       const backgroundColorResource: ExhibitionPageResource = {
         id: uuid(),
@@ -77,7 +78,9 @@ namespace HtmlResourceUtils {
     if (!hasBackgroundImageResource) {
       const backgroundImageResource: ExhibitionPageResource = {
         id: uuid(),
-        data: backgroundImageResourceValue || "none",
+        data: backgroundImageResourceValue.startsWith("@resources/")
+          ? "none"
+          : backgroundColorResourceValue || "none",
         mode: PageResourceMode.Static,
         type: ExhibitionPageResourceType.Image
       };

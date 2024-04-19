@@ -1,3 +1,4 @@
+import parse from "color-parse";
 import moment from "moment";
 
 namespace GenericUtils {
@@ -88,20 +89,14 @@ namespace GenericUtils {
    * @returns rgb color string
    */
   export const hexToRGB = (hexColor: string) => {
-    const isHex = /^#[0-9A-F]{6}$/i.test(hexColor);
-    const isRgb = /rgba?\(\s*(\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*((1|0?\.\d+)))\s*\)/i.test(
-      hexColor
-    );
+    if (hexColor.startsWith("@resources/")) return undefined;
+    if (hexColor === "transparent") return undefined;
+    const {
+      values: [r, g, b],
+      alpha = 0
+    } = parse(hexColor);
 
-    if (!isHex && !isRgb) return undefined;
-    if (isRgb) return hexColor;
-
-    const hex = hexColor.replace("#", "");
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-
-    return `rgb(${r}, ${g}, ${b})`;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 }
 
