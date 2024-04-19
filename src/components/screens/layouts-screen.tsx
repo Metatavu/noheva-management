@@ -369,14 +369,11 @@ class LayoutsScreen extends Component<Props, State> {
     }
 
     const layoutHtml = HtmlComponentsUtils.getSerializedHtmlElement(HtmlComponentType.LAYOUT);
-    const rootComponentBackgroundResource = HtmlResourceUtils.extractResourceIds(layoutHtml);
-
-    const defaultResource = {
-      id: rootComponentBackgroundResource[0],
-      data: "none",
-      type: ExhibitionPageResourceType.Image,
-      mode: PageResourceMode.Static
-    };
+    const tempElement = document.createElement("div");
+    tempElement.innerHTML = layoutHtml;
+    const defaultStyleResources = HtmlResourceUtils.getDefaultStyleResourcesForElement(
+      tempElement.firstChild as HTMLElement
+    );
 
     const pageLayout: PageLayout = {
       name: name,
@@ -386,7 +383,7 @@ class LayoutsScreen extends Component<Props, State> {
       data: {
         html: layoutHtml
       },
-      defaultResources: [defaultResource]
+      defaultResources: defaultStyleResources
     };
     const layoutsApi = Api.getPageLayoutsApi(accessToken);
     const createdLayout = await layoutsApi.createPageLayout({ pageLayout });

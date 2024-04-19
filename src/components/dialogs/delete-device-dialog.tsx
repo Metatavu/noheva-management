@@ -25,6 +25,15 @@ const DeleteDeviceDialog = ({ deviceToDelete, onClose, onDelete }: Props) => {
   const handleDelete = async () => {
     if (!deviceToDelete) return;
     await onDelete(deviceToDelete);
+    handleClose();
+  };
+
+  /**
+   * Event handler for on close events
+   */
+  const handleClose = () => {
+    setConfirmInput("");
+    onClose();
   };
 
   /**
@@ -38,12 +47,12 @@ const DeleteDeviceDialog = ({ deviceToDelete, onClose, onDelete }: Props) => {
       title={strings.fleetManagement.deleteDialog.title}
       fullWidth
       open={!!deviceToDelete}
-      onClose={onClose}
+      onClose={handleClose}
       onConfirm={handleDelete}
       positiveButtonText={strings.generic.delete}
       cancelButtonText={strings.generic.cancel}
       confirmDisabled={confirmInput !== deviceToDelete?.name}
-      onCancel={onClose}
+      onCancel={handleClose}
     >
       {strings.fleetManagement.deleteDialog.description}
       <TextField

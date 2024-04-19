@@ -57,7 +57,7 @@ const TextComponentProperties = ({
   pageLayout,
   setPageLayout
 }: Props) => {
-  const textAlignmenOptions: TextAlignmentOption[] = [
+  const textAlignmentOptions: TextAlignmentOption[] = [
     {
       value: TextAlignment.LEFT,
       icon: <FormatAlignLeft />
@@ -124,8 +124,8 @@ const TextComponentProperties = ({
    * @param event event
    */
   const handleDefaultResourceChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
-    const ressourcePath = getTextResourcePath();
-    const resourceId = HtmlResourceUtils.getResourceId(ressourcePath);
+    const resourcePath = getTextResourcePath();
+    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
     if (!resourceId) return;
 
     const defaultResources = [
@@ -318,7 +318,7 @@ const TextComponentProperties = ({
           size="small"
           fullWidth
         >
-          {textAlignmenOptions.map(renderTextAlignmentToggleButton)}
+          {textAlignmentOptions.map(renderTextAlignmentToggleButton)}
         </ToggleButtonGroup>
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />

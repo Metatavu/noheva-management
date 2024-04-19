@@ -20,7 +20,7 @@ export interface IStrings extends LocalizedStringsMethods {
     folderName: string;
     cancelButton: string;
     createButton: string;
-  },
+  };
 
   mediaLibrary: {
     title: string;
@@ -769,6 +769,15 @@ export interface IStrings extends LocalizedStringsMethods {
       properties: string;
       resources: string;
       resource: string;
+      resourceWithType: string;
+      resourceType: {
+        color: string;
+        image: string;
+        video: string;
+        text: string;
+        svg: string;
+        html: string;
+      };
       resourceProperties: string;
       transitions: {
         title: string;

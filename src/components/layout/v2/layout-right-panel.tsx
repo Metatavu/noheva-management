@@ -118,7 +118,12 @@ const LayoutRightPanel = ({
       actionIcon={<MenuIcon sx={{ color: "#2196F3" }} />}
       menuOptions={getPanelMenuOptions()}
     >
-      <GenericComponentProperties component={component} updateComponent={updateComponent} />
+      <GenericComponentProperties
+        component={component}
+        pageLayout={layout}
+        updateComponent={updateComponent}
+        setPageLayout={setLayout}
+      />
       {renderComponentSpecificProperties()}
     </ElementSettingsPane>
   );
