@@ -106,7 +106,7 @@ const GenericComponentProperties = ({
       ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
       {
         id: resourceId,
-        data: `rgba(${r}, ${g}, ${b}, ${a})`,
+        data: `rgba(${r}, ${g}, ${b}, ${a ?? 1})`,
         type: ExhibitionPageResourceType.Color,
         mode: PageResourceMode.Static
       }

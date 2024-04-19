@@ -179,7 +179,7 @@ class ResourceEditor extends React.Component<Props, {}> {
           <ColorPicker
             color={resource.data}
             onChangeComplete={({ rgb: { r, g, b, a } }) =>
-              this.updateResourceData(`rgba(${r}, ${g}, ${b}, ${a})`)
+              this.updateResourceData(`rgba(${r}, ${g}, ${b}, ${a ?? 1})`)
             }
           />
         );
