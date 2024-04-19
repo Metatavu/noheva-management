@@ -1799,6 +1799,13 @@ class ContentEditorScreen extends React.Component<Props, State> {
     return layouts.find((layout) => layout.id === page.layoutId) || null;
   };
 
+  /**
+   * Validates that page resource is valid for given layout
+   *
+   * @param layoutDefaultResources layouts default resources
+   * @param resource page resource
+   * @returns Returns false when a resource is missing from the page or it has wrong type
+   */
   private validatePageResource = (
     layoutDefaultResources: ExhibitionPageResource[],
     resource: ExhibitionPageResource
