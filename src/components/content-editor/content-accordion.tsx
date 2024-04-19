@@ -61,7 +61,7 @@ interface Props extends WithStyles<typeof styles> {
   onPageDeviceChange: (deviceId: string) => void;
   onPageLayoutChange: (layoutId: string) => void;
   onPageNameChange: (text: string) => void;
-  setSelectResource: (resource?: ExhibitionPageResource, component?: TreeObject) => void;
+  setSelectedResource: (resource?: ExhibitionPageResource, component?: TreeObject) => void;
   setSelectedTriggerIndex: (index: number | undefined) => void;
   setSelectedTabIndex: (index: number | undefined) => void;
   setSelectedLayoutView: (view: PageLayoutView | undefined) => void;
@@ -102,7 +102,7 @@ const ContentEditorContentAccordion: React.FC<Props> = ({
   onPageDeviceChange,
   onPageLayoutChange,
   onPageNameChange,
-  setSelectResource,
+  setSelectedResource,
   setSelectedTriggerIndex,
   setSelectedTabIndex,
   setSelectedLayoutView,
@@ -118,7 +118,7 @@ const ContentEditorContentAccordion: React.FC<Props> = ({
    */
   const onTriggerClick = (triggerIndex: number) => () => {
     setSelectedTabIndex(undefined);
-    setSelectResource(undefined);
+    setSelectedResource(undefined);
     setSelectedTriggerIndex(triggerIndex);
   };
 
@@ -165,7 +165,7 @@ const ContentEditorContentAccordion: React.FC<Props> = ({
    * @param treeObject tree object
    */
   const onResourceClick = (resource: ExhibitionPageResource, treeObject?: TreeObject) => () => {
-    setSelectResource(resource, treeObject);
+    setSelectedResource(resource, treeObject);
     setSelectedTriggerIndex(undefined);
     setSelectedTabIndex(undefined);
   };
@@ -198,7 +198,7 @@ const ContentEditorContentAccordion: React.FC<Props> = ({
    * @param tabIndex clicked tab index
    */
   const onAndroidTabClick = (tabIndex: number) => () => {
-    setSelectResource(undefined);
+    setSelectedResource(undefined);
     setSelectedTriggerIndex(undefined);
     setSelectedTabIndex(tabIndex);
   };

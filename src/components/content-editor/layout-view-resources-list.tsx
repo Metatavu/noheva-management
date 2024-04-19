@@ -2,6 +2,7 @@ import { ExhibitionPageResource } from "../../generated/client/models";
 import strings from "../../localization/strings";
 import styles from "../../styles/components/content-editor/layout-view-resources-list";
 import { TreeObject } from "../../types";
+import LocalizationUtils from "../../utils/localization-utils";
 import ResourceUtils from "../../utils/resource-utils";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { List, ListItem, ListItemText } from "@mui/material";
@@ -42,7 +43,10 @@ const LayoutViewResourcesList: React.FC<Props> = ({
           onClick={onClick?.(resource, component)}
         >
           <ListItemText
-            primary={strings.contentEditor.editor.resource}
+            primary={strings.formatString(
+              strings.contentEditor.editor.resourceWithType,
+              LocalizationUtils.getLocalizedResourceType(resource.type)
+            )}
             secondary={ResourceUtils.getModeDisplayName(resource.mode)}
           />
           <ChevronRightIcon />

@@ -1,3 +1,4 @@
+import parse from "color-parse";
 import moment from "moment";
 
 namespace GenericUtils {
@@ -76,6 +77,26 @@ namespace GenericUtils {
     }
 
     return parseFloat(number ?? "0.0").toFixed(precision);
+  };
+
+  /**
+   * Converts CSS HEX color to CSS RGB function
+   *
+   * If the input is already in RGB format, it will be returned as is.
+   * If the input is not a valid HEX, undefined will be returned.
+   *
+   * @param hexColor hex color string
+   * @returns rgb color string
+   */
+  export const hexToRGB = (hexColor: string) => {
+    if (hexColor.startsWith("@resources/")) return undefined;
+    if (hexColor === "transparent") return undefined;
+    const {
+      values: [r, g, b],
+      alpha = 0
+    } = parse(hexColor);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 }
 

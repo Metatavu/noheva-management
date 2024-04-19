@@ -11,7 +11,9 @@ import {
   ExhibitionPageEventTriggerFromJSON,
   ExhibitionPageResource,
   ExhibitionPageResourceFromJSON,
+  ExhibitionPageResourceType,
   ExhibitionPageTransition,
+  ExhibitionRoom,
   LayoutType,
   PageLayout,
   PageLayoutView,
@@ -26,6 +28,7 @@ import theme from "../../styles/theme";
 import {
   AccessToken,
   ActionButton,
+  BreadcrumbData,
   ConfirmDialogData,
   HtmlComponentType,
   LanguageOptions,
@@ -139,6 +142,7 @@ interface State {
   deleteDialogOpen: boolean;
   devices: Device[];
   selectedTreeObject?: TreeObject;
+  room?: ExhibitionRoom;
 }
 
 /**
@@ -261,7 +265,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         keycloak={keycloak}
         history={history}
         title={contentVersion?.name || ""}
-        breadcrumbs={[]}
+        breadcrumbs={this.getBreadcrumbsData()}
         actionBarButtons={this.getActionButtons()}
         noBackButton
         dataChanged={dataChanged}
@@ -738,7 +742,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         onPageDeviceChange={this.onPageDeviceChange}
         onPageLayoutChange={this.onPageLayoutChange}
         onPageNameChange={this.onPageNameChange}
-        setSelectResource={this.handleResourceSelect}
+        setSelectedResource={this.handleResourceSelect}
         setSelectedTriggerIndex={(selectedTriggerIndex) => this.setState({ selectedTriggerIndex })}
         setSelectedTabIndex={(selectedTabIndex) => this.setState({ selectedTabIndex })}
         setSelectedLayoutView={(selectedLayoutView) => this.setState({ selectedLayoutView })}
@@ -816,7 +820,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
           component={this.state.selectedTreeObject}
           onUpdate={this.onUpdateResource}
           visitorVariables={visitorVariables}
-          setError={ (err: Error) => this.setState({ error: err }) }
+          setError={(err: Error) => this.setState({ error: err })}
         />
       );
     }
@@ -995,7 +999,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
         selectedPage: {
           ...selectedPage,
           layoutId: layoutId,
-          resources: HtmlResourceUtils.getDefaultResources(selectedLayout)
+          resources: HtmlResourceUtils.getLayoutDefaultResources(selectedLayout)
         },
         dataChanged: true
       });
@@ -1019,7 +1023,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
         );
         // At the moment layout components resource is background-image and in css format and it needs to be changed to url('') format
         const resource =
-          component?.type === HtmlComponentType.LAYOUT
+          component?.type === HtmlComponentType.LAYOUT &&
+          updatedResource.type === ExhibitionPageResourceType.Image
             ? {
                 ...updatedResource,
                 data: updatedResource.data ? `url('${updatedResource.data}')` : ""
@@ -1079,6 +1084,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const visitorVariablesApi = Api.getVisitorVariablesApi(accessToken);
     const devicesApi = Api.getDevicesApi(accessToken);
     const exhibitionDeviceGroupsApi = Api.getExhibitionDeviceGroupsApi(accessToken);
+    const exhibitionRoomsApi = Api.getExhibitionRoomsApi(accessToken);
 
     const [
       initialContentVersion,
@@ -1087,7 +1093,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
       layouts,
       visitorVariables,
       devices,
-      exhibitionDeviceGroups
+      exhibitionDeviceGroups,
+      room
     ] = await Promise.all([
       contentVersionsApi.findContentVersion({ exhibitionId, contentVersionId }),
       contentVersionsApi.listContentVersions({ exhibitionId, roomId }),
@@ -1098,7 +1105,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
       exhibitionDeviceGroupsApi.listExhibitionDeviceGroups({
         exhibitionId: exhibitionId,
         roomId: roomId
-      })
+      }),
+      exhibitionRoomsApi.findExhibitionRoom({ exhibitionId, roomId })
     ]);
 
     /**
@@ -1169,7 +1177,8 @@ class ContentEditorScreen extends React.Component<Props, State> {
       layouts,
       selectedContentVersion,
       selectedDevice,
-      devices
+      devices,
+      room
     });
   };
 
@@ -1230,6 +1239,33 @@ class ContentEditorScreen extends React.Component<Props, State> {
       value: locale,
       label: locale
     }));
+  };
+
+  /**
+   * Get breadcrumbs data
+   *
+   * @returns breadcrumbs data as array
+   */
+  private getBreadcrumbsData = () => {
+    const { exhibition } = this.props;
+    const { room, selectedContentVersion } = this.state;
+
+    if (!exhibition || !room || !selectedContentVersion) {
+      return [];
+    }
+
+    return [
+      { name: strings.exhibitions.listTitle, url: "/exhibitions" },
+      { name: exhibition?.name, url: `/exhibitions/${exhibition.id}/content` },
+      {
+        name: room.name,
+        url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}`
+      },
+      {
+        name: selectedContentVersion.name,
+        url: `/exhibitions/${exhibition.id}/content/floors/${room.floorId}/rooms/${room.id}?contentVersionId=${selectedContentVersion.id}`
+      }
+    ] as BreadcrumbData[];
   };
 
   /**
@@ -1764,6 +1800,24 @@ class ContentEditorScreen extends React.Component<Props, State> {
   };
 
   /**
+   * Validates that page resource is valid for given layout
+   *
+   * @param layoutDefaultResources layouts default resources
+   * @param resource page resource
+   * @returns Returns false when a resource is missing from the page or it has wrong type
+   */
+  private validatePageResource = (
+    layoutDefaultResources: ExhibitionPageResource[],
+    resource: ExhibitionPageResource
+  ) => {
+    const foundDefaultResource = layoutDefaultResources.find(
+      (defaultResource) => defaultResource.id === resource.id
+    );
+
+    return foundDefaultResource && foundDefaultResource.type === resource.type;
+  };
+
+  /**
    * Update page resources and id mappings
    *
    * @param layouts list of layouts
@@ -1777,12 +1831,12 @@ class ContentEditorScreen extends React.Component<Props, State> {
 
     if (pageLayout.layoutType === LayoutType.Html && pageLayout.defaultResources) {
       const updatedResources: ExhibitionPageResource[] = selectedPage.resources.filter((resource) =>
-        pageLayout.defaultResources?.some((defaultResource) => defaultResource.id === resource.id)
+        this.validatePageResource(pageLayout.defaultResources ?? [], resource)
       );
 
       for (const defaultResource of pageLayout.defaultResources) {
         const foundResource = selectedPage.resources.find((res) => res.id === defaultResource.id);
-        if (!foundResource) {
+        if (!foundResource || foundResource.type !== defaultResource.type) {
           updatedResources.push(defaultResource);
         }
       }
@@ -1977,7 +2031,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       contentVersionId: selectedContentVersion.id,
       name: strings.exhibition.newPage,
       eventTriggers: [],
-      resources: HtmlResourceUtils.getDefaultResources(defaultLayout),
+      resources: HtmlResourceUtils.getLayoutDefaultResources(defaultLayout),
       orderNumber: isIdlePage ? 0 : filteredPages.length,
       enterTransitions: [],
       exitTransitions: []

@@ -5,7 +5,6 @@ import {
   Exhibition,
   PageLayout,
   PageLayoutViewHtml,
-  PageResourceMode,
   ScreenOrientation,
   SubLayout
 } from "../../generated/client";
@@ -93,30 +92,46 @@ const LayoutScreenHTML: FC<Props> = ({
   const isFirstRender = useRef(true);
 
   useEffect(() => {
-    fetchLayout();
+    loadData();
   }, []);
 
   useEffect(() => {
     if (!foundLayout) return;
-    setTreeObjects([...constructTree((foundLayout.data as PageLayoutViewHtml).html)]);
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    setDataChanged(true);
+    const constructedTree = constructTree((foundLayout.data as PageLayoutViewHtml).html);
+
+    setTreeObjects(constructedTree);
   }, [foundLayout]);
 
   /**
    * Fetches PageLayout
    */
-  const fetchLayout = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
       const pageLayoutsApi = Api.getPageLayoutsApi(accessToken);
 
       const pageLayout = await pageLayoutsApi.findPageLayout({ pageLayoutId: layoutId });
 
-      setFoundLayout(pageLayout);
+      const constructedTree = constructTree((pageLayout.data as PageLayoutViewHtml).html);
+      const updatedDefaultResources = HtmlResourceUtils.updateDefaultStyleResources(
+        constructedTree,
+        pageLayout
+      );
+      const updatedHtmlElements = constructedTree.map((treeObject) =>
+        treeObjectToHtmlElement(treeObject)
+      );
+      const domArray = Array.from(updatedHtmlElements) as HTMLElement[];
+
+      setTreeObjects(constructedTree);
+      setFoundLayout({
+        ...pageLayout,
+        defaultResources: updatedDefaultResources,
+        data: { html: domArray[0].outerHTML.replace(/^\s*\n/gm, "") }
+      });
     } catch (e) {
       console.error(e);
       setError(new Error(strings.errorDialog.layoutFetchNotFound));
@@ -359,8 +374,6 @@ const LayoutScreenHTML: FC<Props> = ({
 
     if (!newComponent) return;
 
-    const resourceIds = HtmlResourceUtils.extractResourceIds(componentData);
-
     const updatedTree = addNewHtmlComponent(
       treeObjects,
       newComponent,
@@ -368,12 +381,7 @@ const LayoutScreenHTML: FC<Props> = ({
       !!isNewComponentSibling
     );
 
-    const newDefaultResources = (resourceIds ?? []).map((resourceId) => ({
-      id: resourceId,
-      data: newComponent.type === HtmlComponentType.LAYOUT ? "none" : "",
-      type: HtmlResourceUtils.getResourceType(newComponent.type),
-      mode: PageResourceMode.Static
-    }));
+    const newDefaultResources = HtmlResourceUtils.getDefaultResourcesForComponent(newComponent);
 
     const defaultResources = [...(foundLayout.defaultResources || []), ...newDefaultResources];
 

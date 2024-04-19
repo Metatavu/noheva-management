@@ -1,22 +1,23 @@
 import GenericUtils from "../../../utils/generic-utils";
 import { Popover } from "@mui/material";
-import { ColorResult, SketchPicker } from "react-color";
+import { Color, ColorResult, SketchPicker } from "react-color";
 import { PresetColor } from "react-color/lib/components/sketch/Sketch";
 
 /**
  * Components properties
  */
 interface Props {
-  color: string;
+  color?: Color;
   anchorEl?: HTMLButtonElement;
-  onClose: () => void;
+  popover?: boolean;
+  onClose?: () => void;
   onChangeComplete: (color: ColorResult) => void;
 }
 
 /**
  * Color Picker component
  */
-const ColorPicker = ({ color, anchorEl, onClose, onChangeComplete }: Props) => {
+const ColorPicker = ({ color, anchorEl, popover, onClose, onChangeComplete }: Props) => {
   /**
    * Gets preset colors from local storage
    */
@@ -49,27 +50,41 @@ const ColorPicker = ({ color, anchorEl, onClose, onChangeComplete }: Props) => {
     onChangeComplete(color);
   };
 
-  return (
-    <Popover
-      open={!!anchorEl}
-      anchorEl={anchorEl}
-      onClose={onClose}
-      anchorOrigin={{
-        vertical: "center",
-        horizontal: "left"
-      }}
-      transformOrigin={{
-        vertical: "center",
-        horizontal: "right"
-      }}
-    >
+  if (anchorEl && popover) {
+    return (
+      <Popover
+        open={!!anchorEl}
+        anchorEl={anchorEl}
+        onClose={onClose}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "left"
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "right"
+        }}
+      >
+        <SketchPicker
+          color={color}
+          presetColors={getPresetColors()}
+          onChangeComplete={handleChangeComplete}
+        />
+      </Popover>
+    );
+  }
+
+  if (!popover) {
+    return (
       <SketchPicker
         color={color}
         presetColors={getPresetColors()}
         onChangeComplete={handleChangeComplete}
       />
-    </Popover>
-  );
+    );
+  }
+
+  return null;
 };
 
 export default ColorPicker;

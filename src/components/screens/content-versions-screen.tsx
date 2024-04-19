@@ -289,7 +289,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
    * Fetches component data
    */
   private fetchData = async () => {
-    const { accessToken, exhibitionId, roomId } = this.props;
+    const { accessToken, exhibitionId, roomId, history } = this.props;
 
     const exhibitionsApi = Api.getExhibitionsApi(accessToken);
     const exhibitionRoomsApi = Api.getExhibitionRoomsApi(accessToken);
@@ -335,6 +335,10 @@ class ContentVersionsScreen extends React.Component<Props, State> {
 
         multiLingualContentVersions.push({ languageVersions: [contentVersion] });
       });
+      
+    const queryParams = history.location.search ? new URLSearchParams(history.location.search) : null;
+    const preselectedContentVersionId = queryParams?.get("contentVersionId");
+    const preselectedContentVersion = preselectedContentVersionId ? multiLingualContentVersions.find(multiLingualContentVersion => multiLingualContentVersion.languageVersions[0].id === preselectedContentVersionId)?.languageVersions[0] : undefined;
 
     this.setState({
       exhibition,
@@ -342,7 +346,8 @@ class ContentVersionsScreen extends React.Component<Props, State> {
       multiLingualContentVersions,
       visitorVariables,
       contentVersions,
-      deviceGroups
+      deviceGroups,
+      selectedContentVersion: preselectedContentVersion
     });
   };
 

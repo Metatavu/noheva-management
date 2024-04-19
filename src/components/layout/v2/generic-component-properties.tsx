@@ -1,6 +1,12 @@
+import {
+  ExhibitionPageResourceType,
+  PageLayout,
+  PageResourceMode
+} from "../../../generated/client";
 import strings from "../../../localization/strings";
 import { GroupedInputsType, HtmlComponentType, TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
+import HtmlResourceUtils from "../../../utils/html-resource-utils";
 import LocalizationUtils from "../../../utils/localization-utils";
 import SelectBox from "../../generic/v2/select-box";
 import TextField from "../../generic/v2/text-field";
@@ -23,13 +29,20 @@ import { ColorResult } from "react-color";
  */
 interface Props {
   component: TreeObject;
+  pageLayout: PageLayout;
   updateComponent: (updatedComponent: TreeObject) => void;
+  setPageLayout: (foundLayout: PageLayout) => void;
 }
 
 /**
  * Generic Component Properties
  */
-const GenericComponentProperties = ({ component, updateComponent }: Props) => {
+const GenericComponentProperties = ({
+  component,
+  pageLayout,
+  updateComponent,
+  setPageLayout
+}: Props) => {
   const [popoverAnchorElement, setPopoverAnchorElement] = useState<HTMLButtonElement>();
 
   if (!component) return null;
@@ -53,15 +66,80 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
   };
 
   /**
+   * Returns text resource path
+   *
+   * @returns text resource path
+   */
+  const getBackgroundColorResourcePath = () => {
+    const { element } = component;
+    const styles = HtmlComponentsUtils.parseStyles(element);
+
+    return styles["background-color"];
+  };
+
+  /**
+   * Returns background color
+   *
+   * @returns background color
+   */
+  const getElementBackgroundColor = () => {
+    const backgroundColorString = HtmlResourceUtils.getResourceData(
+      pageLayout.defaultResources,
+      getBackgroundColorResourcePath()
+    );
+
+    return backgroundColorString;
+  };
+
+  /**
+   * Event handler for background color change events
+   *
+   * @param color color
+   */
+  const handleBackgroundColorChange = ({ rgb }: ColorResult) => {
+    const { r, g, b, a } = rgb;
+    const resourcePath = getBackgroundColorResourcePath();
+    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
+    if (!resourceId) return;
+
+    const defaultResources = [
+      ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
+      {
+        id: resourceId,
+        data: `rgba(${r}, ${g}, ${b}, ${a ?? 1})`,
+        type: ExhibitionPageResourceType.Color,
+        mode: PageResourceMode.Static
+      }
+    ];
+
+    setPageLayout({
+      ...pageLayout,
+      defaultResources: defaultResources
+    });
+  };
+
+  /**
    * Event handler for background remove events
    */
   const handleBackgroundRemove = () => {
-    const element = HtmlComponentsUtils.handleStyleAttributeChange(
-      component.element,
-      "background-color",
-      ""
-    );
-    updateComponent({ ...component, element: element });
+    const resourcePath = getBackgroundColorResourcePath();
+    const resourceId = HtmlResourceUtils.getResourceId(resourcePath);
+    if (!resourceId) return;
+
+    const defaultResources = [
+      ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
+      {
+        id: resourceId,
+        data: "transparent",
+        type: ExhibitionPageResourceType.Color,
+        mode: PageResourceMode.Static
+      }
+    ];
+
+    setPageLayout({
+      ...pageLayout,
+      defaultResources: defaultResources
+    });
   };
 
   const getElementWidth = () => {
@@ -103,16 +181,6 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
   const onNameChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     component.element.setAttribute("name", value);
     updateComponent(component);
-  };
-
-  /**
-   * Gets elements background color
-   */
-  const getElementBackgroundColor = () => {
-    const { element } = component;
-    const styles = HtmlComponentsUtils.parseStyles(element);
-
-    return styles["background-color"];
   };
 
   /**
@@ -237,10 +305,11 @@ const GenericComponentProperties = ({ component, updateComponent }: Props) => {
         </PropertyBox>
       </Stack>
       <ColorPicker
-        color={component.element.style.backgroundColor}
+        color={getElementBackgroundColor()}
         anchorEl={popoverAnchorElement}
+        popover
         onClose={() => setPopoverAnchorElement(undefined)}
-        onChangeComplete={({ hex }: ColorResult) => onPropertyChange("background-color", hex)}
+        onChangeComplete={handleBackgroundColorChange}
       />
     </>
   );

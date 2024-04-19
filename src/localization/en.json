@@ -761,6 +761,15 @@
       "properties": "Properties",
       "resources": "Resources",
       "resource": "Resource",
+      "resourceWithType": "Resource ({0})",
+      "resourceType": {
+        "color": "Color",
+        "image": "Image",
+        "video": "Video",
+        "text": "Text",
+        "svg": "SVG",
+        "html": "HTML"
+      },
       "resourceProperties": "Resource properties",
       "transitions": {
         "title": "Page change effects",
