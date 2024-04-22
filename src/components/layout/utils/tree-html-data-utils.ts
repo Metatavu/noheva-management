@@ -356,10 +356,12 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
         }
         h1, h2, h3, h4, h5, h6 {
           font-family: 'Larken-Medium';
+          margin: 0;
         }
         p, button {
           font-family: 'Source-Sans-Pro-Regular';
           border: none;
+          margin: 0;
         }
       </style>
     </head>

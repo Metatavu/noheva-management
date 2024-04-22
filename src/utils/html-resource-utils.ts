@@ -77,7 +77,9 @@ namespace HtmlResourceUtils {
     if (!hasBackgroundImageResource) {
       const backgroundImageResource: ExhibitionPageResource = {
         id: uuid(),
-        data: backgroundImageResourceValue || "none",
+        data: backgroundImageResourceValue.startsWith("@resources/")
+          ? "none"
+          : backgroundImageResourceValue || "none",
         mode: PageResourceMode.Static,
         type: ExhibitionPageResourceType.Image
       };
