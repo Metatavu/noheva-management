@@ -9,7 +9,7 @@ import HtmlResourceUtils from "../../../utils/html-resource-utils";
 import TextField from "../../generic/v2/text-field";
 import PanelSubtitle from "./panel-subtitle";
 import PropertyBox from "./property-box";
-import { Divider, Stack } from "@mui/material";
+import { Checkbox, Divider, FormControlLabel, Stack } from "@mui/material";
 import { ChangeEvent } from "react";
 
 /**
@@ -58,22 +58,19 @@ const VideoComponentProperties = ({
     return HtmlResourceUtils.getResourceData(pageLayout.defaultResources, getVideoResourcePath());
   };
 
-  // /**
-  //  * Returns whether the video element currently has VIDEO_CONTROLS
-  //  */
-  // const getHasVideoControlsChild = () => {
-  //   const { element } = component;
-  //   let hasVideoControlsChild = false;
+  /**
+   * Returns whether the video element has autoplay enabled
+   */
+  const getVideoAutoPlay = () => {
+    return getVideoElement().autoplay;
+  };
 
-  //   for (const child of element.children) {
-  //     if (child.getAttribute("data-component-type") === "video-controls") {
-  //       hasVideoControlsChild = true;
-  //       break;
-  //     }
-  //   }
-
-  //   return hasVideoControlsChild;
-  // };
+  /**
+   * Returns whether the video element has loop enabled
+   */
+  const getVideoLoop = () => {
+    return getVideoElement().loop;
+  };
 
   /**
    * Event handler for default resource change event
@@ -101,27 +98,30 @@ const VideoComponentProperties = ({
     });
   };
 
-  // /**
-  //  * Event handler for toggling video controls
-  //  */
-  // const handleToggleVideoControls = ({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
-  //   const { element } = component;
-  //   if (checked) {
-  //     const videoControlsElement = deserializeElement(
-  //       HtmlComponentsUtils.getSerializedHtmlElement(HtmlComponentType.VIDEO_CONTROLS)
-  //     );
-  //     element.appendChild(videoControlsElement);
-  //   } else {
-  //     for (const child of element.children) {
-  //       if (child.getAttribute("data-component-type") === "video-controls") {
-  //         element.removeChild(child);
-  //         break;
-  //       }
-  //     }
-  //   }
+  const getVideoElement = () => {
+    const { element } = component;
+    return element.getElementsByTagName("video")[0];
+  };
 
-  //   updateComponent({ ...component, element: element });
-  // };
+  /**
+   * Event handler for toggling video autoplay
+   */
+  const handleToggleVideoProperty = ({
+    target: { name, checked }
+  }: ChangeEvent<HTMLInputElement>) => {
+    const { element } = component;
+    const videoElement = getVideoElement();
+    if (!videoElement) return;
+    switch (name) {
+      case "autoplay":
+        videoElement.autoplay = checked;
+        break;
+      case "loop":
+        videoElement.loop = checked;
+        break;
+    }
+    updateComponent({ ...component, element: element });
+  };
 
   return (
     <Stack>
@@ -135,18 +135,30 @@ const VideoComponentProperties = ({
         />
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
-      {/* <PropertyBox>
+      <PropertyBox>
         <FormControlLabel
-          label="Ohjausnäppäimet"
+          label={strings.layoutEditorV2.videoProperties.autoPlay}
           control={
             <Checkbox
+              name="autoplay"
               color="secondary"
-              value={getHasVideoControlsChild()}
-              onChange={handleToggleVideoControls}
+              value={getVideoAutoPlay()}
+              onChange={handleToggleVideoProperty}
             />
           }
         />
-      </PropertyBox> */}
+        <FormControlLabel
+          label={strings.layoutEditorV2.videoProperties.loop}
+          control={
+            <Checkbox
+              name="loop"
+              color="secondary"
+              value={getVideoLoop()}
+              onChange={handleToggleVideoProperty}
+            />
+          }
+        />
+      </PropertyBox>
     </Stack>
   );
 };
