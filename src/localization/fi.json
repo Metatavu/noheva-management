@@ -563,7 +563,8 @@
       "fontColor": "Fontin väri",
       "defaultResource": "Oletusteksti",
       "font": "Fontti",
-      "textAlign": "Tekstin tasaus"
+      "textAlign": "Tekstin tasaus",
+      "letterSpacing": "Kirjasinväli"
     },
     "buttonProperties": {
       "fontColor": "Fontin väri",
@@ -583,7 +584,7 @@
       "startsVideo": "Käynnistää videon"
     },
     "preview": {
-      "showElementBorders": "Näytä elementtien reunat"
+      "showElementBorders": "Näytä valitun elementin reunat"
     }
   },
   "layoutEditor": {

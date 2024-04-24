@@ -562,7 +562,8 @@
       "fontColor": "Font color",
       "defaultResource": "Default text",
       "font": "Font",
-      "textAlign": "Text alignment"
+      "textAlign": "Text alignment",
+      "letterSpacing": "Letter spacing"
     },
     "buttonProperties": {
       "fontColor": "Font color",
@@ -582,7 +583,7 @@
       "startsVideo": "Starts video"
     },
     "preview": {
-      "showElementBorders": "Show element borders"
+      "showElementBorders": "Show selected element borders"
     }
   },
   "layoutEditor": {

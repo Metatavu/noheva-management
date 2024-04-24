@@ -162,14 +162,27 @@ const TextComponentProperties = ({
   /**
    * Event handler for line height change events
    *
-   * @param name name
-   * @param value value
+   * @param newValue value
    */
   const onLineHeightChange = (_: any, newValue: number | number[]) => {
     if (!newValue) {
       component.element.style.removeProperty("line-height");
     } else {
       component.element.style.setProperty("line-height", newValue.toString());
+    }
+    updateComponent(component);
+  };
+
+  /**
+   * Event handler for letter spacing change events
+   *
+   * @param newValue value
+   */
+  const onLetterSpacingChange = (_: any, newValue: number | number[]) => {
+    if (!newValue) {
+      component.element.style.removeProperty("letter-spacing");
+    } else {
+      component.element.style.setProperty("letter-spacing", newValue.toString());
     }
     updateComponent(component);
   };
@@ -210,6 +223,17 @@ const TextComponentProperties = ({
     }
 
     return parseFloat(lineHeight);
+  };
+
+  /**
+   * Gets letter spacing
+   */
+  const getLetterSpacing = () => {
+    const letterSpacing = component.element?.style.letterSpacing;
+    if (!letterSpacing) {
+      return HtmlComponentsUtils.DEFAULT_LETTER_SPACING;
+    }
+    return parseFloat(letterSpacing);
   };
 
   /**
@@ -306,6 +330,22 @@ const TextComponentProperties = ({
             max={5}
           />
           <Typography variant="caption">{getLineHeight()}</Typography>
+        </Stack>
+      </PropertyBox>
+      <Divider sx={{ color: "#F5F5F5" }} />
+      <PropertyBox>
+        <PanelSubtitle subtitle={strings.layoutEditorV2.textProperties.letterSpacing} />
+        <Stack direction="row" spacing={2}>
+          <Slider
+            value={getLetterSpacing()}
+            onChange={onLetterSpacingChange}
+            valueLabelDisplay="auto"
+            step={0.01}
+            color="secondary"
+            min={0}
+            max={5}
+          />
+          <Typography variant="caption">{getLetterSpacing()}</Typography>
         </Stack>
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />

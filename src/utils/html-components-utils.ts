@@ -325,6 +325,11 @@ namespace HtmlComponentsUtils {
   export const DEFAULT_LINE_HEIGHT = 1.2;
 
   /**
+   * Default letter spacing
+   */
+  export const DEFAULT_LETTER_SPACING = 0;
+
+  /**
    * Components that don't support proportions as percentages
    */
   export const COMPONENTS_WITHOUT_PERCENTAGE_PROPORTIONS = [

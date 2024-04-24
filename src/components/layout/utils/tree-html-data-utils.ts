@@ -353,6 +353,8 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
           pointer-events: none;
           height: 100vh;
           overflow: hidden;
+          user-select: none;
+          -webkit-user-select: none;
         }
         h1, h2, h3, h4, h5, h6 {
           font-family: 'Larken-Medium';
