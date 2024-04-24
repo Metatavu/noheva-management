@@ -9,6 +9,27 @@ import { v4 as uuid } from "uuid";
 
 namespace HtmlComponentsUtils {
   /**
+   * Returns whether the selected component is inside video controls
+   *
+   * @param selectedComponent selected component
+   * @returns whether the selected component is inside video controls
+   */
+  export const checkIfComponentIsInsideVideoControls = (selectedComponent?: TreeObject) => {
+    if (!selectedComponent) return false;
+    let isInsideVideoControls = false;
+    let parentElement: HTMLElement | null = selectedComponent.element.parentElement;
+    while (parentElement) {
+      const parentElementType =
+        parentElement.attributes.getNamedItem("data-component-type")?.nodeValue;
+      if (parentElementType === HtmlComponentType.VIDEO_CONTROLS) {
+        isInsideVideoControls = true;
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+    return isInsideVideoControls;
+  };
+  /**
    * Returns serialized HTML element based on type
    *
    * @param type type
@@ -311,6 +332,15 @@ namespace HtmlComponentsUtils {
     HtmlComponentType.VIDEO,
     HtmlComponentType.IMAGE_BUTTON,
     HtmlComponentType.BUTTON
+  ];
+
+  /**
+   * Components that can be used to play video
+   */
+  export const PLAY_VIDEO_COMPONENTS = [
+    HtmlComponentType.BUTTON,
+    HtmlComponentType.IMAGE_BUTTON,
+    HtmlComponentType.IMAGE
   ];
 }
 

@@ -1,5 +1,5 @@
 import strings from "../../../localization/strings";
-import { TreeObject } from "../../../types";
+import { ComponentProportionName, ComponentProportionType, TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import LocalizationUtils from "../../../utils/localization-utils";
 import ConditionalTooltip from "../../generic/v2/conditional-tooltip";
@@ -14,8 +14,8 @@ import { ChangeEvent, useEffect, useState } from "react";
  */
 interface Props {
   component: TreeObject;
-  value?: string;
-  name: "width" | "height";
+  value?: number;
+  name: ComponentProportionName;
   label: string;
   onChange: (name: string, value: string) => void;
 }
@@ -28,35 +28,61 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
     !HtmlComponentsUtils.COMPONENTS_WITHOUT_PERCENTAGE_PROPORTIONS.includes(component.type);
 
   /**
+   * Returns whether component currently has this dimension set to auto
+   *
+   * @returns boolean
+   */
+  const getAutoValue = () => {
+    const { element } = component;
+    const styles = HtmlComponentsUtils.parseStyles(element);
+
+    return styles[name] === "auto";
+  };
+
+  /**
    * Gets element proportion type
    *
    * @param proportion proportion
    */
-  const getElementProportionType = (proportion: "width" | "height") => {
-    if (!componentCanUsePercentageProportions) return "px";
-
+  const getElementProportionType = (proportion: ComponentProportionName) => {
     const styles = HtmlComponentsUtils.parseStyles(component.element);
     const elementDimension = styles[proportion];
+
+    if (elementDimension === "auto") return "auto";
+
+    if (!componentCanUsePercentageProportions) return "px";
 
     if (elementDimension?.endsWith("%")) return "%";
     if (elementDimension?.endsWith("px")) return "px";
     return "px";
   };
 
-  const [proportionType, setProportionType] = useState<"%" | "px">(getElementProportionType(name));
+  const [proportionType, setProportionType] = useState<ComponentProportionType>(
+    getElementProportionType(name)
+  );
 
   useEffect(() => {
     setProportionType(getElementProportionType(name));
-  }, [component.element]);
+  }, [component]);
 
+  /**
+   * Event handler for select box change events
+   *
+   * @param event event
+   */
   const onSettingsChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    setProportionType(value as ComponentProportionType);
+    if (value === "auto") {
+      onChange(name, "auto");
+      return;
+    }
     const styles = HtmlComponentsUtils.parseStyles(component.element);
     const val = styles[name];
-    const numberVal = parseInt(val);
-    setProportionType(value as "px" | "%");
+    const numberVal = parseInt(val.replace("auto", "0"));
 
     onChange(name, `${numberVal}${value}`);
   };
+
   /**
    * Event handler for input change events
    *
@@ -94,14 +120,26 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
   };
 
   /**
-   * Gets appropriate tooltip text based on component type
+   * Parses the value to be displayed in the input field
    *
-   * @returns tooltip text
+   * If the value is undefined and the proportion type is not auto, return 0
+   * If the elements proportion type is auto, return an empty string to be displayed in the input field
+   */
+  const parseValue = () => {
+    if (value === undefined && proportionType !== "auto") {
+      return 0;
+    }
+
+    return value ?? "";
+  };
+
+  /**
+   * Returns tooltip text
    */
   const getTooltipText = () =>
     strings.formatString(
-      strings.layoutEditorV2.genericProperties.noPercentageDimensionsTooltip,
-      LocalizationUtils.getLocalizedComponentType(component.type)
+      strings.layoutEditorV2.genericProperties.proportionSetToAuto,
+      LocalizationUtils.getLocalizedComponentProportionName(name)
     );
 
   return (
@@ -109,21 +147,27 @@ const ProportionsEditorHtml = ({ component, value, name, label, onChange }: Prop
       <Typography variant="caption" fontWeight={500} fontSize="12px">
         {label}
       </Typography>
-      <TextField name={name} value={value} onChange={onValueChange} />
-      <ConditionalTooltip enabled={!componentCanUsePercentageProportions} title={getTooltipText()}>
-        <SelectBox
-          value={proportionType}
-          disabled={!componentCanUsePercentageProportions}
-          onChange={onSettingsChange}
-        >
-          <MenuItem value="px" sx={{ color: "#2196F3" }}>
-            px
-          </MenuItem>
+      <ConditionalTooltip title={getTooltipText()} enabled={getAutoValue()}>
+        <TextField
+          name={name}
+          value={parseValue()}
+          onChange={onValueChange}
+          disabled={getAutoValue()}
+        />
+      </ConditionalTooltip>
+      <SelectBox value={proportionType} onChange={onSettingsChange}>
+        <MenuItem value="px" sx={{ color: "#2196F3" }}>
+          px
+        </MenuItem>
+        {componentCanUsePercentageProportions && (
           <MenuItem value="%" sx={{ color: "#2196F3" }}>
             %
           </MenuItem>
-        </SelectBox>
-      </ConditionalTooltip>
+        )}
+        <MenuItem value="auto" sx={{ color: "#2196F3" }}>
+          auto
+        </MenuItem>
+      </SelectBox>
       {renderIcon()}
     </Stack>
   );

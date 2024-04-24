@@ -520,7 +520,7 @@ export interface IStrings extends LocalizedStringsMethods {
       elementName: string;
       proportions: string;
       backgroundImage: string;
-      noPercentageDimensionsTooltip: string;
+      proportionSetToAuto: string;
       width: string;
       height: string;
       elevation: string;
@@ -584,6 +584,9 @@ export interface IStrings extends LocalizedStringsMethods {
       autoPlay: string;
       controls: string;
       defaultResource: string;
+    };
+    videoControlsChildProperties: {
+      startsVideo: string;
     };
     preview: {
       showElementBorders: string;

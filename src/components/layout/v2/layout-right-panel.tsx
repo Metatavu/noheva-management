@@ -1,6 +1,7 @@
 import { PageLayout } from "../../../generated/client";
 import strings from "../../../localization/strings";
 import { ActionButton, HtmlComponentType, TreeObject } from "../../../types";
+import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import ElementSettingsPane from "../../layouts/element-settings-pane";
 import ButtonComponentProperties from "./button-component-properties";
 import GenericComponentProperties from "./generic-component-properties";
@@ -9,6 +10,7 @@ import ImageComponentProperties from "./image-component-properties";
 import LayoutComponentProperties from "./layout-component-properties";
 import TextComponentProperties from "./text-component-properties";
 import VideoComponentProperties from "./video-component-properties";
+import VideoControlsChildComponentProperties from "./video-controls-child-component-properties";
 import VideoControlsComponentProperties from "./video-controls-component-properties";
 import { Menu as MenuIcon } from "@mui/icons-material";
 
@@ -118,9 +120,25 @@ const LayoutRightPanel = ({
     }
   };
 
+  /**
+   * Renders video controls child properties
+   */
+  const renderVideoControlsChildProperties = () => {
+    const isInsideVideoControls =
+      HtmlComponentsUtils.checkIfComponentIsInsideVideoControls(component);
+    if (!isInsideVideoControls) return null;
+
+    return (
+      <VideoControlsChildComponentProperties
+        component={component}
+        updateComponent={updateComponent}
+      />
+    );
+  };
+
   return (
     <ElementSettingsPane
-      width={250}
+      width={300}
       open={!!component}
       title={strings.layoutEditorV2.drawerTitle}
       actionIcon={<MenuIcon sx={{ color: "#2196F3" }} />}
@@ -133,6 +151,7 @@ const LayoutRightPanel = ({
         setPageLayout={setLayout}
       />
       {renderComponentSpecificProperties()}
+      {renderVideoControlsChildProperties()}
     </ElementSettingsPane>
   );
 };

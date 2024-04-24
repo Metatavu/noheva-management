@@ -79,7 +79,7 @@ const GroupedInputsWithLock = ({ type, onChange, styles }: Props) => {
               value={(parseInt(styles[name] || styles[type]) || "0").toString()}
               name={name}
               inputProps={{
-                pattern: "[0-9]"
+                pattern: "-[0-9]"
               }}
               InputProps={{
                 sx: {

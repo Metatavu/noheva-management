@@ -59,18 +59,9 @@ const VideoComponentProperties = ({
   };
 
   /**
-   * Returns whether the video element has autoplay enabled
-   */
-  const getVideoAutoPlay = () => {
-    return getVideoElement().autoplay;
-  };
-
-  /**
    * Returns whether the video element has loop enabled
    */
-  const getVideoLoop = () => {
-    return getVideoElement().loop;
-  };
+  const getVideoLoop = () => getVideoElement().loop;
 
   /**
    * Event handler for default resource change event
@@ -104,22 +95,14 @@ const VideoComponentProperties = ({
   };
 
   /**
-   * Event handler for toggling video autoplay
+   * Event handler for toggling video looping
    */
-  const handleToggleVideoProperty = ({
-    target: { name, checked }
-  }: ChangeEvent<HTMLInputElement>) => {
+  const handleToggleVideoLooping = ({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
     const { element } = component;
     const videoElement = getVideoElement();
     if (!videoElement) return;
-    switch (name) {
-      case "autoplay":
-        videoElement.autoplay = checked;
-        break;
-      case "loop":
-        videoElement.loop = checked;
-        break;
-    }
+    videoElement.loop = checked;
+    videoElement.autoplay = checked;
     updateComponent({ ...component, element: element });
   };
 
@@ -137,24 +120,13 @@ const VideoComponentProperties = ({
       <Divider sx={{ color: "#F5F5F5" }} />
       <PropertyBox>
         <FormControlLabel
-          label={strings.layoutEditorV2.videoProperties.autoPlay}
-          control={
-            <Checkbox
-              name="autoplay"
-              color="secondary"
-              value={getVideoAutoPlay()}
-              onChange={handleToggleVideoProperty}
-            />
-          }
-        />
-        <FormControlLabel
           label={strings.layoutEditorV2.videoProperties.loop}
           control={
             <Checkbox
               name="loop"
               color="secondary"
-              value={getVideoLoop()}
-              onChange={handleToggleVideoProperty}
+              checked={getVideoLoop()}
+              onChange={handleToggleVideoLooping}
             />
           }
         />

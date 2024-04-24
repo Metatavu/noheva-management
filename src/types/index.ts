@@ -374,6 +374,9 @@ export interface NavigationButton {
   label: string;
 }
 
+export type ComponentProportionType = "%" | "px" | "auto";
+export type ComponentProportionName = "width" | "height";
+
 // Required for Leaflet to work.
 // Older version of Leaflet declares it as global variable but newer version no longer does
 // https://github.com/Leaflet/Leaflet.draw/issues/1026#issuecomment-986702652

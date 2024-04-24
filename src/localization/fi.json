@@ -514,7 +514,7 @@
       "elementName": "Elementin nimi",
       "proportions": "Mittasuhteet",
       "backgroundImage": "Taustakuva",
-      "noPercentageDimensionsTooltip": "{0}-elementti tukee vain pikselikokoa",
+      "proportionSetToAuto": "{0} on asetettu automaattiseksi",
       "width": "Leveys",
       "height": "Korkeus",
       "elevation": "Varjostus",
@@ -578,6 +578,9 @@
       "autoPlay": "Automaattinen toisto",
       "controls": "Näytä allintapainikkeet",
       "defaultResource": "Oletusvideo"
+    },
+    "videoControlsChildProperties": {
+      "startsVideo": "Käynnistää videon"
     },
     "preview": {
       "showElementBorders": "Näytä elementtien reunat"

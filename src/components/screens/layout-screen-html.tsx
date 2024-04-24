@@ -506,7 +506,6 @@ const LayoutScreenHTML: FC<Props> = ({
       <AddNewElementDialog
         open={addComponentDialogOpen}
         siblingPath={newComponentPath}
-        selectedComponent={selectedComponent}
         onConfirm={createComponent}
         onClose={() => setAddComponentDialogOpen(false)}
       />

@@ -513,7 +513,7 @@
       "elementName": "Element name",
       "proportions": "Proportions",
       "backgroundImage": "Background image",
-      "noPercentageDimensionsTooltip": "{0} element only supports pixel dimensions",
+      "proportionSetToAuto": "{0} is set to auto",
       "width": "Width",
       "height": "Height",
       "elevation": "Elevation",
@@ -577,6 +577,9 @@
       "autoPlay": "Automatic playback",
       "controls": "Show controls",
       "defaultResource": "Default video"
+    },
+    "videoControlsChildProperties": {
+      "startsVideo": "Starts video"
     },
     "preview": {
       "showElementBorders": "Show element borders"
