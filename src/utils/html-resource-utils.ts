@@ -63,6 +63,7 @@ namespace HtmlResourceUtils {
         hasBackgroundImageResource = checkStyleResource(value, resources);
       }
     }
+
     if (!hasBackgroundColorResource) {
       const backgroundColorResource: ExhibitionPageResource = {
         id: uuid(),
@@ -293,7 +294,8 @@ namespace HtmlResourceUtils {
       [HtmlComponentType.TABS]: ExhibitionPageResourceType.Text,
       [HtmlComponentType.TAB]: ExhibitionPageResourceType.Text,
       [HtmlComponentType.LAYOUT]: ExhibitionPageResourceType.Image,
-      [HtmlComponentType.IMAGE_BUTTON]: ExhibitionPageResourceType.Image
+      [HtmlComponentType.IMAGE_BUTTON]: ExhibitionPageResourceType.Image,
+      [HtmlComponentType.VIDEO_CONTROLS]: ExhibitionPageResourceType.Image
     })[type];
 
   /**

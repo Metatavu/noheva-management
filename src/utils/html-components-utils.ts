@@ -89,7 +89,7 @@ namespace HtmlComponentsUtils {
   const getHtmlVideoControlsElement = (name = "video") =>
     `<div id="${uuid()}" name="${name}-hallinta" data-component-type="${
       HtmlComponentType.VIDEO_CONTROLS
-    }" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>`;
+    }" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: @resources/${uuid()}; background-color: @resources/${uuid()}"></div>`;
 
   export const handleAttributeChange = (
     element: HTMLElement,
