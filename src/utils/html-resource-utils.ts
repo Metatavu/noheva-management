@@ -48,6 +48,12 @@ namespace HtmlResourceUtils {
     resources: ExhibitionPageResource[]
   ): ExhibitionPageResource[] => {
     let updatedResources = [...resources];
+    if (branch.type === HtmlComponentType.VIDEO) {
+      for (const child of branch.children) {
+        updatedResources = [...updateDefaultStyleResourcesOfTree(child, updatedResources)];
+      }
+      return updatedResources;
+    }
     const styleMap = HtmlComponentsUtils.parseStyles(branch.element);
     let hasBackgroundColorResource = false;
     let backgroundColorResourceValue = "";
@@ -58,7 +64,11 @@ namespace HtmlResourceUtils {
         backgroundColorResourceValue = value;
         hasBackgroundColorResource = checkStyleResource(value, resources);
       }
-      if (key === "background-image" && branch.type === HtmlComponentType.LAYOUT) {
+      if (
+        key === "background-image" &&
+        (branch.type === HtmlComponentType.LAYOUT ||
+          branch.type === HtmlComponentType.VIDEO_CONTROLS)
+      ) {
         backgroundImageResourceValue = value;
         hasBackgroundImageResource = checkStyleResource(value, resources);
       }
@@ -153,11 +163,25 @@ namespace HtmlResourceUtils {
     return resources;
   };
 
+  const recursivelyGetDefaultResourcesForComponent = (
+    component: TreeObject,
+    defaultStyleResources: ExhibitionPageResource[] = []
+  ): ExhibitionPageResource[] => {
+    const componentDefaultStyleResources = getDefaultStyleResourcesForElement(component.element);
+    let defaultResources = [...defaultStyleResources, ...componentDefaultStyleResources];
+
+    for (const child of component.children) {
+      defaultResources = recursivelyGetDefaultResourcesForComponent(child, defaultResources);
+    }
+
+    return defaultResources;
+  };
+
   export const getDefaultResourcesForComponent = (
     component: TreeObject
   ): ExhibitionPageResource[] => {
     const { element } = component;
-    const defaultStyleResources = getDefaultStyleResourcesForElement(element);
+    const defaultStyleResources = recursivelyGetDefaultResourcesForComponent(component);
     const resourceIds = extractResourceIds(element.outerHTML).filter(
       (id) => !defaultStyleResources.find((resource) => resource.id === id)
     );

@@ -119,7 +119,6 @@ const LayoutScreenHTML: FC<Props> = ({
         constructedTree,
         pageLayout
       );
-
       const updatedHtmlElements = constructedTree.map((treeObject) =>
         treeObjectToHtmlElement(treeObject)
       );
