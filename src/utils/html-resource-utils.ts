@@ -142,6 +142,12 @@ namespace HtmlResourceUtils {
     return resources;
   };
 
+  /**
+   * Returns the default style resources for an element
+   *
+   * @param element element
+   * @returns default style resources
+   */
   export const getDefaultStyleResourcesForElement = (
     element: HTMLElement
   ): ExhibitionPageResource[] => {
@@ -163,7 +169,14 @@ namespace HtmlResourceUtils {
     return resources;
   };
 
-  const recursivelyGetDefaultResourcesForComponent = (
+  /**
+   * Recursively gets the default style resources for a component
+   *
+   * @param component component
+   * @param defaultStyleResources default style resources
+   * @returns default style resources
+   */
+  const recursivelyGetDefaultStyleResourcesForComponent = (
     component: TreeObject,
     defaultStyleResources: ExhibitionPageResource[] = []
   ): ExhibitionPageResource[] => {
@@ -171,17 +184,23 @@ namespace HtmlResourceUtils {
     let defaultResources = [...defaultStyleResources, ...componentDefaultStyleResources];
 
     for (const child of component.children) {
-      defaultResources = recursivelyGetDefaultResourcesForComponent(child, defaultResources);
+      defaultResources = recursivelyGetDefaultStyleResourcesForComponent(child, defaultResources);
     }
 
     return defaultResources;
   };
 
+  /**
+   * Returns the default resources for a component
+   *
+   * @param component component
+   * @returns default resources
+   */
   export const getDefaultResourcesForComponent = (
     component: TreeObject
   ): ExhibitionPageResource[] => {
     const { element } = component;
-    const defaultStyleResources = recursivelyGetDefaultResourcesForComponent(component);
+    const defaultStyleResources = recursivelyGetDefaultStyleResourcesForComponent(component);
     const resourceIds = extractResourceIds(element.outerHTML).filter(
       (id) => !defaultStyleResources.find((resource) => resource.id === id)
     );

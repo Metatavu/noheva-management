@@ -1,7 +1,8 @@
 import strings from "../../../localization/strings";
 import { StyledTreeItem } from "../../../styles/components/layout-screen/styled-tree-item";
 import theme from "../../../styles/theme";
-import { HtmlComponentType, TreeObject } from "../../../types";
+import { TreeObject } from "../../../types";
+import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import { CONTAINER_ELEMENTS } from "../utils/tree-html-data-utils";
 import {
   AddBoxOutlined as AddBoxOutlinedIcon,
@@ -90,17 +91,12 @@ const LayoutTreeMenuHtml = ({
       >
         {(item.children ?? []).map(renderTreeItem)}
         {item.children?.length === 0 &&
-          HTML_COMPONENTS_WITH_CHILDREN.includes(item.type) &&
+          HtmlComponentsUtils.HTML_COMPONENTS_WITH_CHILDREN.includes(item.type) &&
           renderAddNewElementButton(item, true)}
       </StyledTreeItem>
       {renderAddNewElementButton(item, false)}
     </Stack>
   );
-
-  const HTML_COMPONENTS_WITH_CHILDREN = [
-    HtmlComponentType.LAYOUT,
-    HtmlComponentType.VIDEO_CONTROLS
-  ];
 
   /**
    * Gets parent ids, based on selected path.
@@ -108,7 +104,7 @@ const LayoutTreeMenuHtml = ({
    * In case of the root element we return the path as is.
    *
    * @param path path
-   * @retuns IDs of parent elements
+   * @return IDs of parent elements
    */
   const getParentIds = (): string[] => {
     if (!selectedComponent) {

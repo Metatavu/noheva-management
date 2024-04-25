@@ -347,6 +347,14 @@ namespace HtmlComponentsUtils {
     HtmlComponentType.IMAGE_BUTTON,
     HtmlComponentType.IMAGE
   ];
+
+  /**
+   * Components that can have children created manually
+   */
+  export const HTML_COMPONENTS_WITH_CHILDREN = [
+    HtmlComponentType.LAYOUT,
+    HtmlComponentType.VIDEO_CONTROLS
+  ];
 }
 
 export default HtmlComponentsUtils;

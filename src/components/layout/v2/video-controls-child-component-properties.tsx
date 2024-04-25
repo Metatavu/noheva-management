@@ -1,3 +1,4 @@
+import strings from "../../../localization/strings";
 import { TreeObject } from "../../../types";
 import HtmlComponentsUtils from "../../../utils/html-components-utils";
 import PropertyBox from "./property-box";
@@ -47,7 +48,7 @@ const VideoControlsChildComponentProperties = ({ component, updateComponent }: P
       <Divider sx={{ color: "#F5F5F5" }} />
       <PropertyBox>
         <FormControlLabel
-          label="Käynnistää videon"
+          label={strings.layoutEditorV2.videoControlsChildProperties.startsVideo}
           control={
             <Checkbox
               color="secondary"
