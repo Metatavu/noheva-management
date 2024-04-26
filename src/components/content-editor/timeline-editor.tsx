@@ -3,11 +3,12 @@ import strings from "../../localization/strings";
 import styles from "../../styles/components/content-editor/timeline-editor";
 import theme from "../../styles/theme";
 import { PreviewDeviceData } from "../../types";
-import { List, ListItem, Paper, Typography } from "@mui/material";
+import { List, ListItem, Paper } from "@mui/material";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import classNames from "classnames";
 import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -46,9 +47,15 @@ interface Props extends WithStyles<typeof styles> {
  */
 const TimelineEditor: React.FC<Props> = (props: Props) => {
   const { devices, classes } = props;
+  const [sortedDevices, setSortedDevices] = useState<ExhibitionDevice[]>(devices);
+
+  useEffect(() => {
+    setSortedDevices([...devices].sort((a, b) => a.name.localeCompare(b.name)));
+  }, [devices]);
+
   return (
     <List className={classes.timeLineRowList}>
-      {devices.map((device) => renderTimelineRow(device, props))}
+      {sortedDevices.map((device) => renderTimelineRow(device, props))}
     </List>
   );
 };
@@ -154,9 +161,9 @@ const renderPageContent = (
   const { innerRef, draggableProps, dragHandleProps } = provided;
   const { isDragging } = snapshot;
   const { selectedPage } = props;
-  const deviceInPreview =
-    previewDevicesData &&
-    previewDevicesData.find((previewData) => previewData.device.id === page.deviceId);
+  const deviceInPreview = previewDevicesData?.find(
+    (previewData) => previewData.device.id === page.deviceId
+  );
   const inPreview = page.id === deviceInPreview?.page?.id;
   const selected = selectedPage?.id === page.id;
   const isDeviceIndexPage = index === 0;
@@ -175,13 +182,15 @@ const renderPageContent = (
       {...draggableProps}
       {...dragHandleProps}
     >
-      <div className={ classes.pageItemName } title={ page.name }>
-        <span>{ page.name }</span>
+      <div className={classes.pageItemName} title={page.name}>
+        <span>{page.name}</span>
         {isDeviceIndexPage && pageType !== "idle" && (
-          <span style={{
-            marginLeft: theme.spacing(1),
-            fontSize: 12
-          }}>
+          <span
+            style={{
+              marginLeft: theme.spacing(1),
+              fontSize: 12
+            }}
+          >
             {`(${strings.contentEditor.editor.indexPageId})`}
           </span>
         )}

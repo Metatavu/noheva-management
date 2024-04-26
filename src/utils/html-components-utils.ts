@@ -9,6 +9,27 @@ import { v4 as uuid } from "uuid";
 
 namespace HtmlComponentsUtils {
   /**
+   * Returns whether the selected component is inside video controls
+   *
+   * @param selectedComponent selected component
+   * @returns whether the selected component is inside video controls
+   */
+  export const checkIfComponentIsInsideVideoControls = (selectedComponent?: TreeObject) => {
+    if (!selectedComponent) return false;
+    let isInsideVideoControls = false;
+    let parentElement: HTMLElement | null = selectedComponent.element.parentElement;
+    while (parentElement) {
+      const parentElementType =
+        parentElement.attributes.getNamedItem("data-component-type")?.nodeValue;
+      if (parentElementType === HtmlComponentType.VIDEO_CONTROLS) {
+        isInsideVideoControls = true;
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+    return isInsideVideoControls;
+  };
+  /**
    * Returns serialized HTML element based on type
    *
    * @param type type
@@ -36,21 +57,39 @@ namespace HtmlComponentsUtils {
   };
 
   const getHtmlLayoutElement = (name?: string) =>
-    `<div id="${uuid()}" data-component-type="layout" name="${name}" style="display: flex; flex-direction: row; width: 100%; height: 100%; background-repeat: no-repeat; background-position: center; background-image: @resources/${uuid()}; background-color: @resources/${uuid()};"></div>`;
+    `<div id="${uuid()}" data-component-type="${
+      HtmlComponentType.LAYOUT
+    }" name="${name}" style="display: flex; flex-direction: row; width: 100%; height: 100%; background-repeat: no-repeat; background-position: center; background-image: @resources/${uuid()}; background-color: @resources/${uuid()};"></div>`;
   const getHtmlButtonElement = (name?: string) =>
-    `<button id="${uuid()}" data-component-type="button" name="${name}" style="background-color: @resources/${uuid()};">@resources/${uuid()}</button>`;
+    `<button id="${uuid()}" data-component-type="${
+      HtmlComponentType.BUTTON
+    }" name="${name}" style="background-color: @resources/${uuid()};">@resources/${uuid()}</button>`;
   const getHtmlTextElement = (name?: string) =>
-    `<p id="${uuid()}" data-component-type="text" name="${name}" style="background-color: @resources/${uuid()};">@resources/${uuid()}</p>`;
+    `<p id="${uuid()}" data-component-type="${
+      HtmlComponentType.TEXT
+    }" name="${name}" style="background-color: @resources/${uuid()};">@resources/${uuid()}</p>`;
   const getHtmlImageElement = (name?: string) =>
-    `<img id="${uuid()}" data-component-type="image" name="${name}" src="@resources/${uuid()}" style="background-color: @resources/${uuid()};"/>`;
+    `<img id="${uuid()}" data-component-type="${
+      HtmlComponentType.IMAGE
+    }" name="${name}" src="@resources/${uuid()}" style="background-color: @resources/${uuid()};"/>`;
   const getHtmlTabsElement = (name?: string) =>
     `div id="${uuid()}" data-component-type="tabs" name="${name}"></div>`;
   const getHtmlTabElement = (name?: string) =>
     `<div id="${uuid()}" data-component-type="tab" name="${name}"></div>`;
   const getHtmlVideoElement = (name?: string) =>
-    `<video id="${uuid()}" data-component-type="video" name="${name}"><source src="@resources/${uuid()}"></video>`;
+    `<div id="${uuid()}" data-component-type="${
+      HtmlComponentType.VIDEO
+    }" name="${name}" style="position: relative;"><video><source src="@resources/${uuid()}"></video>${getHtmlVideoControlsElement(
+      name
+    )}</div>`;
   const getHtmlImageButtonElement = (name?: string) =>
-    `<button id="${uuid()}" data-component-type="image-button" name="${name}" style="padding: 0; background-color: @resources/${uuid()};"><img src="@resources/${uuid()}" style="width: 100%; height: 100%;"/></button>`;
+    `<button id="${uuid()}" data-component-type="${
+      HtmlComponentType.IMAGE_BUTTON
+    }" name="${name}" style="padding: 0; background-color: @resources/${uuid()};"><img src="@resources/${uuid()}" style="width: 100%; height: 100%;"/></button>`;
+  const getHtmlVideoControlsElement = (name = "video") =>
+    `<div id="${uuid()}" name="${name}-hallinta" data-component-type="${
+      HtmlComponentType.VIDEO_CONTROLS
+    }" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: @resources/${uuid()}; background-color: @resources/${uuid()}"></div>`;
 
   export const handleAttributeChange = (
     element: HTMLElement,
@@ -110,11 +149,10 @@ namespace HtmlComponentsUtils {
    * @returns serialized element
    */
   export const updateStyles = (element: HTMLElement, styles: { [key: string]: string }) => {
-    const styleString = Object.entries(styles)
+    const styleString = `${Object.entries(styles)
       .map(([key, value]) => `${key}: ${value}`)
-      .join("; ");
-
-    element.setAttribute("style", styleString);
+      .join("; ")};`;
+    +element.setAttribute("style", styleString);
 
     return element;
   };
@@ -287,6 +325,11 @@ namespace HtmlComponentsUtils {
   export const DEFAULT_LINE_HEIGHT = 1.2;
 
   /**
+   * Default letter spacing
+   */
+  export const DEFAULT_LETTER_SPACING = 0;
+
+  /**
    * Components that don't support proportions as percentages
    */
   export const COMPONENTS_WITHOUT_PERCENTAGE_PROPORTIONS = [
@@ -294,6 +337,23 @@ namespace HtmlComponentsUtils {
     HtmlComponentType.VIDEO,
     HtmlComponentType.IMAGE_BUTTON,
     HtmlComponentType.BUTTON
+  ];
+
+  /**
+   * Components that can be used to play video
+   */
+  export const PLAY_VIDEO_COMPONENTS = [
+    HtmlComponentType.BUTTON,
+    HtmlComponentType.IMAGE_BUTTON,
+    HtmlComponentType.IMAGE
+  ];
+
+  /**
+   * Components that can have children created manually
+   */
+  export const HTML_COMPONENTS_WITH_CHILDREN = [
+    HtmlComponentType.LAYOUT,
+    HtmlComponentType.VIDEO_CONTROLS
   ];
 }
 

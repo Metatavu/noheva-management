@@ -1,6 +1,11 @@
 import { DeviceApprovalStatus, ExhibitionPageResourceType } from "../generated/client";
 import strings from "../localization/strings";
-import { HtmlComponentType, HtmlTextComponentType, LayoutAlignment } from "../types";
+import {
+  ComponentProportionName,
+  HtmlComponentType,
+  HtmlTextComponentType,
+  LayoutAlignment
+} from "../types";
 
 /**
  * Namespace containing localization utilities
@@ -38,7 +43,8 @@ namespace LocalizationUtils {
       [HtmlComponentType.TABS]: strings.layout.html.types.tabs,
       [HtmlComponentType.TAB]: strings.layout.html.types.tab,
       [HtmlComponentType.VIDEO]: strings.layout.html.types.video,
-      [HtmlComponentType.IMAGE_BUTTON]: strings.layout.html.types.imageButton
+      [HtmlComponentType.IMAGE_BUTTON]: strings.layout.html.types.imageButton,
+      [HtmlComponentType.VIDEO_CONTROLS]: "Video Controls"
     })[componentType];
 
   /**
@@ -55,7 +61,8 @@ namespace LocalizationUtils {
       [HtmlComponentType.TABS]: strings.helpTexts.layoutEditorHtml.tabsViewDescription,
       [HtmlComponentType.TAB]: strings.helpTexts.layoutEditorHtml.tabViewDescription,
       [HtmlComponentType.VIDEO]: strings.helpTexts.layoutEditorHtml.videoViewDescription,
-      [HtmlComponentType.IMAGE_BUTTON]: strings.helpTexts.layoutEditorHtml.videoViewDescription
+      [HtmlComponentType.IMAGE_BUTTON]: strings.helpTexts.layoutEditorHtml.videoViewDescription,
+      [HtmlComponentType.VIDEO_CONTROLS]: ""
     })[componentType];
 
   /**
@@ -128,6 +135,17 @@ namespace LocalizationUtils {
       [ExhibitionPageResourceType.Svg]: strings.contentEditor.editor.resourceType.svg,
       [ExhibitionPageResourceType.Html]: strings.contentEditor.editor.resourceType.html
     })[resourceType];
+
+  /**
+   * Returns localized element proportion name
+   *
+   * @param proportionName proportion name
+   */
+  export const getLocalizedComponentProportionName = (proportionName: ComponentProportionName) =>
+    ({
+      width: strings.layoutEditorV2.genericProperties.width,
+      height: strings.layoutEditorV2.genericProperties.height
+    })[proportionName];
 }
 
 export default LocalizationUtils;

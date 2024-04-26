@@ -75,8 +75,7 @@ const LayoutScreenHTML: FC<Props> = ({
   layouts,
   layoutId,
   accessToken,
-  classes,
-  subLayouts
+  classes
 }) => {
   const [view, setView] = useState<LayoutEditorView>(LayoutEditorView.VISUAL);
   const [dataChanged, setDataChanged] = useState(false);
@@ -124,6 +123,7 @@ const LayoutScreenHTML: FC<Props> = ({
       const updatedHtmlElements = constructedTree.map((treeObject) =>
         treeObjectToHtmlElement(treeObject)
       );
+
       const domArray = Array.from(updatedHtmlElements) as HTMLElement[];
 
       setTreeObjects(constructedTree);
@@ -411,16 +411,14 @@ const LayoutScreenHTML: FC<Props> = ({
    * @param id id of the component to be deleted
    */
   const deleteComponent = (componentToDelete: TreeObject) => {
-    const updatedTree = deleteHtmlComponent(treeObjects, componentToDelete.path);
     const parentId = componentToDelete.path.split("/").toReversed()[1];
-    const resourceIds = HtmlResourceUtils.extractResourceIds(updatedTree[0].element.outerHTML);
-
-    const updatedDefaultResources = foundLayout.defaultResources?.filter((resource) =>
-      resourceIds.includes(resource.id)
-    );
-
+    const updatedTree = deleteHtmlComponent(treeObjects, componentToDelete.path);
     const updatedHtmlElements = updatedTree.map((treeObject) =>
       treeObjectToHtmlElement(treeObject)
+    );
+    const resourceIds = HtmlResourceUtils.extractResourceIds(updatedHtmlElements[0].outerHTML);
+    const updatedDefaultResources = foundLayout.defaultResources?.filter((resource) =>
+      resourceIds.includes(resource.id)
     );
 
     const domArray = Array.from(updatedHtmlElements) as HTMLElement[];
@@ -516,7 +514,6 @@ const LayoutScreenHTML: FC<Props> = ({
       </div>
       <AddNewElementDialog
         open={addComponentDialogOpen}
-        subLayouts={subLayouts}
         siblingPath={newComponentPath}
         onConfirm={createComponent}
         onClose={() => setAddComponentDialogOpen(false)}

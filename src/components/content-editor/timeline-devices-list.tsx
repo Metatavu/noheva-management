@@ -4,7 +4,7 @@ import { List, ListItem } from "@mui/material";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * Interface representing component properties
@@ -31,7 +31,7 @@ const TimelineDevicesList: React.FC<Props> = ({
   classes
 }) => {
   const contentVersionSelected = selectedContentVersion?.id === contentVersion?.id;
-  const [ sortedDevices, setSortedDevices ] = useState<ExhibitionDevice[]>(devices);
+  const [sortedDevices, setSortedDevices] = useState<ExhibitionDevice[]>(devices);
 
   useEffect(() => {
     setSortedDevices([...devices].sort((a, b) => a.name.localeCompare(b.name)));
@@ -47,7 +47,7 @@ const TimelineDevicesList: React.FC<Props> = ({
             divider
             key={device.id}
             selected={deviceSelected && (!selectedContentVersion || contentVersionSelected)}
-            onClick={onClick && onClick(device, contentVersion)}
+            onClick={onClick?.(device, contentVersion)}
             className={classes.listItem}
           >
             {device.name || ""}

@@ -48,6 +48,12 @@ namespace HtmlResourceUtils {
     resources: ExhibitionPageResource[]
   ): ExhibitionPageResource[] => {
     let updatedResources = [...resources];
+    if (branch.type === HtmlComponentType.VIDEO) {
+      for (const child of branch.children) {
+        updatedResources = [...updateDefaultStyleResourcesOfTree(child, updatedResources)];
+      }
+      return updatedResources;
+    }
     const styleMap = HtmlComponentsUtils.parseStyles(branch.element);
     let hasBackgroundColorResource = false;
     let backgroundColorResourceValue = "";
@@ -58,7 +64,11 @@ namespace HtmlResourceUtils {
         backgroundColorResourceValue = value;
         hasBackgroundColorResource = checkStyleResource(value, resources);
       }
-      if (key === "background-image" && branch.type === HtmlComponentType.LAYOUT) {
+      if (
+        key === "background-image" &&
+        (branch.type === HtmlComponentType.LAYOUT ||
+          branch.type === HtmlComponentType.VIDEO_CONTROLS)
+      ) {
         backgroundImageResourceValue = value;
         hasBackgroundImageResource = checkStyleResource(value, resources);
       }
@@ -80,7 +90,7 @@ namespace HtmlResourceUtils {
         id: uuid(),
         data: backgroundImageResourceValue.startsWith("@resources/")
           ? "none"
-          : backgroundColorResourceValue || "none",
+          : backgroundImageResourceValue || "none",
         mode: PageResourceMode.Static,
         type: ExhibitionPageResourceType.Image
       };
@@ -132,6 +142,12 @@ namespace HtmlResourceUtils {
     return resources;
   };
 
+  /**
+   * Returns the default style resources for an element
+   *
+   * @param element element
+   * @returns default style resources
+   */
   export const getDefaultStyleResourcesForElement = (
     element: HTMLElement
   ): ExhibitionPageResource[] => {
@@ -153,11 +169,38 @@ namespace HtmlResourceUtils {
     return resources;
   };
 
+  /**
+   * Recursively gets the default style resources for a component
+   *
+   * @param component component
+   * @param defaultStyleResources default style resources
+   * @returns default style resources
+   */
+  const recursivelyGetDefaultStyleResourcesForComponent = (
+    component: TreeObject,
+    defaultStyleResources: ExhibitionPageResource[] = []
+  ): ExhibitionPageResource[] => {
+    const componentDefaultStyleResources = getDefaultStyleResourcesForElement(component.element);
+    let defaultResources = [...defaultStyleResources, ...componentDefaultStyleResources];
+
+    for (const child of component.children) {
+      defaultResources = recursivelyGetDefaultStyleResourcesForComponent(child, defaultResources);
+    }
+
+    return defaultResources;
+  };
+
+  /**
+   * Returns the default resources for a component
+   *
+   * @param component component
+   * @returns default resources
+   */
   export const getDefaultResourcesForComponent = (
     component: TreeObject
   ): ExhibitionPageResource[] => {
     const { element } = component;
-    const defaultStyleResources = getDefaultStyleResourcesForElement(element);
+    const defaultStyleResources = recursivelyGetDefaultStyleResourcesForComponent(component);
     const resourceIds = extractResourceIds(element.outerHTML).filter(
       (id) => !defaultStyleResources.find((resource) => resource.id === id)
     );
@@ -294,7 +337,8 @@ namespace HtmlResourceUtils {
       [HtmlComponentType.TABS]: ExhibitionPageResourceType.Text,
       [HtmlComponentType.TAB]: ExhibitionPageResourceType.Text,
       [HtmlComponentType.LAYOUT]: ExhibitionPageResourceType.Image,
-      [HtmlComponentType.IMAGE_BUTTON]: ExhibitionPageResourceType.Image
+      [HtmlComponentType.IMAGE_BUTTON]: ExhibitionPageResourceType.Image,
+      [HtmlComponentType.VIDEO_CONTROLS]: ExhibitionPageResourceType.Image
     })[type];
 
   /**

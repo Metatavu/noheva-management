@@ -514,7 +514,7 @@
       "elementName": "Elementin nimi",
       "proportions": "Mittasuhteet",
       "backgroundImage": "Taustakuva",
-      "noPercentageDimensionsTooltip": "{0}-elementti tukee vain pikselikokoa",
+      "proportionSetToAuto": "{0} on asetettu automaattiseksi",
       "width": "Leveys",
       "height": "Korkeus",
       "elevation": "Varjostus",
@@ -563,7 +563,8 @@
       "fontColor": "Fontin väri",
       "defaultResource": "Oletusteksti",
       "font": "Fontti",
-      "textAlign": "Tekstin tasaus"
+      "textAlign": "Tekstin tasaus",
+      "letterSpacing": "Kirjasinväli"
     },
     "buttonProperties": {
       "fontColor": "Fontin väri",
@@ -579,8 +580,11 @@
       "controls": "Näytä allintapainikkeet",
       "defaultResource": "Oletusvideo"
     },
+    "videoControlsChildProperties": {
+      "startsVideo": "Käynnistää videon"
+    },
     "preview": {
-      "showElementBorders": "Näytä elementtien reunat"
+      "showElementBorders": "Näytä valitun elementin reunat"
     }
   },
   "layoutEditor": {

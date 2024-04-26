@@ -78,9 +78,6 @@ const GroupedInputsWithLock = ({ type, onChange, styles }: Props) => {
             <TextField
               value={(parseInt(styles[name] || styles[type]) || "0").toString()}
               name={name}
-              inputProps={{
-                pattern: "[0-9]"
-              }}
               InputProps={{
                 sx: {
                   "& .MuiInputBase-input": {

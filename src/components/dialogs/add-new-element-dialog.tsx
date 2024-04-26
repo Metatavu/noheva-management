@@ -1,4 +1,3 @@
-import { SubLayout } from "../../generated/client";
 import strings from "../../localization/strings";
 import theme from "../../styles/theme";
 import { HtmlComponentType } from "../../types";
@@ -13,7 +12,6 @@ import { ChangeEvent, useState } from "react";
  */
 interface Props {
   open: boolean;
-  subLayouts: SubLayout[];
   siblingPath?: string;
   onConfirm: (componentData: string, siblingPath: string) => void;
   onClose: () => void;
