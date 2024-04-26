@@ -66,8 +66,7 @@ namespace HtmlResourceUtils {
       }
       if (
         key === "background-image" &&
-        (branch.type === HtmlComponentType.LAYOUT ||
-          branch.type === HtmlComponentType.VIDEO_CONTROLS)
+        HtmlComponentsUtils.HTML_COMPONENTS_WITH_BACKGROUND_IMAGE.includes(branch.type)
       ) {
         backgroundImageResourceValue = value;
         hasBackgroundImageResource = checkStyleResource(value, resources);
@@ -85,7 +84,10 @@ namespace HtmlResourceUtils {
       updatedResources = [...updatedResources, backgroundColorResource];
     }
 
-    if (!hasBackgroundImageResource) {
+    if (
+      !hasBackgroundImageResource &&
+      HtmlComponentsUtils.HTML_COMPONENTS_WITH_BACKGROUND_IMAGE.includes(branch.type)
+    ) {
       const backgroundImageResource: ExhibitionPageResource = {
         id: uuid(),
         data: backgroundImageResourceValue.startsWith("@resources/")

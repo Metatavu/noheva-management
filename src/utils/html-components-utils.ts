@@ -355,6 +355,14 @@ namespace HtmlComponentsUtils {
     HtmlComponentType.LAYOUT,
     HtmlComponentType.VIDEO_CONTROLS
   ];
+
+  /**
+   * Components that can have background images
+   */
+  export const HTML_COMPONENTS_WITH_BACKGROUND_IMAGE = [
+    HtmlComponentType.LAYOUT,
+    HtmlComponentType.VIDEO_CONTROLS
+  ];
 }
 
 export default HtmlComponentsUtils;
