@@ -19,8 +19,8 @@ import { ChangeEvent } from "react";
  */
 interface Props {
   component: TreeObject;
-  updateComponent: (updatedComponent: TreeObject) => void;
   pageLayout: PageLayout;
+  updateComponent: (updatedComponent: TreeObject) => void;
   setPageLayout: (foundLayout: PageLayout) => void;
 }
 
@@ -29,8 +29,8 @@ interface Props {
  */
 const ImageButtonComponentProperties = ({
   component,
-  updateComponent,
   pageLayout,
+  updateComponent,
   setPageLayout
 }: Props) => {
   /**

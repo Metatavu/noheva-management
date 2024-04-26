@@ -96,6 +96,8 @@ namespace GenericUtils {
       alpha = 0
     } = parse(hexColor);
 
+    if (r === undefined || g === undefined || b === undefined) return undefined;
+
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   };
 }

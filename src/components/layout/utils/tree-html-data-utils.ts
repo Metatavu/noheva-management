@@ -140,8 +140,15 @@ export const treeObjectToHtmlElement = (treeObject: TreeObject): HTMLElement => 
 
   switch (treeObject.type) {
     case HtmlComponentType.LAYOUT:
+    case HtmlComponentType.VIDEO_CONTROLS:
       element.replaceChildren();
       break;
+    case HtmlComponentType.VIDEO: {
+      const videoElement = element.getElementsByTagName("video")[0];
+      element.replaceChildren();
+      element.appendChild(videoElement);
+      break;
+    }
   }
 
   if (treeObject.children) {
@@ -321,7 +328,8 @@ export const createTreeObject = (element: Element, basePath?: string): TreeObjec
 export const CONTAINER_ELEMENTS = [
   HtmlComponentType.LAYOUT,
   HtmlComponentType.TAB,
-  HtmlComponentType.TABS
+  HtmlComponentType.TABS,
+  HtmlComponentType.VIDEO_CONTROLS
 ];
 
 /**
@@ -345,13 +353,17 @@ export const wrapHtmlLayout = (bodyContent: string) => `<!DOCTYPE html>
           pointer-events: none;
           height: 100vh;
           overflow: hidden;
+          user-select: none;
+          -webkit-user-select: none;
         }
         h1, h2, h3, h4, h5, h6 {
           font-family: 'Larken-Medium';
+          margin: 0;
         }
         p, button {
           font-family: 'Source-Sans-Pro-Regular';
           border: none;
+          margin: 0;
         }
       </style>
     </head>

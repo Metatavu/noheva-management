@@ -301,7 +301,8 @@ export enum HtmlComponentType {
   TABS = "tabs",
   TAB = "tab",
   VIDEO = "video",
-  IMAGE_BUTTON = "image-button"
+  IMAGE_BUTTON = "image-button",
+  VIDEO_CONTROLS = "video-controls"
 }
 
 /**
@@ -372,6 +373,9 @@ export interface NavigationButton {
   postfix: string;
   label: string;
 }
+
+export type ComponentProportionType = "%" | "px" | "auto";
+export type ComponentProportionName = "width" | "height";
 
 // Required for Leaflet to work.
 // Older version of Leaflet declares it as global variable but newer version no longer does

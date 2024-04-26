@@ -56,11 +56,12 @@ const GenericComponentProperties = ({
   const onPropertyChange = (name: string, value: string) => {
     let { element } = component;
     const dimensionAttributes = ["width", "height"];
-    const { tagName } = component.element;
-    if (tagName.toLowerCase() === HtmlComponentType.VIDEO && dimensionAttributes.includes(name)) {
-      element = HtmlComponentsUtils.handleAttributeChange(element, name, value);
-    } else {
-      element = HtmlComponentsUtils.handleStyleAttributeChange(element, name, value);
+    const dataComponentType = element.attributes.getNamedItem("data-component-type")?.value;
+    element = HtmlComponentsUtils.handleStyleAttributeChange(element, name, value);
+
+    if (dataComponentType === HtmlComponentType.VIDEO && dimensionAttributes.includes(name)) {
+      const videoChild = element.getElementsByTagName("video")[0];
+      HtmlComponentsUtils.handleAttributeChange(videoChild, name, value.replace(/(px)|%/g, ""));
     }
     updateComponent({ ...component, element: element });
   };
@@ -151,11 +152,11 @@ const GenericComponentProperties = ({
         .getNamedItem("width")
         ?.value.replace(/(px)|%/g, "");
       if (!width) return;
-      return parseInt(width).toString();
+      return parseInt(width);
     }
     const width = styles["width"]?.replace(/(px)|%/g, "");
     if (!width) return;
-    return parseInt(width).toString();
+    return parseInt(width) || undefined;
   };
 
   const getElementHeight = () => {
@@ -167,11 +168,11 @@ const GenericComponentProperties = ({
         .getNamedItem("height")
         ?.value.replace(/(px)|%/g, "");
       if (!height) return;
-      return parseInt(height).toString();
+      return parseInt(height);
     }
     const height = styles["height"]?.replace(/(px)|%/g, "");
     if (!height) return;
-    return parseInt(height).toString();
+    return parseInt(height) || undefined;
   };
   /**
    * Event handler for name change events

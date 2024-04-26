@@ -38,7 +38,15 @@ const VideoComponentProperties = ({
    */
   const getVideoResourcePath = () => {
     const { element } = component;
-    return element.getElementsByTagName("source")[0].getAttribute("src") || "";
+    const videoElement = element.getElementsByTagName("video")[0];
+
+    if (!videoElement) return "";
+
+    const sourceElement = videoElement.getElementsByTagName("source")[0];
+
+    if (!sourceElement) return "";
+
+    return sourceElement.getAttribute("src") || "";
   };
 
   /**
@@ -49,6 +57,11 @@ const VideoComponentProperties = ({
   const getVideo = () => {
     return HtmlResourceUtils.getResourceData(pageLayout.defaultResources, getVideoResourcePath());
   };
+
+  /**
+   * Returns whether the video element has loop enabled
+   */
+  const getVideoLoop = () => getVideoElement().loop;
 
   /**
    * Event handler for default resource change event
@@ -77,60 +90,26 @@ const VideoComponentProperties = ({
   };
 
   /**
-   * Event handler for attribute change event
+   * Returns the HTML video element
    *
-   * @param event event
+   * @returns HTML video element
    */
-  const handleAttributeChange = ({ target: { checked, name } }: ChangeEvent<HTMLInputElement>) => {
-    const element = component.element as HTMLVideoElement;
-    switch (name) {
-      case "controls":
-        element.controls = checked;
-        break;
-      case "loop":
-        element.loop = checked;
-        break;
-      case "autoplay":
-        element.autoplay = checked;
-    }
-
-    updateComponent({
-      ...component,
-      element: element
-    });
+  const getVideoElement = () => {
+    const { element } = component;
+    return element.getElementsByTagName("video")[0];
   };
 
   /**
-   * Checks whether component has given attribute or not
-   *
-   * @param attribute attribute
-   * @returns whether component has given attribute or not
+   * Event handler for toggling video looping
    */
-  const checkIsAttributePresent = (attribute: string) => {
-    return component.element.hasAttribute(attribute);
+  const handleToggleVideoLooping = ({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
+    const { element } = component;
+    const videoElement = getVideoElement();
+    if (!videoElement) return;
+    videoElement.loop = checked;
+    videoElement.autoplay = checked;
+    updateComponent({ ...component, element: element });
   };
-
-  /**
-   * Renders checkbox with given label and name
-   *
-   * @param label label
-   * @param name name
-   */
-  const renderCheckbox = (label: string, name: string) => (
-    <PropertyBox>
-      <FormControlLabel
-        label={label}
-        control={
-          <Checkbox
-            color="secondary"
-            name={name}
-            value={checkIsAttributePresent(name)}
-            onChange={handleAttributeChange}
-          />
-        }
-      />
-    </PropertyBox>
-  );
 
   return (
     <Stack>
@@ -144,11 +123,19 @@ const VideoComponentProperties = ({
         />
       </PropertyBox>
       <Divider sx={{ color: "#F5F5F5" }} />
-      {renderCheckbox("Ohjausnäppäimet", "controls")}
-      <Divider sx={{ color: "#F5F5F5" }} />
-      {renderCheckbox("Jatkuva toisto", "loop")}
-      <Divider sx={{ color: "#F5F5F5" }} />
-      {renderCheckbox("Automaattinen toisto", "autoplay")}
+      <PropertyBox>
+        <FormControlLabel
+          label={strings.layoutEditorV2.videoProperties.loop}
+          control={
+            <Checkbox
+              name="loop"
+              color="secondary"
+              checked={getVideoLoop()}
+              onChange={handleToggleVideoLooping}
+            />
+          }
+        />
+      </PropertyBox>
     </Stack>
   );
 };
