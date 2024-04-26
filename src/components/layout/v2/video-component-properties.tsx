@@ -89,6 +89,11 @@ const VideoComponentProperties = ({
     });
   };
 
+  /**
+   * Returns the HTML video element
+   *
+   * @returns HTML video element
+   */
   const getVideoElement = () => {
     const { element } = component;
     return element.getElementsByTagName("video")[0];
