@@ -92,6 +92,11 @@ export const SOURCE_NODE_NAME = "SOURCE";
 export const IMG_NODE_NAME = "IMG";
 
 /**
+ * Video node name constant
+ */
+export const VIDEO_NODE_NAME = "VIDEO";
+
+/**
  * Allowed child node names for source node
  */
-export const ALLOWED_CHILD_NODE_NAMES = [SOURCE_NODE_NAME, IMG_NODE_NAME];
+export const ALLOWED_CHILD_NODE_NAMES = [VIDEO_NODE_NAME, SOURCE_NODE_NAME, IMG_NODE_NAME];
