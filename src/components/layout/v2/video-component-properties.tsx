@@ -64,6 +64,11 @@ const VideoComponentProperties = ({
   const getVideoLoop = () => getVideoElement().loop;
 
   /**
+   * Returns whether the video element has autoplay enabled
+   */
+  const getVideoAutoplay = () => getVideoElement().autoplay;
+
+  /**
    * Event handler for default resource change event
    *
    * @param event event
@@ -100,14 +105,22 @@ const VideoComponentProperties = ({
   };
 
   /**
-   * Event handler for toggling video looping
+   * Event handler for toggling video attributes
    */
-  const handleToggleVideoLooping = ({ target: { checked } }: ChangeEvent<HTMLInputElement>) => {
+  const handleToggleVideoAttribute = ({
+    target: { checked, name }
+  }: ChangeEvent<HTMLInputElement>) => {
     const { element } = component;
     const videoElement = getVideoElement();
     if (!videoElement) return;
-    videoElement.loop = checked;
-    videoElement.autoplay = checked;
+    switch (name) {
+      case "loop":
+        videoElement.loop = checked;
+        break;
+      case "autoplay":
+        videoElement.autoplay = checked;
+        break;
+    }
     updateComponent({ ...component, element: element });
   };
 
@@ -131,7 +144,18 @@ const VideoComponentProperties = ({
               name="loop"
               color="secondary"
               checked={getVideoLoop()}
-              onChange={handleToggleVideoLooping}
+              onChange={handleToggleVideoAttribute}
+            />
+          }
+        />
+        <FormControlLabel
+          label={strings.layoutEditorV2.videoProperties.autoPlay}
+          control={
+            <Checkbox
+              name="autoplay"
+              color="secondary"
+              checked={getVideoAutoplay()}
+              onChange={handleToggleVideoAttribute}
             />
           }
         />
