@@ -318,7 +318,7 @@ namespace HtmlResourceUtils {
         childNode.nodeType === TEXT_NODE_TYPE ||
         ALLOWED_CHILD_NODE_NAMES.includes(childNode.nodeName)
       ) {
-        elementClone.appendChild(childNode.cloneNode());
+        elementClone.appendChild(childNode.cloneNode(true));
       }
     }
 
