@@ -92,7 +92,10 @@ const TextComponentProperties = ({
    * @returns text
    */
   const getText = () => {
-    return HtmlResourceUtils.getResourceData(pageLayout.defaultResources, getTextResourcePath());
+    return HtmlResourceUtils.getResourceData(
+      pageLayout.defaultResources,
+      getTextResourcePath()
+    )?.replaceAll("<br/>", "\n");
   };
 
   /**
@@ -132,7 +135,7 @@ const TextComponentProperties = ({
       ...(pageLayout.defaultResources || []).filter((resource) => resource.id !== resourceId),
       {
         id: resourceId,
-        data: value,
+        data: value.split("\n").join("<br/>"),
         type: ExhibitionPageResourceType.Text,
         mode: PageResourceMode.Static
       }
@@ -373,6 +376,7 @@ const TextComponentProperties = ({
       <PropertyBox>
         <PanelSubtitle subtitle={strings.layoutEditorV2.textProperties.defaultResource} />
         <TextField
+          multiline
           value={getText()}
           onChange={handleDefaultResourceChange}
           placeholder={strings.layoutEditorV2.textProperties.defaultResource}
