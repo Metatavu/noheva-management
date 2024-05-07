@@ -170,7 +170,7 @@ class ResourceEditor extends React.Component<Props, {}> {
             className={classes.field}
             label={strings.exhibition.resources.textView.properties.text}
             name="data"
-            value={resource.data}
+            value={resource.data.replaceAll("<br/>", "\n")}
             onChange={this.onResourceDataChange}
           />
         );
@@ -244,8 +244,8 @@ class ResourceEditor extends React.Component<Props, {}> {
    *
    * @param event React change event
    */
-  private onResourceDataChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.updateResourceData(event.target.value);
+  private onResourceDataChange = ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    this.updateResourceData(value.split("\n").join("<br/>"));
   };
 
   /**
