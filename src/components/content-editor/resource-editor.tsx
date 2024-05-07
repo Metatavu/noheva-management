@@ -8,22 +8,21 @@ import {
   VisitorVariable
 } from "../../generated/client";
 import strings from "../../localization/strings";
-import { ReduxActions, ReduxState } from "../../store";
+import { ReduxState } from "../../store";
 import styles from "../../styles/components/content-editor/resource-editor";
 import { AccessToken, TreeObject } from "../../types";
-import HtmlResourceUtils from "../../utils/html-resource-utils";
 import ResourceUtils from "../../utils/resource-utils";
 import ColorPicker from "../layout/v2/color-picker";
 import MediaLibrary from "../right-panel-editors/media-library";
 import { resourceModes } from "./constants";
 import DynamicResourceEditor from "./dynamic-resource-editor";
-import { MenuItem, SelectChangeEvent, TextField } from "@mui/material";
+import { MenuItem, TextField } from "@mui/material";
 import { WithStyles } from "@mui/styles";
 import withStyles from "@mui/styles/withStyles";
 import produce from "immer";
+import { ChangeEvent } from "react";
 import * as React from "react";
 import { connect } from "react-redux";
-import { Dispatch } from "redux";
 
 /**
  * Interface representing component properties
@@ -155,7 +154,7 @@ class ResourceEditor extends React.Component<Props, {}> {
         return (
           <MediaLibrary
             accessToken={accessToken}
-            mediaType={ResourceUtils.getResourceMediaType(resource.type)!}
+            mediaType={ResourceUtils.getResourceMediaType(resource.type)}
             currentUrl={resource.data}
             onUrlChange={this.updateResourceData}
             setError={(error: Error) => this.setState({ error })}
@@ -194,7 +193,7 @@ class ResourceEditor extends React.Component<Props, {}> {
    * @param event React change event
    * @param child selected child
    */
-  private onModeChange = (event: SelectChangeEvent<string>, child: React.ReactNode) => {
+  private onModeChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { resource, component, onUpdate } = this.props;
     const mode = event.target.value as PageResourceMode;
 
@@ -205,13 +204,15 @@ class ResourceEditor extends React.Component<Props, {}> {
     onUpdate(
       produce(resource, (draft) => {
         switch (mode || PageResourceMode.Static) {
-          case PageResourceMode.Dynamic:
+          case PageResourceMode.Dynamic: {
             const dynamicData = this.createDynamicResourceDataStructure();
             draft.data = JSON.stringify(dynamicData);
             break;
-          default:
+          }
+          default: {
             draft.data = "";
             break;
+          }
         }
 
         draft.mode = mode;
@@ -263,12 +264,12 @@ class ResourceEditor extends React.Component<Props, {}> {
    *
    * @param value value as string
    */
-  private updateResourceData = (value: string) => {
+  private updateResourceData = (value?: string) => {
     const { resource, component, onUpdate } = this.props;
 
     onUpdate(
       produce(resource, (draft) => {
-        draft.data = value;
+        draft.data = value ?? "";
       }),
       component
     );
@@ -286,13 +287,4 @@ function mapStateToProps(state: ReduxState) {
   };
 }
 
-/**
- * Redux mapper for mapping component dispatches
- *
- * @param dispatch dispatch method
- */
-function mapDispatchToProps(dispatch: Dispatch<ReduxActions>) {
-  return {};
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ResourceEditor));
+export default withStyles(styles)(connect(mapStateToProps)(ResourceEditor));
