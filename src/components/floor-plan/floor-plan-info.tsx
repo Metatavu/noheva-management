@@ -289,7 +289,9 @@ class FloorPlanInfo extends React.Component<Props, State> {
             }}
           >
             <MenuItem>{strings.generic.noSelection}</MenuItem>
-            {devices.map(this.renderDeviceMenuItem)}
+            {devices
+              .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""))
+              .map(this.renderDeviceMenuItem)}
           </TextField>
           <Button
             variant="contained"
