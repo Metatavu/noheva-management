@@ -616,12 +616,12 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
         selectedDeviceModel,
         true
       );
+      const isFormInValid = !updatedDevice.manufacturer && !updatedDevice.model;
+
       this.setState({
         selectedDeviceModel: updatedDevice,
         deviceData: updatedDeviceData,
-        formError:
-          JSON.stringify(this.translateDeviceToDeviceData(updatedDevice)) !==
-          JSON.stringify(updatedDeviceData)
+        formError: isFormInValid
       });
     } else {
       const updatedDeviceData = {
@@ -633,12 +633,11 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
         selectedDeviceModel,
         true
       );
+      const isFormInValid = !updatedDevice.manufacturer && !updatedDevice.model;
       this.setState({
         selectedDeviceModel: updatedDevice,
         deviceData: updatedDeviceData,
-        formError:
-          JSON.stringify(this.translateDeviceToDeviceData(updatedDevice)) !==
-          JSON.stringify(updatedDeviceData)
+        formError: isFormInValid
       });
     }
   };
@@ -903,18 +902,18 @@ export class DeviceModelsScreen extends React.Component<Props, State> {
     const { displayMetrics, dimensions, manufacturer, model, capabilities } = deviceData;
 
     const deviceDimensions: DeviceModelDimensions = {
-      deviceWidth: Number(dimensions.deviceWidth),
-      deviceHeight: Number(dimensions.deviceHeight),
-      deviceDepth: Number(dimensions.deviceDepth),
-      screenWidth: Number(dimensions.screenWidth),
-      screenHeight: Number(dimensions.screenHeight)
+      deviceWidth: parseInt(dimensions.deviceWidth),
+      deviceHeight: parseInt(dimensions.deviceHeight),
+      deviceDepth: parseInt(dimensions.deviceDepth),
+      screenWidth: parseInt(dimensions.screenWidth),
+      screenHeight: parseInt(dimensions.screenHeight)
     };
     const deviceDisplayMetrics: DeviceModelDisplayMetrics = {
-      density: Number(displayMetrics.density),
-      widthPixels: Number(displayMetrics.widthPixels),
-      heightPixels: Number(displayMetrics.heightPixels),
-      xdpi: Number(displayMetrics.xdpi),
-      ydpi: Number(displayMetrics.ydpi)
+      density: displayMetrics.density ? parseInt(displayMetrics.density) : undefined,
+      widthPixels: parseInt(displayMetrics.widthPixels),
+      heightPixels: parseInt(displayMetrics.heightPixels),
+      xdpi: parseInt(displayMetrics.xdpi),
+      ydpi: parseInt(displayMetrics.ydpi)
     };
 
     return {
