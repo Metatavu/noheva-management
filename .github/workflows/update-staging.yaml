@@ -1,0 +1,71 @@
+name: Update staging UI
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  GITHUB_REPOSITORY: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    environment: develop
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout Main Repository
+        uses: actions/checkout@v4
+      - name: Resolve docker image name
+        id: image_name
+        run: |
+          echo "IMAGE_NAME=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ steps.image_name.outputs.IMAGE_NAME }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Install dependencies
+        run: npm install
+      - name: Create production build
+        env:
+          VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+          VAULT_PATH: ${{ secrets.VAULT_PATH }}
+        run: npm run build
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          file: Dockerfile
+          tags: ${{ steps.meta.outputs.tags }},${{ env.REGISTRY }}/${{ steps.image_name.outputs.IMAGE_NAME }}:develop
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Import Secrets
+        id: import-secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+              ${{ secrets.VAULT_PATH }} CHARTS_UPDATE_PAT | CHARTS_UPDATE_PAT ;
+      - name: Install staging charts
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          repository: Metatavu/finnlines-crew-portal-charts
+          event-type: update-staging
+          token: ${{ env.CHARTS_UPDATE_PAT }}
