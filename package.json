@@ -33,7 +33,7 @@
     "immer": "9.0.19",
     "js-beautify": "1.14.7",
     "jsonlint-mod": "1.7.6",
-    "keycloak-js": "21.0.1",
+    "keycloak-js": "26.0.8",
     "leaflet": "1.6.0",
     "leaflet-draw": "1.0.4",
     "leaflet-freedraw": "2.13.3",

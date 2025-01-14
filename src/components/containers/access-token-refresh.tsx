@@ -41,7 +41,7 @@ class AccessTokenRefresh extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.keycloak = Keycloak({
+    this.keycloak = new Keycloak({
       url: config.keycloakConfig.url,
       realm: config.keycloakConfig.realm,
       clientId: config.keycloakConfig.clientId
@@ -121,7 +121,7 @@ class AccessTokenRefresh extends React.Component<Props, State> {
    */
   private keycloakInit = () => {
     return new Promise((resolve) => {
-      this.keycloak.init({ onLoad: "login-required", checkLoginIframe: false }).success(resolve);
+      this.keycloak.init({ onLoad: "login-required", checkLoginIframe: false }).then(resolve);
     });
   };
 }
