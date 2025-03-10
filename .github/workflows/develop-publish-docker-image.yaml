@@ -1,4 +1,4 @@
-name: Update staging UI
+name: Publish develop docker image
 
 on:
   push:
