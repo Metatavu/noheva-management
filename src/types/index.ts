@@ -65,15 +65,18 @@ export type DeviceModelDataSubPropertyKey =
  * Enum for physical event trigger button values
  */
 export enum PhysicalButton {
-  BUTTON_1 = "F1",
-  BUTTON_2 = "F2",
-  BUTTON_3 = "F3",
-  BUTTON_4 = "F4",
-  BUTTON_5 = "F5",
-  BUTTON_6 = "F6",
-  BUTTON_7 = "F7",
-  BUTTON_8 = "F8",
-  BUTTON_9 = "F9"
+  BUTTON_F1 = "F1",
+  BUTTON_F2 = "F2",
+  BUTTON_F3 = "F3",
+  BUTTON_F4 = "F4",
+  BUTTON_F5 = "F5",
+  BUTTON_F6 = "F6",
+  BUTTON_F7 = "F7",
+  BUTTON_F8 = "F8",
+  BUTTON_F9 = "F9",
+  BUTTON_BUTTON_A = "BUTTON_A",
+  BUTTON_BUTTON_X = "BUTTON_X",
+  BUTTON_BUTTON_Y = "BUTTON_Y"
 }
 
 /**
