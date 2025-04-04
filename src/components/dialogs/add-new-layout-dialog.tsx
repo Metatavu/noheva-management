@@ -1,4 +1,4 @@
-import { DeviceModel } from "../../generated/client";
+import { DeviceModel, DeviceType, LayoutType, LayoutTypeFromJSON } from "../../generated/client";
 import strings from "../../localization/strings";
 import theme from "../../styles/theme";
 import {
@@ -24,7 +24,7 @@ interface Props {
   open: boolean;
   deviceModels: DeviceModel[];
   onClose: () => void;
-  onCreateNewLayout: (name: string, deviceModelId: string) => Promise<void>;
+  onCreateNewLayout: (name: string, deviceModelId: string, layoutType: LayoutType) => Promise<void>;
 }
 
 /**
@@ -40,7 +40,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
 }) => {
   const [newLayoutName, setNewLayoutName] = useState<string>();
   const [selectedDeviceModelId, setSelectedDeviceModelId] = useState<string>();
-
+  const [newLayoutType, setNewLayoutType] = useState<LayoutType>(LayoutType.Html);
   const isValid = !!newLayoutName && !!selectedDeviceModelId;
 
   /**
@@ -54,6 +54,12 @@ const AddNewLayoutDialog: React.FC<Props> = ({
    */
   const onDeviceModelChange = ({ target: { value } }: SelectChangeEvent) =>
     setSelectedDeviceModelId(value);
+
+  /**
+   * Handler for New Layout Type Select change event
+   */
+  const onLayoutTypeChange = ({ target: { value } }: SelectChangeEvent) =>
+    setNewLayoutType(LayoutTypeFromJSON(value));
 
   /**
    * Render device model select
@@ -81,6 +87,33 @@ const AddNewLayoutDialog: React.FC<Props> = ({
     </FormControl>
   );
 
+    /**
+   * Render layout type select
+   */
+    const renderLayoutTypeSelect = () => (
+      <FormControl variant="outlined">
+        <InputLabel id="layoutType-label" style={{ marginTop: theme.spacing(2) }}>
+          {strings.layout.settings.layoutType}
+        </InputLabel>
+        <Select
+          fullWidth
+          style={{ marginTop: theme.spacing(2) }}
+          label={strings.layout.settings.layoutType}
+          labelId="layoutType-label"
+          name="layoutType"
+          value={newLayoutType}
+          onChange={onLayoutTypeChange}
+        >
+          <MenuItem key={LayoutType.Html} value={LayoutType.Html}>
+            {strings.layout.settings.layoutTypeHtml}
+          </MenuItem>
+          <MenuItem key={LayoutType.Android} value={LayoutType.Android}>
+            {strings.layout.settings.layoutTypeAndroid}
+          </MenuItem>
+        </Select>
+      </FormControl>
+    );
+
   return (
     <Dialog
       open={open}
@@ -100,6 +133,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
             onChange={onNewLayoutNameChange}
           />
           {renderDeviceModelSelect()}
+          {renderLayoutTypeSelect()}
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -110,7 +144,7 @@ const AddNewLayoutDialog: React.FC<Props> = ({
           disableElevation
           variant="contained"
           disabled={!isValid}
-          onClick={() => isValid && onCreateNewLayout(newLayoutName, selectedDeviceModelId)}
+          onClick={() => isValid && onCreateNewLayout(newLayoutName, selectedDeviceModelId, newLayoutType)}
           color="secondary"
           autoFocus
         >

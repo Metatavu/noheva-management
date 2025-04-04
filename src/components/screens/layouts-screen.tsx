@@ -10,6 +10,8 @@ import {
   LayoutType,
   PageLayout,
   PageLayoutViewHtml,
+  PageLayoutWidgetType,
+  PageLayoutViewPropertyType,
   PageResourceMode,
   ScreenOrientation,
   SubLayout
@@ -359,30 +361,58 @@ class LayoutsScreen extends Component<Props, State> {
   /**
    * Creates new layout
    *
-   * @param layout layout
+   * @param name name
+   * @param deviceModelId deviceModelId
+   * @param layoutType layoutType
    */
-  private createNewLayout = async (name: string, deviceModelId: string) => {
+  private createNewLayout = async (name: string, deviceModelId: string, layoutType: LayoutType) => {
     const { accessToken, setLayouts, layouts } = this.props;
 
     if (!name || !deviceModelId) {
       return;
     }
 
-    const layoutHtml = HtmlComponentsUtils.getSerializedHtmlElement(HtmlComponentType.LAYOUT);
-    const tempElement = document.createElement("div");
-    tempElement.innerHTML = layoutHtml;
-    const defaultStyleResources = HtmlResourceUtils.getDefaultStyleResourcesForElement(
-      tempElement.firstChild as HTMLElement
-    );
+    let data = null;
+    let defaultStyleResources: ExhibitionPageResource[] = [];
+    
+    if (layoutType == LayoutType.Html){
+      const layoutHtml = HtmlComponentsUtils.getSerializedHtmlElement(HtmlComponentType.LAYOUT);
+      const tempElement = document.createElement("div");
+      tempElement.innerHTML = layoutHtml??"";
+      defaultStyleResources = HtmlResourceUtils.getDefaultStyleResourcesForElement(
+        tempElement.firstChild as HTMLElement
+      );
+      data = {
+        html: layoutHtml
+      }
+    } else {
+      data = { 
+        id: uuid(),
+        name: "",
+        widget: PageLayoutWidgetType.FrameLayout,
+        properties: [{
+          name: "layout_width",
+          value: "match_parent",
+          type: PageLayoutViewPropertyType.String
+        }, {
+          name: "layout_height",
+          value: "match_parent",
+          type: PageLayoutViewPropertyType.String
+        }, {
+          name: "background",
+          value: "#000000",
+          type: PageLayoutViewPropertyType.String
+        }],
+        children: []
+      }
+    };
 
     const pageLayout: PageLayout = {
       name: name,
       screenOrientation: ScreenOrientation.Landscape,
       modelId: deviceModelId,
-      layoutType: LayoutType.Html,
-      data: {
-        html: layoutHtml
-      },
+      layoutType: layoutType,
+      data: data,
       defaultResources: defaultStyleResources
     };
     const layoutsApi = Api.getPageLayoutsApi(accessToken);

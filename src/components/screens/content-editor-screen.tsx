@@ -4,6 +4,7 @@ import {
   ContentVersion,
   Device,
   DeviceModel,
+  DeviceType,
   Exhibition,
   ExhibitionDevice,
   ExhibitionPage,
@@ -1860,10 +1861,7 @@ class ContentEditorScreen extends React.Component<Props, State> {
       this.setState(
         produce((draft: State) => {
           const resourceHolder = ResourceUtils.getResourcesFromLayoutData(layoutData);
-
-          draft.selectedPage = selectedPage;
-          draft.selectedLayoutView = undefined;
-
+          const selectedPageResources = [...selectedPage.resources];
           resourceHolder.resources
             .filter(
               (layoutResource) =>
@@ -1872,8 +1870,10 @@ class ContentEditorScreen extends React.Component<Props, State> {
                 )
             )
             .forEach((missingLayoutResource) => {
-              selectedPage.resources.push(missingLayoutResource);
+              selectedPageResources.push(missingLayoutResource);
             });
+          draft.selectedPage = { ...selectedPage, resources: selectedPageResources };
+          draft.selectedLayoutView = undefined;
 
           const tempTriggers = [
             ...draft.selectedPage.eventTriggers
@@ -2003,32 +2003,37 @@ class ContentEditorScreen extends React.Component<Props, State> {
     const {
       layouts,
       selectedContentVersion,
-      selectedDevice,
-      exhibitionDevices: devices,
+      selectedDevice: selectedExhibitionDevice,
+      exhibitionDevices,
       pages,
-      timelineTabIndex
+      timelineTabIndex,
+      devices
     } = this.state;
 
-    if (!selectedDevice) {
+    if (!selectedExhibitionDevice) {
       return;
     }
 
-    const htmlLayouts = layouts.filter((layout) => layout.layoutType === LayoutType.Html);
+    const deviceId = selectedExhibitionDevice.deviceId;
+    const device = devices.find((device) => device.id === deviceId);
+    // TODO: Use exhibition ui device type when available
+    const allowedLayoutType = device?.deviceType === DeviceType.Custom ? LayoutType.Android : LayoutType.Html;
+    const allowedLayouts = layouts.filter((layout) => layout.layoutType === allowedLayoutType);
     const isIdlePage = timelineTabIndex === 0;
-    const defaultLayout = htmlLayouts[0];
-    const deviceId = selectedDevice.id;
+    const defaultLayout = allowedLayouts[0];
+    const exhibitionDeviceId = selectedExhibitionDevice.id;
 
-    if (!defaultLayout || !deviceId || !selectedContentVersion || !selectedContentVersion.id) {
+    if (!defaultLayout || !exhibitionDeviceId || !selectedContentVersion || !selectedContentVersion.id) {
       return;
     }
 
     const filteredPages = pages.filter(
-      (page) => page.deviceId === deviceId && page.contentVersionId === selectedContentVersion.id
+      (page) => page.deviceId === exhibitionDeviceId && page.contentVersionId === selectedContentVersion.id
     );
 
     const newPage: ExhibitionPage = {
       layoutId: defaultLayout.id!!,
-      deviceId: deviceId,
+      deviceId: exhibitionDeviceId,
       contentVersionId: selectedContentVersion.id,
       name: strings.exhibition.newPage,
       eventTriggers: [],
@@ -2054,24 +2059,24 @@ class ContentEditorScreen extends React.Component<Props, State> {
     );
 
     if (isIdlePage) {
-      const deviceIndex = devices.findIndex((device) => device.id === selectedDevice.id);
+      const exhibitionDeviceIndex = exhibitionDevices.findIndex((exhibitionDevice) => exhibitionDevice.id === selectedExhibitionDevice.id);
 
-      if (deviceIndex < 0) {
+      if (exhibitionDeviceIndex < 0) {
         return;
       }
 
       const updatedDevice = await exhibitionDevicesApi.updateExhibitionDevice({
         exhibitionId: exhibitionId,
-        deviceId: selectedDevice.id,
+        deviceId: selectedExhibitionDevice.id,
         exhibitionDevice: {
-          ...selectedDevice,
+          ...selectedExhibitionDevice,
           idlePageId: createdPage.id
         }
       });
 
       this.setState(
         produce((draft: State) => {
-          draft.exhibitionDevices[deviceIndex] = updatedDevice;
+          draft.exhibitionDevices[exhibitionDeviceIndex] = updatedDevice;
         })
       );
     }
