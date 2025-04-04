@@ -299,6 +299,8 @@ namespace HtmlResourceUtils {
           }
         );
       });
+    } else if (layout.layoutType === LayoutType.Android) {
+      return [];
     } else {
       throw new Error(`Unsupported layout type ${layout.layoutType}`);
     }

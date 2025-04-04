@@ -280,7 +280,10 @@
       "deviceModelId": "Laitemalli",
       "screenOrientation": "Näytön suunta",
       "portrait": "Pysty",
-      "landscape": "Vaaka"
+      "landscape": "Vaaka",
+      "layoutType": "Asettelun tyyppi",
+      "layoutTypeHtml": "Html asettelu",
+      "layoutTypeAndroid": "Android asettelu (Vanhentunut)"
     },
     "properties": {
       "title": "Ominaisuudet"
