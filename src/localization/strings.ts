@@ -286,6 +286,9 @@ export interface IStrings extends LocalizedStringsMethods {
       screenOrientation: string;
       portrait: string;
       landscape: string;
+      layoutType: string;
+      layoutTypeHtml: string;
+      layoutTypeAndroid: string;
     };
     properties: {
       title: string;

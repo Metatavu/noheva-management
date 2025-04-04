@@ -280,7 +280,10 @@
       "deviceModelId": "Device model",
       "screenOrientation": "Device orientation",
       "portrait": "Portrait",
-      "landscape": "Landscape"
+      "landscape": "Landscape",
+      "layoutType": "Layout type",
+      "layoutTypeHtml": "Html layout",
+      "layoutTypeAndroid": "Android layout (Deprecated)"
     },
     "properties": {
       "title": "properties"
