@@ -2006,21 +2006,15 @@ class ContentEditorScreen extends React.Component<Props, State> {
       selectedDevice: selectedExhibitionDevice,
       exhibitionDevices,
       pages,
-      timelineTabIndex,
-      devices
+      timelineTabIndex
     } = this.state;
 
     if (!selectedExhibitionDevice) {
       return;
     }
 
-    const deviceId = selectedExhibitionDevice.deviceId;
-    const device = devices.find((device) => device.id === deviceId);
-    // TODO: Use exhibition ui device type when available
-    const allowedLayoutType = device?.deviceType === DeviceType.Custom ? LayoutType.Android : LayoutType.Html;
-    const allowedLayouts = layouts.filter((layout) => layout.layoutType === allowedLayoutType);
     const isIdlePage = timelineTabIndex === 0;
-    const defaultLayout = allowedLayouts[0];
+    const defaultLayout = layouts[0];
     const exhibitionDeviceId = selectedExhibitionDevice.id;
 
     if (!defaultLayout || !exhibitionDeviceId || !selectedContentVersion || !selectedContentVersion.id) {
