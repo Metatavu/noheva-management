@@ -31,15 +31,18 @@ const CommonSettingsEditor: React.FC<Props> = ({
   onLayoutChange,
   onNameChange
 }) => {
-  const pageLayout = layouts.find((layout) => layout.id === pageData.layoutId);
 
   /**
    * Renders layout select
    */
   const renderLayoutSelect = () => {
     const layoutSelectItems = [...layouts]
-      .filter((layout) => pageLayout?.layoutType == layout.layoutType)
       .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => {
+        if (a.layoutType === LayoutType.Android && b.layoutType !== LayoutType.Android) return -1;
+        if (a.layoutType !== LayoutType.Android && b.layoutType === LayoutType.Android) return 1;
+        return 0;
+      })
       .map((layout) => (
         <MenuItem key={layout.id} value={layout.id}>
           {layout.name}
