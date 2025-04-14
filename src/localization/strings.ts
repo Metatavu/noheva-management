@@ -720,11 +720,12 @@ export interface IStrings extends LocalizedStringsMethods {
     language: string;
     rooms: string;
     room: string;
-    delete: {
-      deleteTitle: string;
-      deleteText: string;
-      contentTitle: string;
-    };
+    deleteDialog: {
+      title: string;
+      text: string;
+      pagesWarning: string;
+      confirmPagesRemoval: string;
+    },
     contentMaterials: string;
     nameAlreadyTaken: string;
     nameIsMandatory: string;
