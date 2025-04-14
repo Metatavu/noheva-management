@@ -207,7 +207,9 @@ function resolveResourceType(
     case "src":
       if (layoutView.widget === "ImageView") {
         return ExhibitionPageResourceType.Image;
-      }
+      } else if (layoutView.widget === "WebView") {
+        return ExhibitionPageResourceType.Text
+      } 
       return ExhibitionPageResourceType.Video;
     case "text":
       return ExhibitionPageResourceType.Text;
