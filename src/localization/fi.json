@@ -713,10 +713,11 @@
     "language": "Kieli",
     "rooms": "Näyttelykohteet",
     "room": "Näyttelykohde",
-    "delete": {
-      "deleteTitle": "Poista sisältökokonaisuus",
-      "deleteText": "Oletko varma että haluat poistaa tämän sisältökokonaisuuden?",
-      "contentTitle": "Poistaminen ei ole mahdollista! Sisältökokonaisuus on käytössä."
+    "deleteDialog": {
+      "title": "Poista sisältökokonaisuus",
+      "text": "Haluatko varmasti poistaa valitun sisältökokonaisuuden?",
+      "pagesWarning": "Sisältökokonaisuus sisältää sivuja. Poistaminen poistaa myös seuraavat sivut:",
+      "confirmPagesRemoval": "Poista myös sivut"
     },
     "contentMaterials": "Sisältökokonaisuudet",
     "nameAlreadyTaken": "Nimi on käytössä jo olemassa olevalla sisältökokonaisuudella",
