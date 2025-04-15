@@ -389,6 +389,7 @@ export const getInitializedPageLayoutViewByWidgetType = (
     case PageLayoutWidgetType.ImageView:
     case PageLayoutWidgetType.PlayerView:
     case PageLayoutWidgetType.MediaView:
+    case PageLayoutWidgetType.WebView:
       fillMediaProperties(layoutView);
       break;
     case PageLayoutWidgetType.MaterialTabLayout:

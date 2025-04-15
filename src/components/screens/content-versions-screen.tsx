@@ -26,17 +26,14 @@ import {
   AccessToken,
   ActionButton,
   BreadcrumbData,
-  ConfirmDialogData,
-  DeleteDataHolder,
   LanguageOptions,
   MultiLingualContentVersion
 } from "../../types";
-import DeleteUtils from "../../utils/delete-utils";
 import CardItem from "../generic/card/card-item";
 import CardList from "../generic/card/card-list";
-import ConfirmDialog from "../generic/confirm-dialog";
 import BasicLayout from "../layouts/basic-layout";
 import ContentVersionEditDialog from "../content-versions/content-version-edit-dialog";
+import DeleteContentVersionDialog from "../dialogs/delete-content-version-dialog";
 
 /**
  * Component props
@@ -62,9 +59,10 @@ interface State {
   multiLingualContentVersions: MultiLingualContentVersion[];
   dialogOpen: boolean;
   deleteDialogOpen: boolean;
+  deleteMultiLingualContentVersion?: MultiLingualContentVersion;
+  deleteDependingExhibitionPages?: ExhibitionPage[];
   addNewContentVersion: boolean;
   visitorVariables?: VisitorVariable[];
-  confirmDialogData: ConfirmDialogData;
   selectedContentVersion?: ContentVersion;
 }
 
@@ -86,16 +84,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
       deviceGroups: [],
       dialogOpen: false,
       deleteDialogOpen: false,
-      addNewContentVersion: false,
-      confirmDialogData: {
-        title: strings.contentVersion.delete.deleteTitle,
-        text: strings.contentVersion.delete.deleteText,
-        cancelButtonText: strings.confirmDialog.cancel,
-        positiveButtonText: strings.confirmDialog.delete,
-        deletePossible: true,
-        onCancel: this.onCloseOrCancelClick,
-        onClose: this.onCloseOrCancelClick
-      }
+      addNewContentVersion: false
     };
   }
 
@@ -267,11 +256,25 @@ class ContentVersionsScreen extends React.Component<Props, State> {
    * Render content version confirmation dialog
    */
   private renderConfirmDeleteDialog = () => {
-    const { selectedContentVersion, deleteDialogOpen, confirmDialogData } = this.state;
+    const { 
+      deleteMultiLingualContentVersion, 
+      deleteDialogOpen, 
+      deleteDependingExhibitionPages
+    } = this.state;
 
-    if (selectedContentVersion) {
-      return <ConfirmDialog open={deleteDialogOpen} confirmDialogData={confirmDialogData} />;
+    if (!deleteMultiLingualContentVersion || !deleteDialogOpen) {
+      return null;
     }
+
+    return (
+      <DeleteContentVersionDialog 
+        open={ deleteDialogOpen }
+        multiLingualContentVersion={ deleteMultiLingualContentVersion }
+        dependingExhibitionPages={ deleteDependingExhibitionPages || [] }
+        onClose={this.onCloseOrCancelClick}
+        onDelete={ this.deleteMultiLingualContentVersion }
+      />
+    );
   };
 
   /**
@@ -374,11 +377,13 @@ class ContentVersionsScreen extends React.Component<Props, State> {
 
   /**
    * Deletes multilingual content version
-   *
-   * @param multiLingualContentVersion multilingual content version to delete
+   * 
+   * @param multiLingualContentVersion multilingual content version to delete 
+   * @param dependingExhibitionPages exhibition pages depending on the content version
    */
   private deleteMultiLingualContentVersion = async (
-    multiLingualContentVersion: MultiLingualContentVersion
+    multiLingualContentVersion: MultiLingualContentVersion,
+    dependingExhibitionPages: ExhibitionPage[]
   ) => {
     const { accessToken, exhibitionId } = this.props;
     const { languageVersions } = multiLingualContentVersion;
@@ -387,8 +392,21 @@ class ContentVersionsScreen extends React.Component<Props, State> {
       return;
     }
 
-    const contentVersionApi = Api.getContentVersionsApi(accessToken);
+    this.setState({
+      loading: true
+    });
+
     try {
+      const contentVersionApi = Api.getContentVersionsApi(accessToken);
+      const exhibitionPagesApi = Api.getExhibitionPagesApi(accessToken);
+
+      await Promise.all(dependingExhibitionPages.map((exhibitionPage) =>
+        exhibitionPagesApi.deleteExhibitionPage({
+          exhibitionId: exhibitionId,
+          pageId: exhibitionPage.id!!
+        })
+      ));
+
       await Promise.all(
         languageVersions.map((languageVersion) =>
           contentVersionApi.deleteContentVersion({
@@ -414,6 +432,9 @@ class ContentVersionsScreen extends React.Component<Props, State> {
         }
 
         draft.deleteDialogOpen = false;
+        draft.loading = false;
+        draft.deleteDependingExhibitionPages = undefined;
+        draft.deleteMultiLingualContentVersion = undefined;
       })
     );
   };
@@ -425,41 +446,22 @@ class ContentVersionsScreen extends React.Component<Props, State> {
    */
   private onDeleteClick = async (multiLingualContentVersion: MultiLingualContentVersion) => {
     const { accessToken, exhibitionId } = this.props;
-    const { confirmDialogData } = this.state;
-
     const pagesApi = Api.getExhibitionPagesApi(accessToken);
-
-    const tempDeleteData = { ...confirmDialogData } as ConfirmDialogData;
-    const allPages: ExhibitionPage[] = [];
+    const dependingExhibitionPages: ExhibitionPage[] = [];
 
     for (const contentVersion of multiLingualContentVersion.languageVersions) {
-      const pages = await pagesApi.listExhibitionPages({
+      const exhibitionPages = await pagesApi.listExhibitionPages({
           exhibitionId: exhibitionId,
           contentVersionId: contentVersion.id
       });
 
-      allPages.push(...pages);
+      dependingExhibitionPages.push(...exhibitionPages);
     }
-
-    if (allPages.length > 0) {
-      // TODO: causing a read only error if try to delete straight after creating a new content version
-      tempDeleteData.deletePossible = false;
-      tempDeleteData.contentTitle = strings.contentVersion.delete.contentTitle;
-
-      const holder: DeleteDataHolder[] = [];
-      holder.push({ objects: allPages, localizedMessage: strings.deleteContent.pages });
-      tempDeleteData.contentSpecificMessages = DeleteUtils.constructContentDeleteMessages(holder);
-    } else {
-      tempDeleteData.deletePossible = true;
-      tempDeleteData.contentSpecificMessages = [];
-    }
-
-    tempDeleteData.onConfirm = () => this.deleteMultiLingualContentVersion(multiLingualContentVersion);
 
     this.setState({
       deleteDialogOpen: true,
-      selectedContentVersion: multiLingualContentVersion.languageVersions[0],
-      confirmDialogData: tempDeleteData
+      deleteMultiLingualContentVersion: multiLingualContentVersion,
+      deleteDependingExhibitionPages: dependingExhibitionPages
     });
   };
 
@@ -602,6 +604,7 @@ class ContentVersionsScreen extends React.Component<Props, State> {
     this.setState({
       dialogOpen: false,
       deleteDialogOpen: false,
+      deleteDependingExhibitionPages: undefined,
       selectedContentVersion: undefined
     });
   };
