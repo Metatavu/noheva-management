@@ -363,7 +363,11 @@ export enum AvailableFonts {
   SOURCE_SANS_PRO_ITALIC = "Source-Sans-Pro-Italic",
   SOURCE_SANS_PRO_BOLD_ITALIC = "Source-Sans-Pro-BoldItalic",
   SOURCE_SANS_PRO_SEMI_BOLD = "Source-Sans-Pro-SemiBold",
-  SOURCE_SANS_PRO_SEMI_BOLD_ITALIC = "Source-Sans-Pro-SemiBoldItalic"
+  SOURCE_SANS_PRO_SEMI_BOLD_ITALIC = "Source-Sans-Pro-SemiBoldItalic",
+  LIBRE_BASKERVILLE_REGULAR = "Libre-Baskerville-Regular",
+  LIBRE_BASKERVILLE_ITALIC = "Libre-Baskerville-Italic",
+  NOTO_SANS_REGULAR = "Noto-Sans-Regular",
+  NOTO_SANS_BOLD = "Noto-Sans-Bold"
 }
 
 /**
