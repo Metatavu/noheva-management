@@ -60,8 +60,11 @@ const getDefine = async ({ mode }: UserConfig) => {
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   return Object.entries(secrets).reduce((acc: any, [key, value]) => {
-    const envKey = `import.meta.env.${key}`;
-    acc[envKey] = JSON.stringify(value);
+    if (key.startsWith("VITE_")) {
+      const envKey = `import.meta.env.${key}`;
+      acc[envKey] = JSON.stringify(value);
+    }
+    
     return acc;
   }, {});
 };
