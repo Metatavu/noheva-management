@@ -1,5 +1,5 @@
 import Api from "../../api/api";
-import { Device, DeviceModel, Exhibition } from "../../generated/client";
+import { Device, DeviceModel, DeviceType, Exhibition } from "../../generated/client";
 import strings from "../../localization/strings";
 import { ReduxState } from "../../store";
 import { AccessToken } from "../../types";
@@ -21,12 +21,13 @@ interface Props {
   accessToken: AccessToken;
   exhibitions: Exhibition[];
   deviceModels: DeviceModel[];
+  deviceTypes: DeviceType[];
 }
 
 /**
  * Fleet Management Screen component
  */
-const FleetManagementScreen = ({ history, keycloak, accessToken, deviceModels }: Props) => {
+const FleetManagementScreen = ({ history, keycloak, accessToken, deviceModels, deviceTypes }: Props) => {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<Device>();
@@ -68,6 +69,12 @@ const FleetManagementScreen = ({ history, keycloak, accessToken, deviceModels }:
     }
     setLoading(false);
   };
+
+  /** 
+   * Retrieves all possible values from the DeviceType enum
+   * to be used as selectable options in dropdowns or other UI elements.
+   */
+  const allDeviceTypes = Object.values(DeviceType);
 
   /**
    * Handler for delete device button click
@@ -125,6 +132,7 @@ const FleetManagementScreen = ({ history, keycloak, accessToken, deviceModels }:
       <EditDeviceDrawer
         selectedDevice={selectedDevice}
         deviceModels={deviceModels}
+        deviceTypes={allDeviceTypes}
         onSave={handleSaveDevice}
         onClose={() => setSelectedDevice(undefined)}
       />
@@ -147,7 +155,9 @@ const mapStateToProps = (state: ReduxState) => {
     keycloak: state.auth.keycloak as KeycloakInstance,
     accessToken: state.auth.accessToken as AccessToken,
     exhibitions: state.exhibitions.exhibitions,
-    deviceModels: state.devices.deviceModels
+    deviceModels: state.devices.deviceModels,
+    deviceTypes: state.devices.deviceTypes
+
   };
 };
 

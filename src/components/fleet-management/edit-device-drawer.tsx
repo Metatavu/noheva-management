@@ -1,4 +1,4 @@
-import { Device, DeviceApprovalStatus, DeviceModel } from "../../generated/client";
+import { Device, DeviceApprovalStatus, DeviceModel, DeviceType } from "../../generated/client";
 import strings from "../../localization/strings";
 import theme from "../../styles/theme";
 import GenericUtils from "../../utils/generic-utils";
@@ -27,6 +27,7 @@ import { ChangeEvent, ReactNode, useState } from "react";
 interface Props {
   selectedDevice?: Device;
   deviceModels: DeviceModel[];
+  deviceTypes: DeviceType[];
   onSave: (device: Device) => Promise<void>;
   onClose: () => void;
 }
@@ -34,11 +35,11 @@ interface Props {
 /**
  * Edit Device Drawer component
  */
-const EditDeviceDrawer = ({ selectedDevice, deviceModels, onSave, onClose }: Props) => {
+const EditDeviceDrawer = ({ selectedDevice, deviceModels, deviceTypes, onSave, onClose }: Props) => {
   if (!selectedDevice?.id) return null;
 
   const [tempDevice, setTempDevice] = useState(selectedDevice);
-
+  
   /**
    * Event handler for device property change events
    *
@@ -199,6 +200,42 @@ const EditDeviceDrawer = ({ selectedDevice, deviceModels, onSave, onClose }: Pro
     </MenuItem>
   );
 
+/**
+ * Renders device types select box options
+ *
+ * @param deviceType device type
+ */
+const renderDeviceTypeSelectBoxOptions = (deviceType: DeviceType) => (
+  
+  <MenuItem key={deviceType} value={deviceType}>
+    {getDeviceTypeLabel(deviceType)}
+  </MenuItem>
+  
+);
+
+/**
+ * Returns a user-friendly label for device type
+ *
+ * @param deviceType device type
+ * @returns label
+ */
+const getDeviceTypeLabel = (deviceType: DeviceType): string => {
+  switch (deviceType) {
+    case DeviceType.NohevaAndroid:
+      return "Noheva Android";
+    case DeviceType.NohevaMacos:
+      return "Noheva macOS";
+    case DeviceType.MuistiAndroid:
+      return "Muisti Android";
+    case DeviceType.Custom:
+      return "Custom";
+      
+    default:
+      return deviceType;
+
+  }
+};
+
   /**
    * Renders device models select box
    *
@@ -267,6 +304,13 @@ const EditDeviceDrawer = ({ selectedDevice, deviceModels, onSave, onClose }: Pro
         deviceModels.map(renderDeviceModelSelectBoxOptions)
       )}
       {renderDevicePropertyField(
+        "deviceType",
+        strings.fleetManagement.properties.deviceType,
+        false,
+        "select",
+        deviceTypes.map(renderDeviceTypeSelectBoxOptions)
+      )}
+      {renderDevicePropertyField(
         "serialNumber",
         strings.fleetManagement.properties.serialNumber,
         true,
@@ -329,7 +373,9 @@ const EditDeviceDrawer = ({ selectedDevice, deviceModels, onSave, onClose }: Pro
         </Button>
       </PropertyBox>
     </Drawer>
+    
   );
+  
 };
 
 export default EditDeviceDrawer;

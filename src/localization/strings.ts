@@ -1242,6 +1242,7 @@ export interface IStrings extends LocalizedStringsMethods {
       serialNumber: string;
       lastSeen: string;
       model: string;
+      deviceType: string;
     };
     deleteDialog: {
       title: string;

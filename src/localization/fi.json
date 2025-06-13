@@ -1220,7 +1220,8 @@
       },
       "serialNumber": "Sarjanumero",
       "lastSeen": "Nähty",
-      "model": "Laitemalli"
+      "model": "Laitemalli",
+      "deviceType": "Laite tyyppi"
     },
     "deleteDialog": {
       "title": "Poista laite",
