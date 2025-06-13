@@ -1221,7 +1221,8 @@
       },
       "serialNumber": "Serial number",
       "lastSeen": "Last seen",
-      "model": "Device model"
+      "model": "Device model",
+      "deviceType": "Device type"
     },
     "deleteDialog": {
       "title": "Delete device",

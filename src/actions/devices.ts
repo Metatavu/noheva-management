@@ -1,5 +1,5 @@
 import * as actionTypes from "../constants/actionTypes";
-import { DeviceModel, ExhibitionDevice, ExhibitionDeviceGroup } from "../generated/client";
+import { DeviceModel, DeviceType, ExhibitionDevice, ExhibitionDeviceGroup } from "../generated/client";
 import { ActionCreator } from "redux";
 
 /**
@@ -24,6 +24,14 @@ export interface SetDeviceGroupsAction {
 export interface SetDeviceModelsAction {
   type: actionTypes.SET_DEVICE_MODELS;
   deviceModels: DeviceModel[];
+}
+
+/**
+ * Interface for set device types action type
+ */
+export interface SetDeviceTypesAction {
+  type: actionTypes.SET_DEVICE_TYPES;
+  deviceTypes: DeviceType[];
 }
 
 /**
@@ -53,6 +61,20 @@ export const setDeviceGroups: ActionCreator<SetDeviceGroupsAction> = (
 };
 
 /**
+ * Function for dispatching device types
+ *
+ * @param deviceTypes device types being dispatched
+ */
+export const setDeviceTypes: ActionCreator<SetDeviceTypesAction> = (
+  deviceTypes: DeviceType[]
+) => {
+  return {
+    type: actionTypes.SET_DEVICE_TYPES,
+    deviceTypes: deviceTypes
+  };
+};
+
+/**
  * Function for dispatching device models
  *
  * @param deviceModels device models being dispatched
@@ -66,4 +88,9 @@ export const setDeviceModels: ActionCreator<SetDeviceModelsAction> = (
   };
 };
 
-export type DevicesAction = SetDevicesAction | SetDeviceGroupsAction | SetDeviceModelsAction;
+export type DevicesAction =
+  | SetDevicesAction
+  | SetDeviceGroupsAction
+  | SetDeviceModelsAction
+  | SetDeviceTypesAction;
+
