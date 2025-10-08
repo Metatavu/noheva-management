@@ -222,17 +222,17 @@ const renderDeviceTypeSelectBoxOptions = (deviceType: DeviceType) => (
 const getDeviceTypeLabel = (deviceType: DeviceType): string => {
   switch (deviceType) {
     case DeviceType.NohevaAndroid:
-      return "Noheva Android";
+      return strings.fleetManagement.properties.deviceTypeValues.nohevaAndroid;
     case DeviceType.NohevaMacos:
-      return "Noheva macOS";
+      return strings.fleetManagement.properties.deviceTypeValues.nohevaMacos
     case DeviceType.MuistiAndroid:
-      return "Muisti Android";
+      return strings.fleetManagement.properties.deviceTypeValues.muistiAndroid;
     case DeviceType.Custom:
-      return "Custom";
+      return strings.fleetManagement.properties.deviceTypeValues.custom;
       
     default:
       return deviceType;
-
+ 
   }
 };
 

@@ -1244,10 +1244,10 @@ export interface IStrings extends LocalizedStringsMethods {
       model: string;
       deviceType: string;
       deviceTypeValues: {
-        NOHEVA_ANDROID: string;
-        NOHEVA_MACOS: string;
-        MUISTI_ANDROID: string;
-        CUSTOM: string;
+        nohevaAndroid: string;
+        nohevaMacos: string;
+        muistiAndroid: string;
+        custom: string;
       };
     };
     deleteDialog: {

@@ -1223,10 +1223,10 @@
       "model": "Device model",
       "deviceType": "Device type",
       "deviceTypeValues": {
-       "NOHEVA_ANDROID": "Noheva Android",
-       "NOHEVA_MACOS": "Noheva macOS",
-       "MUISTI_ANDROID": "Muisti Android",
-       "CUSTOM": "Custom"
+       "nohevaAndroid": "Noheva Android",
+       "nohevaMacos": "Noheva macOS",
+       "muistiAndroid": "Muisti Android",
+       "custom": "Custom"
       }
     },
     "deleteDialog": {
