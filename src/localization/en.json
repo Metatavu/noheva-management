@@ -1221,7 +1221,13 @@
       "serialNumber": "Serial number",
       "lastSeen": "Last seen",
       "model": "Device model",
-      "deviceType": "Device type"
+      "deviceType": "Device type",
+      "deviceTypeValues": {
+       "NOHEVA_ANDROID": "Noheva Android",
+       "NOHEVA_MACOS": "Noheva macOS",
+       "MUISTI_ANDROID": "Muisti Android",
+       "CUSTOM": "Custom"
+      }
     },
     "deleteDialog": {
       "title": "Delete device",
