@@ -1243,6 +1243,13 @@ export interface IStrings extends LocalizedStringsMethods {
       serialNumber: string;
       lastSeen: string;
       model: string;
+      deviceType: string;
+      deviceTypeValues: {
+        nohevaAndroid: string;
+        nohevaMacos: string;
+        muistiAndroid: string;
+        custom: string;
+      };
     };
     deleteDialog: {
       title: string;

@@ -1,6 +1,6 @@
 import { DevicesAction } from "../actions/devices";
-import { SET_DEVICES, SET_DEVICE_GROUPS, SET_DEVICE_MODELS } from "../constants/actionTypes";
-import { DeviceModel, ExhibitionDevice, ExhibitionDeviceGroup } from "../generated/client";
+import { SET_DEVICES, SET_DEVICE_GROUPS, SET_DEVICE_MODELS, SET_DEVICE_TYPES } from "../constants/actionTypes";
+import { DeviceModel, DeviceType, ExhibitionDevice, ExhibitionDeviceGroup } from "../generated/client";
 import { Reducer } from "redux";
 
 /**
@@ -10,6 +10,7 @@ interface DevicesState {
   devices: ExhibitionDevice[];
   deviceGroups: ExhibitionDeviceGroup[];
   deviceModels: DeviceModel[];
+  deviceTypes: DeviceType[];
 }
 
 /**
@@ -18,7 +19,8 @@ interface DevicesState {
 const initialState: DevicesState = {
   devices: [],
   deviceGroups: [],
-  deviceModels: []
+  deviceModels: [],
+  deviceTypes: []
 };
 
 /**
@@ -48,6 +50,11 @@ export const devicesReducer: Reducer<DevicesState, DevicesAction> = (
         ...state,
         deviceModels: action.deviceModels
       };
+      case SET_DEVICE_TYPES:
+        return {
+          ...state,
+          deviceTypes: action.deviceTypes
+        };
     default:
       return state;
   }
