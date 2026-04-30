@@ -315,36 +315,35 @@ class PageEventDialog extends React.Component<Props, State> {
   };
 
   /**
- * Render device group event settings
- */
-private renderDeviceGroupEventSettings = () => {
+   * Render device group event settings
+   */
+  private renderDeviceGroupEventSettings = () => {
     const { classes } = this.props;
 
-  const event = this.state.pageEvent;
-
-  if (!event) {
+    const event = this.state.pageEvent;
+    if (!event) {
         return null;
-  }
+    }
 
     const deviceGroupEventNameProperty = event
       ? event.properties.find((property) => property.name === "name")
       : undefined;
   
-  return (
-    <div style={{ marginTop: theme.spacing(2) }}>
-      <Typography variant="h6">
-        {strings.contentEditor.editor.eventTriggers.deviceGroupEvent}
-      </Typography>
-      <TextField
-        fullWidth={false}
-        name="name"
-        className={classes.textResourceEditor}
-        value={deviceGroupEventNameProperty?.value || ""}
-        onChange={this.onEventTriggerEventPropertyChange}
-      />
-    </div>
-  );
-};
+    return (
+      <div style={{ marginTop: theme.spacing(2) }}>
+        <Typography variant="h6">
+          {strings.contentEditor.editor.eventTriggers.deviceGroupEvent}
+        </Typography>
+        <TextField
+          fullWidth={false}
+          name="name"
+          className={classes.textResourceEditor}
+          value={deviceGroupEventNameProperty?.value || ""}
+          onChange={this.onEventTriggerEventPropertyChange}
+        />
+      </div>
+    );
+  };
 
   /**
    * Renders execute web script settings
