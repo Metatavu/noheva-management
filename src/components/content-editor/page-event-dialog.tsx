@@ -127,6 +127,9 @@ class PageEventDialog extends React.Component<Props, State> {
           <MenuItem value={ExhibitionPageEventActionType.Navigate}>
             {strings.contentEditor.editor.eventTriggers.actionTypes.navigate}
           </MenuItem>
+          <MenuItem value={ExhibitionPageEventActionType.Triggerdevicegroupevent}>
+            {strings.contentEditor.editor.eventTriggers.actionTypes.triggerdevicegroupevent}
+          </MenuItem>
         </TextField>
       </Box>
     );
@@ -318,15 +321,14 @@ class PageEventDialog extends React.Component<Props, State> {
     const { classes } = this.props;
 
     const event = this.state.pageEvent;
-
     if (!event) {
-      return null;
+        return null;
     }
 
     const deviceGroupEventNameProperty = event
       ? event.properties.find((property) => property.name === "name")
       : undefined;
-
+  
     return (
       <div style={{ marginTop: theme.spacing(2) }}>
         <Typography variant="h6">
