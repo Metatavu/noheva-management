@@ -1221,8 +1221,16 @@
       },
       "serialNumber": "Sarjanumero",
       "lastSeen": "Nähty",
-      "model": "Laitemalli"
+      "model": "Laitemalli",
+      "deviceType": "Laite tyyppi",
+      "deviceTypeValues": {
+      "nohevaAndroid": "Noheva Android",
+      "nohevaMacos": "Noheva macOS",
+      "muistiAndroid": "Muisti Android",
+      "custom": "Custom"
+      }
     },
+    
     "deleteDialog": {
       "title": "Poista laite",
       "description": "Kirjoita poistettavan laitteen nimi vahvistaaksesi poisto.",
